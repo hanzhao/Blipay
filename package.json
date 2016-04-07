@@ -1,0 +1,72 @@
+{
+  "name": "blipay",
+  "version": "0.0.1",
+  "description": "Massive dirty.py transaction online.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/magicae/Blipay.git"
+  },
+  "keywords": [
+    "Transaction",
+    "Online",
+    "Project",
+    "Book"
+  ],
+  "author": "GroupB",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/magicae/Blipay/issues"
+  },
+  "homepage": "https://github.com/magicae/Blipay#readme",
+  "dependencies": {
+    "bluebird": "^3.3.4",
+    "body-parser": "^1.15.0",
+    "connect-redis": "^3.0.2",
+    "cookie-parser": "^1.4.1",
+    "express": "expressjs/express#0774548736a00ab380dd648d98ef1a8b415356c5",
+    "express-session": "^1.13.0",
+    "glob": "^7.0.3",
+    "method-override": "^2.3.5",
+    "morgan": "^1.7.0",
+    "serve-favicon": "^2.3.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^6.3.6",
+    "babel-cli": "^6.6.5",
+    "babel-core": "^6.7.4",
+    "babel-loader": "^6.2.4",
+    "babel-plugin-antd": "^0.3.1",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-polyfill": "^6.7.4",
+    "babel-preset-es2015": "^6.6.0",
+    "babel-preset-react": "^6.5.0",
+    "babel-preset-react-hmre": "^1.1.1",
+    "babel-preset-stage-0": "^6.5.0",
+    "classnames": "^2.2.3",
+    "css-loader": "^0.23.1",
+    "file-loader": "^0.8.5",
+    "node-sass": "^3.4.2",
+    "normalize.css": "necolas/normalize.css#ab3abb6d36cf3cd66e22faeec65dcef1196ba1c1",
+    "postcss-loader": "^0.8.2",
+    "qwest": "^4.3.2",
+    "react": "^0.14.8",
+    "react-dom": "^0.14.8",
+    "react-redux": "^4.4.1",
+    "react-router": "^2.0.1",
+    "react-router-redux": "^4.0.1",
+    "redux": "^3.3.1",
+    "redux-async-connect": "^1.0.0-rc4",
+    "redux-form": "^4.2.2",
+    "sass-loader": "^3.2.0",
+    "style-loader": "^0.13.1",
+    "url-loader": "^0.5.7",
+    "webpack": "^1.12.14",
+    "webpack-dev-middleware": "^1.6.1",
+    "webpack-hot-middleware": "^2.10.0"
+  }
+}
