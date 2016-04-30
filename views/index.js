@@ -15,6 +15,7 @@ import AccountPage from './components/AccountPage';
 import AccountRecordPage from './components/AccountRecordPage';
 import AccountSecurityPage from './components/AccountSecurityPage';
 import AccountWelcomePage from './components/AccountWelcomePage';
+import AdminIndexPage from './components/AdminIndexPage';
 import NotFoundPage from './components/NotFoundPage';
 
 const history = syncHistoryWithStore(browserHistory, store);
@@ -24,6 +25,9 @@ const router = (
     <Router history={history}>
       <Route path="/" component={App}>
         <IndexRoute component={MainPage} />
+        <Route path="/admin">
+          <IndexRoute component={AdminIndexPage} />
+        </Route>
         <Route path="/account" component={AccountPage}>
           <IndexRoute component={AccountWelcomePage} />
           <Route path="/account/records" component={AccountRecordPage} />
