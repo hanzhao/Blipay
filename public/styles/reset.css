@@ -1,3 +1,7 @@
+/* 导航栏 */
+.ant-menu-horizontal > .ant-menu-item-selected > a {
+  color: #c63555;
+}
 /* 文本框样式 */
 .ant-input {
   border: none;

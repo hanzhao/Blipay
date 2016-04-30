@@ -20,7 +20,7 @@ class RegisterOrLoginForm extends React.Component {
   };
   handleSwitchPanel = (key) => {
     console.log(`Toggle ${key}`);
-    // 0 - 90deg - 180deg
+    // 0deg - 90deg(switch) - 0deg
     let progress = 0;
     let inc = 5 * (key < this.state.active ? 1 : -1);
     const frame = () => {
