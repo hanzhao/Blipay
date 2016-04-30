@@ -33,6 +33,8 @@
     "glob": "^7.0.3",
     "method-override": "^2.3.5",
     "morgan": "^1.7.0",
+    "mysql": "^2.10.2",
+    "sequelize": "^3.22.0",
     "serve-favicon": "^2.3.0"
   },
   "devDependencies": {

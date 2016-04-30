@@ -27,7 +27,9 @@ class FindPasswordForm extends React.Component {
           找回密码
         </Button>
         <div className={styles.bottomRight}>
-          <a onClick={this.props.handleSwitchPanel.bind(this, 1)}>登录账户</a>
+          <a onClick={this.props.handleSwitchPanel.bind(this, 1)}>
+            登录账户 <Icon type="right" />
+          </a>
         </div>
       </Form>
     );

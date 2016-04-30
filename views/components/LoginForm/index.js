@@ -16,7 +16,10 @@ import styles from './styles';
 })
 class LoginForm extends React.Component {
   render() {
-    const { fields: { username, password }, handleSubmit, submitting } = this.props;
+    const { fields: {
+      username,
+      password
+    }, handleSubmit, submitting } = this.props;
     return (
       <Form horizontal onSubmit={handleSubmit}>
         <Form.Item>
@@ -38,10 +41,14 @@ class LoginForm extends React.Component {
           登录
         </Button>
         <div className={styles.bottomLeft}>
-          <a onClick={this.props.handleSwitchPanel.bind(this, 0)}>忘记密码？</a>
+          <a onClick={this.props.handleSwitchPanel.bind(this, 0)}>
+            <Icon type="left" /> 忘记密码？
+          </a>
         </div>
         <div className={styles.bottomRight}>
-          <a onClick={this.props.handleSwitchPanel.bind(this, 2)}>注册新账户</a>
+          <a onClick={this.props.handleSwitchPanel.bind(this, 2)}>
+            注册新账户 <Icon type="right" />
+          </a>
         </div>
       </Form>
     );

@@ -4,6 +4,7 @@ global.Promise = require('bluebird');
 global.ROOT = __dirname;
 
 const glob = require('glob');
+const http = require('http');
 // Express 服务器框架
 const express = require('express');
 // 解析 body
@@ -27,10 +28,11 @@ const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 
 const env = process.env.NODE_ENV || 'development';
-const port = process.env.PORT || 3000;
+global.isProduction = (env === 'production');
+const port = process.env.PORT || 0;
 const RedisStore = ConnectRedis(session);
 
-const config = require('./config')[env];
+const config = require('./config');
 
 // 创建 app
 const app = express();
@@ -80,6 +82,7 @@ app.use((req, res, next) => {
 });
 
 // models
+require('./models');
 
 // controllers
 glob.sync(`${ROOT}/controllers/*.js`).forEach((controller) => {
@@ -92,7 +95,9 @@ app.use((err, req, res, next) => {
   console.error(err);
 });
 
+const server = http.createServer(app);
+
 // 开始监听
-app.listen(port, () => {
-  console.log(`App is listening on port ${port}`);
+server.listen(port, () => {
+  console.log(`App is listening on port ${server.address().port}`);
 });
