@@ -10,8 +10,12 @@ import { syncHistoryWithStore } from 'react-router-redux';
 import store from './redux/store';
 
 import App from './components/App';
-import MainPage from './components/MainPage'
-import NotFoundPage from './components/NotFoundPage'
+import MainPage from './components/MainPage';
+import AccountPage from './components/AccountPage';
+import AccountRecordPage from './components/AccountRecordPage';
+import AccountSecurityPage from './components/AccountSecurityPage';
+import AccountWelcomePage from './components/AccountWelcomePage';
+import NotFoundPage from './components/NotFoundPage';
 
 const history = syncHistoryWithStore(browserHistory, store);
 
@@ -20,6 +24,11 @@ const router = (
     <Router history={history}>
       <Route path="/" component={App}>
         <IndexRoute component={MainPage} />
+        <Route path="/account" component={AccountPage}>
+          <IndexRoute component={AccountWelcomePage} />
+          <Route path="/account/records" component={AccountRecordPage} />
+          <Route path="/account/security" component={AccountSecurityPage} />
+        </Route>
         <Route path="*" component={NotFoundPage} />
       </Route>
     </Router>

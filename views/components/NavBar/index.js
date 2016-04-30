@@ -15,10 +15,12 @@ import styles from './styles';
  */
 const menus = [
   { to: '/', text: '首页' },
-  { to: '/profile', text: '个人账户' },
+  { to: '/account', text: '个人账户' },
   { to: '/shopping', text: '购买商品' },
   { to: '/booking', text: '在线订票' }
 ]
+
+const getFirstPart = () => `/${location.pathname.split('/')[1]}`
 
 class NavBar extends React.Component {
   render() {
@@ -27,7 +29,7 @@ class NavBar extends React.Component {
         <Logo className={styles.logo} />
         <Menu className={styles.menu}
               mode="horizontal"
-              selectedKeys={[location.pathname]}>
+              selectedKeys={[getFirstPart(location.pathname)]}>
           { menus.map((t) => (
             <Menu.Item key={t.to}>
               <Link to={t.to}>{t.text}</Link>

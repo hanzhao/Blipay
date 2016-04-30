@@ -1,6 +1,22 @@
 /* 导航栏 */
-.ant-menu-horizontal > .ant-menu-item-selected > a {
+.ant-menu-horizontal > .ant-menu-item-selected > a,
+.ant-menu-horizontal > .ant-menu-item-selected > a:active,
+.ant-menu-horizontal > .ant-menu-item-selected > a:hover,
+.ant-menu-horizontal > .ant-menu-item-selected > a:focus,
+.ant-menu-item-selected > a,
+.ant-menu-item-selected > a:active,
+.ant-menu-item-selected > a:hover,
+.ant-menu-item-selected > a:focus {
   color: #c63555;
+}
+.ant-menu-inline > .ant-menu-item {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  height: 82px;
+  line-height: 62px;
+}
+.ant-menu-item > a {
+  font-size: 16px;
 }
 /* 文本框样式 */
 .ant-input {
@@ -36,6 +52,6 @@
 
 .ant-btn-lg {
   border-radius: 2px;
-  padding: 10px 130px;
+  padding: 10px 100px;
   font-size: 16px;
 }

@@ -27,7 +27,9 @@ class RegisterForm extends React.Component {
           <Input size="large"
                  placeholder="账户"
                  addonBefore={<Icon type="user" />}
-                 autoFocus {...username} />
+                 autoFocus
+                 autoComplete="off"
+                 {...username} />
         </Form.Item>
         <Form.Item>
           <Input size="large"

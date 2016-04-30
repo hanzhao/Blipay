@@ -2737,7 +2737,7 @@ fieldset[disabled] .ant-btn-dashed.active {
 }
 .ant-dropdown-menu-item:hover,
 .ant-dropdown-menu-submenu-title:hover {
-  background-color: #eaf8fe;
+  background-color: #ffebee;
 }
 .ant-dropdown-menu-item-disabled,
 .ant-dropdown-menu-submenu-title-disabled {
@@ -3350,7 +3350,7 @@ fieldset[disabled] .ant-btn-dashed.active {
 }
 .ant-select-dropdown-menu-item:hover,
 .ant-select-dropdown-menu-item-active {
-  background-color: #eaf8fe;
+  background-color: #ffebee;
 }
 .ant-select-dropdown-menu-item-selected {
   background-color: #d5f1fd;
@@ -3609,7 +3609,7 @@ fieldset[disabled] .ant-btn-dashed.active {
   transition: background 0.3s ease;
 }
 .ant-calendar-date:hover {
-  background: #eaf8fe;
+  background: #ffebee;
   cursor: pointer;
 }
 .ant-calendar-date:active {
@@ -3974,7 +3974,7 @@ textarea.ant-calendar-range .ant-time-picker-input {
   border-radius: 0;
 }
 .ant-calendar-range .ant-calendar-in-range-cell > span {
-  background: #eaf8fe;
+  background: #ffebee;
   width: 100%;
   border-radius: 0;
   border: 0;
@@ -4179,7 +4179,7 @@ textarea.ant-calendar-time .ant-time-picker-input {
   transition: background 0.3s ease;
 }
 .ant-calendar-month-panel-month:hover {
-  background: #eaf8fe;
+  background: #ffebee;
   cursor: pointer;
 }
 .ant-calendar-month-panel-selected-cell .ant-calendar-month-panel-month {
@@ -4285,7 +4285,7 @@ textarea.ant-calendar-time .ant-time-picker-input {
   transition: background 0.3s ease;
 }
 .ant-calendar-year-panel-year:hover {
-  background: #eaf8fe;
+  background: #ffebee;
   cursor: pointer;
 }
 .ant-calendar-year-panel-selected-cell .ant-calendar-year-panel-year {
@@ -4403,7 +4403,7 @@ textarea.ant-calendar-time .ant-time-picker-input {
   transition: background 0.3s ease;
 }
 .ant-calendar-decade-panel-decade:hover {
-  background: #eaf8fe;
+  background: #ffebee;
   cursor: pointer;
 }
 .ant-calendar-decade-panel-selected-cell .ant-calendar-decade-panel-decade {
@@ -4672,7 +4672,7 @@ textarea.ant-time-picker-input {
   transition: background 0.3s ease;
 }
 .ant-time-picker-panel-select li:hover {
-  background: #eaf8fe;
+  background: #ffebee;
 }
 .ant-time-picker-panel-select li.ant-time-picker-panel-select-option-selected {
   background: #d5f1fd;
@@ -5362,7 +5362,7 @@ textarea.ant-time-picker-input {
   transition: all .3s ease;
 }
 .ant-table tr:hover {
-  background: #eaf8fe;
+  background: #ffebee;
 }
 .ant-table thead tr:hover {
   background: none;
@@ -8473,7 +8473,7 @@ label.ant-radio-button-disabled.ant-radio-button-checked {
 }
 .ant-alert-info {
   border: 1px solid #d5f1fd;
-  background-color: #eaf8fe;
+  background-color: #ffebee;
 }
 .ant-alert-info .ant-alert-icon {
   color: #c63555;
@@ -8738,7 +8738,7 @@ label.ant-radio-button-disabled.ant-radio-button-checked {
   transition: all 0.3s ease;
 }
 .ant-tree li a:hover {
-  background-color: #eaf8fe;
+  background-color: #ffebee;
 }
 .ant-tree li a.ant-tree-node-selected {
   background-color: #d5f1fd;
@@ -9031,7 +9031,7 @@ label.ant-radio-button-disabled.ant-radio-button-checked {
   transition: all 0.3s ease;
 }
 .ant-select-tree li a:hover {
-  background-color: #eaf8fe;
+  background-color: #ffebee;
 }
 .ant-select-tree li a.ant-select-tree-node-selected {
   background-color: #d5f1fd;
@@ -9484,7 +9484,7 @@ label.ant-radio-button-disabled.ant-radio-button-checked {
   color: #666;
 }
 .ant-upload-list-item:hover .ant-upload-list-item-info {
-  background-color: #eaf8fe;
+  background-color: #ffebee;
 }
 .ant-upload-list-item:hover .anticon-cross {
   opacity: 1;
@@ -9720,7 +9720,7 @@ label.ant-radio-button-disabled.ant-radio-button-checked {
 }
 .ant-menu-item-active,
 .ant-menu-submenu-title:hover {
-  background-color: #eaf8fe;
+  background-color: #ffebee;
 }
 .ant-menu-horizontal .ant-menu-item,
 .ant-menu-horizontal .ant-menu-submenu {
@@ -10286,7 +10286,7 @@ a -count:active {
   line-height: 22px;
 }
 .ant-fullcalendar-value:hover {
-  background: #eaf8fe;
+  background: #ffebee;
   cursor: pointer;
 }
 .ant-fullcalendar-month-panel-cell .ant-fullcalendar-value {
@@ -10356,7 +10356,7 @@ a -count:active {
 }
 .ant-fullcalendar-fullscreen .ant-fullcalendar-month:hover,
 .ant-fullcalendar-fullscreen .ant-fullcalendar-date:hover {
-  background: #eaf8fe;
+  background: #ffebee;
   cursor: pointer;
 }
 .ant-fullcalendar-fullscreen .ant-fullcalendar-column-header {
@@ -10375,7 +10375,7 @@ a -count:active {
 .ant-fullcalendar-fullscreen .ant-fullcalendar-month-panel-current-cell .ant-fullcalendar-month,
 .ant-fullcalendar-fullscreen .ant-fullcalendar-today .ant-fullcalendar-date {
   border-top-color: #c63555;
-  background-color: #eaf8fe;
+  background-color: #ffebee;
   color: #c63555;
 }
 .ant-fullcalendar-fullscreen .ant-fullcalendar-month-panel-current-cell .ant-fullcalendar-value {
@@ -10596,7 +10596,7 @@ a -count:active {
 }
 .ant-transfer-list-body ul li:hover {
   cursor: pointer;
-  background-color: #eaf8fe;
+  background-color: #ffebee;
 }
 ul li.ant-transfer-list-highlight-enter {
   animation: transferHighlightIn 1s ease;
@@ -10776,7 +10776,7 @@ ul li.ant-transfer-list-highlight-enter {
   transition: all 0.3s ease;
 }
 .ant-cascader-menu-item:hover {
-  background: #eaf8fe;
+  background: #ffebee;
 }
 .ant-cascader-menu-item-disabled {
   cursor: not-allowed;
