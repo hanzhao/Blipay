@@ -22,7 +22,7 @@ class FindPasswordForm extends React.Component {
           <Input size="large"
                  placeholder="手机号"
                  addonBefore={<Icon type="user" />}
-                 autoFocus />
+                 autoComplete="off" />
         </Form.Item>
         <Button type="primary" size="large"
                 className={styles.btn} >
