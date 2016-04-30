@@ -23,11 +23,11 @@ const history = syncHistoryWithStore(browserHistory, store);
 const router = (
   <Provider store={store}>
     <Router history={history}>
+      <Route path="/admin">
+        <IndexRoute component={AdminIndexPage} />
+      </Route>
       <Route path="/" component={App}>
         <IndexRoute component={MainPage} />
-        <Route path="/admin">
-          <IndexRoute component={AdminIndexPage} />
-        </Route>
         <Route path="/account" component={AccountPage}>
           <IndexRoute component={AccountWelcomePage} />
           <Route path="/account/records" component={AccountRecordPage} />
