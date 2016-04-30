@@ -9,6 +9,11 @@
 .ant-menu-item-selected > a:focus {
   color: #c63555;
 }
+.ant-menu-horizontal > .ant-menu-item,
+.ant-menu-horizontal > .ant-menu-submenu {
+  padding-left: 0;
+  padding-right: 0;
+}
 .ant-menu-inline > .ant-menu-item {
   padding-top: 10px;
   padding-bottom: 10px;
