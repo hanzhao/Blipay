@@ -1,0 +1,23 @@
+.btn {
+  margin-top: 30px;
+}
+
+.bottomLeft {
+  position: absolute;
+  left: 15px;
+  bottom: 15px;
+  a {
+    color: #c63555;
+    font-size: 14px;
+  }
+}
+
+.bottomRight {
+  position: absolute;
+  right: 15px;
+  bottom: 15px;
+  a {
+    color: #c63555;
+    font-size: 14px;
+  }
+}

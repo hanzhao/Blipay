@@ -1,0 +1,15 @@
+.navbar {
+  height: 85px;
+  .logo {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  .menu {
+    float: right;
+    line-height: 80px;
+    font-size: 16px;
+    li > a {
+      margin: 0 20px;
+    }
+  }
+}
