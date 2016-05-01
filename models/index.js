@@ -1,4 +1,3 @@
-const glob = require('glob');
 const Sequelize = require('sequelize');
 const config = require('../config').database;
 

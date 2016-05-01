@@ -1,4 +1,4 @@
-const webpack = require('webpack')
+const webpack = require('webpack');
 
 module.exports = {
   context: `${__dirname}/views`,
@@ -46,4 +46,4 @@ module.exports = {
   postcss: [
     require('autoprefixer')({ browsers: ['last 3 versions'] })
   ]
-}
+};

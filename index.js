@@ -16,7 +16,7 @@ const session = require('express-session');
 // 打印连接日志
 const logger = require('morgan');
 // 图标
-const favicon = require('serve-favicon');
+// const favicon = require('serve-favicon');
 // 使用 Redis 提供 Session 存储
 const ConnectRedis = require('connect-redis');
 
@@ -76,7 +76,7 @@ app.use((req, res, next) => {
     return this.json({
       code: -1,
       data: data
-    })
+    });
   };
   next();
 });
@@ -90,7 +90,7 @@ glob.sync(`${ROOT}/controllers/*.js`).forEach((controller) => {
 });
 
 // 错误处理
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   res.status(500).send(err.stack);
   console.error(err);
 });

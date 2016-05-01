@@ -24,10 +24,10 @@ function ajaxMiddleware(client) {
       ).catch((error) => {
         console.error('MIDDLEWARE ERROR:', error);
         next({...rest, error, type: FAILURE});
-      })
+      });
       return actionPromise;
     };
-  }
+  };
 }
 
 const _routerMiddleware = routerMiddleware(browserHistory);
