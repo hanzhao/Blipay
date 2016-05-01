@@ -16,7 +16,7 @@ const session = require('express-session');
 // 打印连接日志
 const logger = require('morgan');
 // 图标
-// const favicon = require('serve-favicon');
+const favicon = require('serve-favicon');
 // 使用 Redis 提供 Session 存储
 const ConnectRedis = require('connect-redis');
 
@@ -52,6 +52,7 @@ app.use(session({
   cookie: { secure: false },
   store: new RedisStore(config.redis)
 }));
+app.use(favicon(`${ROOT}/public/favicon.ico`));
 
 /* 静态资源 */
 if (env === 'development') {
