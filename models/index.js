@@ -9,18 +9,23 @@ const db = new Sequelize(config.db, config.username, config.password, {
 
 const User = require('./user')(db);
 const Item = require('./item')(db);
+const Order = require('./order')(db);
+const OrderItem = db.define('OrderItem');
+
 
 // 表关联
-Item.belongsTo(User, {
-  as: 'seller'
-});
+Item.belongsTo(User, {as: 'seller'});
 
-[User, Item].forEach((t) => {
+Order.belongsTo(User, {as: 'seller'});
+Order.belongsTo(User, {as: 'customer'});
+Order.belongsToMany(Item, {through: OrderItem});
+
+[User, Item, Order, OrderItem].forEach((t) => {
   t.sync().then(() => {
     console.log(`Table ${t.name} synced`);
   });
 });
 
 module.exports = {
-  User, Item
+  User, Item, Order
 };
