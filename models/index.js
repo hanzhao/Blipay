@@ -7,6 +7,20 @@ const db = new Sequelize(config.db, config.username, config.password, {
   pool: config.pool
 });
 
+const User = require('./user')(db);
+const Item = require('./item')(db);
+
+// 表关联
+Item.belongsTo(User, {
+  as: 'seller'
+});
+
+[User, Item].forEach((t) => {
+  t.sync().then(() => {
+    console.log(`Table ${t.name} synced`);
+  });
+});
+
 module.exports = {
-  User: require('./user')(db)
+  User, Item
 };
