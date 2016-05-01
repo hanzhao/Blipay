@@ -8,7 +8,7 @@ module.exports = (db) => {
     name: {
       type: Sequelize.STRING
     },
-    picUrl: {
+    thumb: {
       type: Sequelize.STRING
     },
     price: Sequelize.DECIMAL(12, 2)

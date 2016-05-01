@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 
 module.exports = (db) => {
-  return db.define('record', {
+  return db.define('wrong', {
     pay: {
       type: Sequelize.DECIMAL(12, 2)
     },
@@ -18,6 +18,9 @@ module.exports = (db) => {
       type: Sequelize.BOOLEAN
     },
     time: {
+      type: Sequelize.STRING
+    },
+    errorState: {
       type: Sequelize.STRING
     }
   });

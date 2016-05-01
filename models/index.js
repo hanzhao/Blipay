@@ -16,6 +16,8 @@ const Hotelorder = require('./hotelorder')(db);
 const Company = require('./company')(db);
 const Air = require('./air')(db);
 const Airorder = require('./airorder')(db);
+const Record = require('./record')(db);
+const Wrong = require('./wrong')(db);
 
 // 表关联
 Item.belongsTo(User, {
@@ -42,12 +44,32 @@ Airorder.belongsTo(User);
 Airorder.belongsTo(Air);
 Airorder.belongsTo(Company);
 
-[User, Item, Order, Hotel, Room, Hotelorder, Company, Air, Airorder].forEach((t) => {
+Record.belongsTo(Order);
+Record.belongsTo(Item);
+Record.belongsTo(User, {
+  as: 'buyer'
+});
+Record.belongsTo(User, {
+  as: 'seller'
+});
+
+Wrong.belongsTo(Order);
+Wrong.belongsTo(Item);
+Wrong.belongsTo(User, {
+  as: 'buyer'
+});
+Wrong.belongsTo(User, {
+  as: 'seller'
+});
+
+[User, Item, Order, Hotel, Room, Hotelorder, Company, Air, 
+Airorder, Record, Wrong].forEach((t) => {
   t.sync().then(() => {
     console.log(`Table ${t.name} synced`);
   });
 });
 
 module.exports = {
-  User, Item, Order, Hotel, Room, Hotelorder, Company, Air, Airorder
+  User, Item, Order, Hotel, Room, Hotelorder, Company, Air, 
+  Airorder, Record, Wrong
 };
