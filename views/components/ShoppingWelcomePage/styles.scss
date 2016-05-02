@@ -1,0 +1,101 @@
+.container {
+	background-color: #FFFFFF;
+	padding-left:0px;
+	padding-top: 20px;
+	padding-right:30px;
+
+	.upperHalf {
+		.info {
+			float: left;
+			.greeting {
+				font-size: 30px;
+			}
+			.lastLogin {
+				font-size: 15px;
+				margin-top: 15px;
+			}
+		}
+		.verticalBar {
+			float: left;
+			top: 0;
+			bottom: 0;
+			width: 1px;
+			height: 100px;
+			background-color: #AAAAAA;
+			margin-left: 12%;
+			margin-bottom: 20px;
+		}
+		.balance {
+			float: left;
+			margin-left: 5%;
+			.balanceTitle {
+				font-size: 15px;
+				margin-top: 15px;
+			}
+			.balanceLower{
+				margin-top: 15px;
+				.balanceHead {
+					position: relative;
+					bottom: 0;
+					color: #c63655;
+					font-size: 30px
+				}
+				.balanceTail {
+					position: relative;
+					bottom: 0;
+					color: #c63655;
+					font-size: 20px;
+				}
+				.topup {
+					position: relative;
+					bottom: 10px;
+					margin-left: 50px;
+				}
+				.withdrawal {
+					position: relative;
+					bottom: 10px;
+					margin-left: 15px;
+
+				}
+			}
+		}
+
+	}
+	.horizontalBar {
+		clear: both;
+		position: relative;
+		margin-top: 20px;
+		height: 1px;
+		background-color: #AAAAAA;
+		
+	}
+	.lowerHalf {
+		clear: both;
+		.title {
+			margin-top: 20px;
+			font-size: 15px
+		}
+		.table {
+			margin-top: 10px;
+			.row {
+				display: block;
+				border-top: 1px solid #EEEEEE;
+				border-bottom: 1px solid #EEEEEE;
+				padding-top: 5px;
+				padding-bottom: 5px;
+				.date {
+					width: 180px;
+				}
+				.description {
+					width: 180px;
+				}
+				.amount {
+					width: 180px;
+				}
+				.status {
+					width: 100px;
+				}
+			}
+		}
+	}
+}
