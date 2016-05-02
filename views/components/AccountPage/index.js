@@ -6,7 +6,6 @@ import React from 'react';
 
 import Container from '../Container';
 import AccountMenu from '../AccountMenu';
-
 import styles from './styles';
 
 class AccountPage extends React.Component {
