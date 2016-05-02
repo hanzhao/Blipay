@@ -1,0 +1,26 @@
+.row {  
+  border-top: 1px solid #AAAAAA;
+  border-bottom: 1px solid #AAAAAA;
+
+  .date {
+    position: relative;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    width: 25%;
+    text-align: center;
+  }
+  .item {
+    position: relative;
+    width: 35%;
+  }
+  .amount {
+    position: relative;
+    width: 20%;
+    text-align: center;
+  }
+  .status {
+    position: relative;
+    width: 20%;
+    text-align: center;
+  }
+}

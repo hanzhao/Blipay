@@ -1,0 +1,40 @@
+.input {
+  width: 150px;
+  height: 30px;
+  margin-right: 20px;
+  border: solid 1px #c3c3c3;
+  border-radius: 2px;
+}
+.input:hover {
+  border-color: #d25f77;
+}
+.input:focus {
+  border: solid 1px #c63655;
+  border-radius: 2px;
+}
+.button {
+  margin-left: 10px;
+}
+.cancel {
+  margin-left: 20px;
+  color: #c63655;
+}
+.cancel:hover {
+  color: #c63655;
+  text-shadow: 1px 1px #AAAAAA;
+}
+
+.title {
+
+}
+.edit {
+  color: #c63655;
+  margin-left: 20px;
+}
+.edit:hover {
+  text-shadow: 1px 1px #AAAAAA;
+  color: #c63655;
+}
+.icon {
+  margin-right: 5px;
+}

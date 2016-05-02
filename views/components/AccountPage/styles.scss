@@ -1,9 +1,28 @@
-.container {
-  margin-top: 50px;
-  .left {
-    float: left;
-  }
-  .right {
-    float: right;
+.wrapper {
+  background-color: #EEEEEE;
+
+  .container {
+    position: relative;
+    padding-top: 30px;
+    height: 100%;
+    width: 90%;
+    margin: auto;
+
+    .left {
+      float: left;
+      position: relative;
+      width: 25%;
+      height: 550px;
+      background-color: #FFFFFF;
+    }
+    
+    .right {
+      float: left;
+      position: relative;
+      width: 60%;
+      margin-left: 30px;
+      height: 550px;
+      background-color: #FFFFFF;
+    }
   }
 }

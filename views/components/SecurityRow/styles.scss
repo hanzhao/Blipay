@@ -1,0 +1,25 @@
+.container {
+  height: 110px;
+
+  .title {
+    margin-top: 30px;
+    font-size: 18px;
+    color: #333333;
+  }
+  .brief {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 18px;
+    color: #AAAAAA; 
+  }
+  .button {
+    float: right;
+    position: relative;
+    bottom: -16px;
+    font-size: 19px;
+    color: #c63655;
+  }
+  .button:hover {
+    text-shadow: 1px 1px #AAAAAA;
+  }
+}
