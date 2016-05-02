@@ -23,7 +23,7 @@ class AccountPage extends React.Component {
           </div>
         </Container>
       </div>
-    )
+    );
   }
 }
 

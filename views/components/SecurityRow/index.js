@@ -1,3 +1,6 @@
+/*
+ * “安全设置”页面中每一个横向部分对应的组件。
+ */
 import React from 'react';
 
 import styles from './styles';

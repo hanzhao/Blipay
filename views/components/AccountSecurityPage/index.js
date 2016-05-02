@@ -1,3 +1,6 @@
+/*
+ * “个人账户”页面中“安全设置”选项对应的右侧方框。
+ */
 import React from 'react';
 
 import SecurityRow from '../SecurityRow';

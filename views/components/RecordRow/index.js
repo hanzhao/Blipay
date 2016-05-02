@@ -1,3 +1,6 @@
+/*
+ * “交易记录”页面中每一行对应的组件
+ */
 import React from 'react';
 
 import styles from './styles';

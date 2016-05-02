@@ -1,3 +1,6 @@
+/*
+ * “个人账户”页面中“欢迎页面”选项对应的右侧方框。
+ */
 import React from 'react';
 
 import { Button } from 'antd';

@@ -16,11 +16,8 @@ import AccountPage from './components/AccountPage';
 import AccountRecordPage from './components/AccountRecordPage';
 import AccountSecurityPage from './components/AccountSecurityPage';
 import AccountWelcomePage from './components/AccountWelcomePage';
-<<<<<<< HEAD
 import AccountInfoPage from './components/AccountInfoPage';
-=======
 import AdminIndexPage from './components/AdminIndexPage';
->>>>>>> origin/master
 import NotFoundPage from './components/NotFoundPage';
 
 const history = syncHistoryWithStore(browserHistory, store);
