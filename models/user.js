@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 
 module.exports = (db) => {
-  const User = db.define('user', {
+  return db.define('user', {
     username: {
       type: Sequelize.STRING
     },
@@ -9,10 +9,4 @@ module.exports = (db) => {
       type: Sequelize.STRING
     }
   });
-  if (!global.isProduction) {
-    User.sync().then(() => {
-      console.log('Table `User` created');
-    });
-  }
-  return User;
 };

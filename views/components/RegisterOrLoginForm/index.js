@@ -20,17 +20,18 @@ class RegisterOrLoginForm extends React.Component {
   };
   handleSwitchPanel = (key) => {
     // 0deg - 90deg(switch) - 0deg
-    let progress = 0;
     let inc = 5 * (key < this.state.active ? 1 : -1);
+    let progress = inc;
     const frame = () => {
       this.refs.root.style.transform = `rotateY(${progress}deg)`;
+      const next = (progress != 0);
       progress += inc;
       if (progress > 90 || progress < -90) {
         inc = -inc;
         this.setState({ active: key });
       }
       /* 进行下一帧播放 */
-      if (progress != 0) {
+      if (next) {
         requestAnimationFrame(frame);
       }
     };

@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { Form, FormItem, Input, Icon, Button } from 'antd';
+import { Form, Input, Icon, Button } from 'antd';
 
 import styles from './styles';
 
@@ -21,8 +21,8 @@ class FindPasswordForm extends React.Component {
         <Form.Item>
           <Input size="large"
                  placeholder="手机号"
-                 addonBefore={<Icon type="user" />}
-                 autoFocus />
+                 addonBefore={<Icon type="mobile" />}
+                 autoComplete="off" />
         </Form.Item>
         <Button type="primary" size="large"
                 className={styles.btn} >

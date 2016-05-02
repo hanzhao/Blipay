@@ -31,6 +31,6 @@ const ajax = {
     }
     return res.data;
   }
-}
+};
 
-export default ajax
+export default ajax;
