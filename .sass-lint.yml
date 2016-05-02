@@ -1,0 +1,16 @@
+# Linter Options
+options:
+  # Don't merge default rules
+  merge-default-rules: false
+# File Options
+files:
+  include: './views/**/*.s+(a|c)ss'
+# Rule Configuration
+rules:
+  indentation:
+    - 2
+    -
+      size: 2
+  final-newline:
+    - 2
+    - include: true

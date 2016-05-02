@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "lint": "eslint . --config ./.eslintrc.node.json --ignore-pattern views/ && eslint views/ --config ./.eslintrc.browser.json && echo -e \"\\033[32;49;1mLint Passed.\\033[39;49;0m\"",
+    "lint": "eslint . --config ./.eslintrc.node.json --ignore-pattern views/ && eslint views/ --config ./.eslintrc.browser.json && sass-lint -c ./.sass-lint.yml -v && echo -e \"\\033[32;49;1mLint Passed.\\033[39;49;0m\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -74,6 +74,7 @@
     "url-loader": "^0.5.7",
     "webpack": "^1.13.0",
     "webpack-dev-middleware": "^1.6.1",
-    "webpack-hot-middleware": "^2.10.0"
+    "webpack-hot-middleware": "^2.10.0",
+    "sass-lint": "^1.7.0"
   }
 }

@@ -40,6 +40,10 @@
     ],
     "react/prop-types": [
       "off"
+    ],
+    "eol-last": [
+      "error",
+      "unix"
     ]
   }
 }

@@ -18,8 +18,8 @@
     bottom: -16px;
     font-size: 19px;
     color: #c63655;
-  }
-  .button:hover {
-    text-shadow: 1px 1px #AAAAAA;
+    &:hover {
+      text-shadow: 1px 1px #AAAAAA;
+    }
   }
 }
