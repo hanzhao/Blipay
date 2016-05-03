@@ -16,7 +16,7 @@ class TogglableInput extends React.Component {
   };
   handleCancel = () => {
     this.setState({ editing: false });
-  }
+  };
   render() {
     return (
       <span>

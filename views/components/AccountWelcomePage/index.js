@@ -3,10 +3,67 @@
  */
 import React from 'react';
 
-import { Button } from 'antd';
+import { Button, Modal, Form, Input } from 'antd';
+import FormModal from '../FormModal';
 import styles from './styles';
 
+const FormItem = Form.Item;
+
+const withdrawalPropsArray = [
+  {
+    input: {placeholder: "请输入银行卡号", type: "text", autoComplete: "off"},
+    field: [ 'card', {rules: [ {required: true} ]} ]
+  },
+  {
+    input: {placeholder: "请输入提现金额", type: "text", autoComplete: "off"},
+    field: [ 'amount', {rules: [ {required: true} ]} ],
+  },
+  {
+    input: {placeholder: "请输入支付密码", type: "password", autoComplete: "off"},
+    field: [ 'password', {rules: [ {required: true} ]} ]
+  }
+];
+
+const topupPropsArray = [
+  {
+    input: {placeholder: "请输入银行卡号", type: "text", autoComplete: "off"},
+    field: [ 'card', {rules: [ {required: true} ]} ]
+  },
+  {
+    input: {placeholder: "请输入充值金额", type: "text", autoComplete: "off"},
+    field: [ 'amount', {rules: [ {required: true} ]} ],
+  },
+  {
+    input: {placeholder: "请输入支付密码", type: "password", autoComplete: "off"},
+    field: [ 'password', {rules: [ {required: true} ]} ]
+  }
+];
+
 class AccountWelcomePage extends React.Component {
+  state = {
+    showTopup: false,
+    showWithdrawal: false
+  };
+  enterTopup = () => {
+    this.setState({
+      showTopup: true
+    });
+  };
+  enterWithDrawal = () => {
+    this.setState({
+      showWithdrawal: true
+    });
+  };
+  submitTopup = (e) => {
+    this.setState({
+      showTopup: false
+    });
+  };
+  submitWithDrawal = (e) => {
+    this.setState({
+      showWithdrawal: false
+    });
+  };
   render() {
     return (
       <div className={styles.container}>
@@ -23,8 +80,8 @@ class AccountWelcomePage extends React.Component {
             <div className={styles.balanceLower}>
               <span className={styles.balanceHead}>￥0.</span>
               <span className={styles.balanceTail}>00</span>
-              <Button className={styles.topup}>充值</Button>
-              <Button className={styles.withdrawal}>提现</Button>
+              <Button className={styles.topup} onClick={this.enterTopup}>充值</Button>
+              <Button className={styles.withdrawal} onClick={this.enterWithDrawal}>提现</Button>
             </div>
           </div>
         </div>
@@ -40,8 +97,13 @@ class AccountWelcomePage extends React.Component {
             </tr>
           </table>
         </div>
-      </div>);
-  }
+        <FormModal title={"账户充值"} visible={this.state.showTopup} num={3} btnText={"确认充值"} 
+                   propsArray={topupPropsArray} btnProps={{onClick: this.submitTopup}}/>
+        <FormModal title={"账户提现"} visible={this.state.showWithdrawal} num={3} btnText={"确认提现"} 
+                   propsArray={withdrawalPropsArray} btnProps={{onClick: this.submitWithDrawal}}/>
+      </div>
+    );
+  };
 }
 
 export default AccountWelcomePage;
