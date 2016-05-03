@@ -9,8 +9,11 @@ files:
 rules:
   indentation:
     - 2
-    -
-      size: 2
+    - size: 2
   final-newline:
     - 2
     - include: true
+  hex-notation:
+    - 2
+    - style: lowercase
+
