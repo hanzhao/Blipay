@@ -1,0 +1,35 @@
+.container {
+  position: relative;
+  border-radius: 8px;
+  border: #eeeeee solid 1px;
+  margin-top: 40px;
+  margin-left: 50px;
+  margin-right: 50px;
+
+  .mainTitle {
+    margin: 25px;
+    font-size: 25px;
+  }
+
+  .horizontalBar {
+    height: 1px;
+    background-color: #eeeeee;
+    margin: 0;
+  }
+
+  .row {
+    position: relative;
+    margin: 0;
+    font-size: 15px;
+
+    .editTitle {
+      display: inline-block;
+      margin-top: 25px;
+      margin-bottom: 25px;
+      position: relative;
+      margin-right: 30px;
+      width: 150px;
+      text-align: right;
+    }
+  }
+}
