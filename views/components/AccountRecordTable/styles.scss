@@ -1,0 +1,6 @@
+.table {
+  margin-top: 15px;
+  tbody > tr:nth-of-type(even) {
+    background-color: #eee;
+  }
+}
