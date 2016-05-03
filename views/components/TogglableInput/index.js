@@ -16,13 +16,15 @@ class TogglableInput extends React.Component {
   };
   handleCancel = () => {
     this.setState({ editing: false });
-  };
+  }
   render() {
     return (
       <span>
-        { this.state.editing && 
+        { this.state.editing &&
           <span className={styles.row}>
-            <Input className={styles.input}/>
+            <Input className={styles.input}
+                   defaultValue={this.props.defaultValue}
+                   autoFocus />
             <Button className={styles.button} type="primary">保存</Button>
             <a className={styles.cancel} onClick={this.handleCancel}>取消</a>
           </span>

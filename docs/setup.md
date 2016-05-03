@@ -14,6 +14,8 @@
 
 Ubuntu 通常通过 `service redis start` 之类的方式启动服务，ArchLinux、Debian 等 systemd 系统通常使用 `systemctl start redis` 之类的方式。
 
+MySQL 需要建立名为 blipay 的库，并且创建用户名 blipay，密码为 blipay 的用户并授予数据库的访问权限。
+
 ## Node.js 环境搭建
 
 比较推荐的方法是使用 nvm 自动下载安装和管理 Node.js，这一步可以参考 [nvm 的 GitHub](https://github.com/creationix/nvm)。

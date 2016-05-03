@@ -4,24 +4,23 @@
   .container {
     position: relative;
     padding-top: 30px;
+    padding-bottom: 30px;
     height: 100%;
-    width: 90%;
     margin: auto;
-
     .left {
       float: left;
       position: relative;
-      width: 25%;
-      height: 550px;
+      width: 24%;
+      height: 100%;
       background-color: #ffffff;
     }
-    
+
     .right {
       float: left;
       position: relative;
-      width: 60%;
-      margin-left: 30px;
-      height: 550px;
+      width: 74%;
+      margin-left: 2%;
+      height: 100%;
       background-color: #ffffff;
     }
   }

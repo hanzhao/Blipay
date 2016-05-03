@@ -2,6 +2,11 @@
  * “个人账户”页面中“欢迎页面”选项对应的右侧方框。
  */
 import React from 'react';
+import { Button } from 'antd';
+
+import AccountRecordTable from '../AccountRecordTable';
+
+import styles from './styles';
 
 import { Button, Modal, Form, Input } from 'antd';
 import FormModal from '../FormModal';
@@ -69,33 +74,30 @@ class AccountWelcomePage extends React.Component {
       <div className={styles.container}>
         <div className={styles.upperHalf}>
           <div className={styles.info}>
-            <div className={styles.greeting}>下午好，XXX</div>
+            <div className={styles.greeting}>下午好，老王！</div>
             <div className={styles.lastLogin}>
-              上次登录时间<br/>2015.01.01 12:00
+              上次登录时间：2015.01.01 12:00
             </div>
           </div>
           <div className={styles.verticalBar}/>
           <div className={styles.balance}>
             <div className={styles.balanceTitle}>账户余额</div>
             <div className={styles.balanceLower}>
-              <span className={styles.balanceHead}>￥0.</span>
-              <span className={styles.balanceTail}>00</span>
-              <Button className={styles.topup} onClick={this.enterTopup}>充值</Button>
-              <Button className={styles.withdrawal} onClick={this.enterWithDrawal}>提现</Button>
+              <div className={styles.balanceValue}>
+                <span className={styles.balanceHead}>￥0.</span>
+                <span className={styles.balanceTail}>00</span>
+              </div>
+              <div className={styles.balanceOperation}>
+                <Button className={styles.topup} onClick={this.enterTopup}>充值</Button>
+                <Button className={styles.withdrawal} onClick={this.enterWithDrawal}>提现</Button>
+              </div>
             </div>
           </div>
         </div>
         <div className={styles.horizontalBar}/>
         <div className={styles.lowerHalf}>
-          <div className={styles.title}>交易记录</div>
-          <table className={styles.table}>
-            <tr className={styles.row}>
-              <td className={styles.date}>2015.01.01</td>
-              <td className={styles.description}>账户充值</td>
-              <td className={styles.amount}>+100.00</td>
-              <td className={styles.status}>交易成功</td>
-            </tr>
-          </table>
+          <div className={styles.title}>最近交易</div>
+          <AccountRecordTable />
         </div>
         <FormModal title={"账户充值"} visible={this.state.showTopup} num={3} btnText={"确认充值"} 
                    propsArray={topupPropsArray} btnProps={{onClick: this.submitTopup}}/>
@@ -103,7 +105,7 @@ class AccountWelcomePage extends React.Component {
                    propsArray={withdrawalPropsArray} btnProps={{onClick: this.submitWithDrawal}}/>
       </div>
     );
-  };
+  }
 }
 
 export default AccountWelcomePage;

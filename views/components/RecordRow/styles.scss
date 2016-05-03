@@ -1,7 +1,10 @@
-.row {  
+.row {
   border-top: 1px solid #aaaaaa;
   border-bottom: 1px solid #aaaaaa;
-
+  background-color: #fff;
+  &.inverse {
+    background-color: #eee;
+  }
   .date {
     position: relative;
     padding-top: 8px;

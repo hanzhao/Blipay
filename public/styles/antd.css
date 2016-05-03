@@ -5362,7 +5362,7 @@ textarea.ant-time-picker-input {
   transition: all .3s ease;
 }
 .ant-table tr:hover {
-  background: #ffebee;
+  background: #ffebee !important;
 }
 .ant-table thead tr:hover {
   background: none;

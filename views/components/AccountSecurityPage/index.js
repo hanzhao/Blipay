@@ -19,8 +19,8 @@ class AccountSecurityPage extends React.Component {
       <div className={styles.container}>
         <div className={styles.horizontalBar}/>
         {
-          contents.map((c) => (
-            <div>
+          contents.map((c, index) => (
+            <div key={index}>
               <SecurityRow content={c}/>
               <div className={styles.horizontalBar}/>
             </div>

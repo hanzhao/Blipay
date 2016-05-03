@@ -20,7 +20,7 @@ const records = [
   {date: '2015.01.01', name: '账户充值', amount: 100.0, status: '交易成功'},
   {date: '2015.01.01', name: '账户充值', amount: 100.0, status: '交易成功'},
   {date: '2015.01.01', name: '账户充值', amount: 100.0, status: '交易成功'},
-  {date: '2015.01.01', name: '账户充值', amount: 100.0, status: '交易成功'} 
+  {date: '2015.01.01', name: '账户充值', amount: 100.0, status: '交易成功'}
 ];
 
 class AccountRecordPage extends React.Component {
@@ -35,7 +35,7 @@ class AccountRecordPage extends React.Component {
           <table className={styles.records}>
             <tbody>
             { records.map((item, index) => (
-              <RecordRow record={item} background={index%2===0 ? '#FFFFFF' : '#EEEEEE'}/>
+              <RecordRow key={index} record={item} inverse={index % 2}/>
             )) }
             </tbody>
           </table>
