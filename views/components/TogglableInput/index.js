@@ -2,6 +2,7 @@
  * “基本信息“页面每一项中供用户修改的部分。
  */
 import React from 'react';
+import ReactDOM from 'react-dom';
 
 import { Button, Input, Icon } from 'antd';
 
@@ -12,7 +13,12 @@ class TogglableInput extends React.Component {
     editing: false
   };
   handleEdit = () => {
-    this.setState({ editing: true });
+    this.setState({ editing: true }, () => {
+      /* 自动全选所有输入文本框中的内容 */
+      ReactDOM.findDOMNode(this.refs.input)
+              .getElementsByTagName('input')[0]
+              .select();
+    });
   };
   handleCancel = () => {
     this.setState({ editing: false });
@@ -22,7 +28,7 @@ class TogglableInput extends React.Component {
       <span>
         { this.state.editing &&
           <span className={styles.row}>
-            <Input className={styles.input}
+            <Input ref="input" className={styles.input}
                    defaultValue={this.props.defaultValue}
                    autoFocus />
             <Button className={styles.button} type="primary">保存</Button>
