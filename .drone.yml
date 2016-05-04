@@ -1,5 +1,5 @@
 build:
   image: node:4
   commands:
-    - npm i
+    - npm install --silent
     - npm run lint
