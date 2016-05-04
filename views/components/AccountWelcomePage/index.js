@@ -99,7 +99,7 @@ const topupPropsArray = [
 ];
 
 /* 以下是本页所能显示交易记录的最大数目 */
-const fakeData = Array(Math.floor((window.innerHeight - 400) / 50)).fill({
+const fakeData = Array(Math.floor((window.innerHeight - 450) / 50)).fill({
   date: '2015.01.01 19:08:32',
   description: '账户充值',
   amount: 100.00,
