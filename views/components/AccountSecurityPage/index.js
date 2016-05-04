@@ -2,50 +2,51 @@
  * “个人账户”页面中“安全设置”选项对应的右侧方框。
  */
 import React from 'react';
+/*
 import { Button } from 'antd';
+*/
 import FormModal from '../FormModal';
 import SecurityRow from '../SecurityRow';
 import styles from './styles';
 
 const loginpassPropsArray = [
   {
-    input: {placeholder: "请输入支付密码", type: "password", autoComplete: "off"},
+    input: {placeholder: '请输入支付密码', type: 'password', autoComplete: 'off'},
     field: [ 'paypass', {rules: [ {required: true} ]} ]
   },
   {
-    input: {placeholder: "请输入新登录密码", type: "password", autoComplete: "off"},
+    input: {placeholder: '请输入新登录密码', type: 'password', autoComplete: 'off'},
     field: [ 'loginpass', {rules: [ {required: true} ]} ]
   },
   {
-    input: {placeholder: "请再次输入新登录密码", type: "password", autoComplete: "off"},
+    input: {placeholder: '请再次输入新登录密码', type: 'password', autoComplete: 'off'},
     field: [ 'reloginpass', {rules: [ {required: true} ]} ]
   }
 ];
 
 const paypassPropsArray = [
   {
-    input: {placeholder: "请输入登录密码", type: "password", autoComplete: "off"},
+    input: {placeholder: '请输入登录密码', type: 'password', autoComplete: 'off'},
     field: [ 'loginpass', {rules: [ {required: true} ]} ]
   },
   {
-    input: {placeholder: "请输入新支付密码", type: "password", autoComplete: "off"},
+    input: {placeholder: '请输入新支付密码', type: 'password', autoComplete: 'off'},
     field: [ 'paypass', {rules: [ {required: true} ]} ]
   },
   {
-    input: {placeholder: "请再次输入新支付密码", type: "password", autoComplete: "off"},
+    input: {placeholder: '请再次输入新支付密码', type: 'password', autoComplete: 'off'},
     field: [ 'repaypass', {rules: [ {required: true} ]} ]
   }
 ];
 
 const emailPropsArray = [
   {
-    input: {placeholder: "请输入邮箱地址", type: "email", autoComplete: "off"},
+    input: {placeholder: '请输入邮箱地址', type: 'email', autoComplete: 'off'},
     field: [ 'email', {rules: [ {required: true} ]} ]
   },
   {
-    input: {placeholder: "请输入验证码", type: "text", autoComplete: "off", 
-            /*
-            addonAfter: (<Button type="ghost" size="small" style={{"margin-right": 25, padding: 2, "font-size":10}}>发送验证码</Button>)
+    input: {placeholder: '请输入验证码', type: 'text', autoComplete: 'off'/*, 
+            addonAfter: (<Button type='ghost' size='small' style={{'margin-right': 25, padding: 2, 'font-size':10}}>发送验证码</Button>)
             */
            },
     field: [ 'verification', {rules: [ {required: true} ]} ]
@@ -61,7 +62,6 @@ class AccountSecurityPage extends React.Component {
   };
 
   changeLoginpass = () => {
-    console.log('in changeLoginpass');
     this.setState({ changingLoginpass: true });
   };
 

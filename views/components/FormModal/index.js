@@ -32,7 +32,7 @@ class FormModal extends React.Component {
     
     if (isFieldValidating(field)) {
       return 'validating';
-    } else if (!!getFieldError(field)) {
+    } else if (getFieldError(field)) {
       return 'error';
     } else if (getFieldValue(field)) {
       return 'success';
@@ -40,7 +40,7 @@ class FormModal extends React.Component {
   };
 
   render() {
-    const { getFieldProps, getFieldError, isFieldValidating } = this.props.form;
+    const { getFieldProps/*, getFieldError, isFieldValidating*/ } = this.props.form;
 
     const num = this.props.num;
     /* 使用空对象填充propsArray */
@@ -81,6 +81,9 @@ class FormModal extends React.Component {
   }
 }
 
+/* eslint-disable */
+/* 官方示例写法*/
 FormModal = Form.create({})(FormModal);
+/* eslint-enable */
 
 export default FormModal;

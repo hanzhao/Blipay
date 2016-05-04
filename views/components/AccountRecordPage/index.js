@@ -3,9 +3,8 @@
  */
 import React from 'react';
 
-import { DatePicker, Button, Pagination } from 'antd';
+import { DatePicker, Button } from 'antd';
 import AccountRecordTable from '../AccountRecordTable';
-import RecordRow from '../RecordRow';
 
 import styles from './styles';
 

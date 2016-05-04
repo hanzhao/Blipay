@@ -2,12 +2,10 @@
  * “个人账户”页面中“欢迎页面”选项对应的右侧方框。
  */
 import React from 'react';
-import { Button, Modal, Form, Input } from 'antd';
+import { Button } from 'antd';
 import AccountRecordTable from '../AccountRecordTable';
 import FormModal from '../FormModal';
 import styles from './styles';
-
-const FormItem = Form.Item;
 
 /* 示例validator */
 const validateCard = (rule, value, callback) => {
@@ -24,30 +22,30 @@ const validateCard = (rule, value, callback) => {
 
 const withdrawalPropsArray = [
   {
-    input: {placeholder: "请输入银行卡号", type: "text", autoComplete: "off"},
+    input: {placeholder: '请输入银行卡号', type: 'text', autoComplete: 'off'},
     field: [ 'card', {rules: [ {required: true}, {validator: validateCard} ]} ]
   },
   {
-    input: {placeholder: "请输入提现金额", type: "text", autoComplete: "off"},
-    field: [ 'amount', {rules: [ {required: true} ]} ],
+    input: {placeholder: '请输入提现金额', type: 'text', autoComplete: 'off'},
+    field: [ 'amount', {rules: [ {required: true} ]} ]
   },
   {
-    input: {placeholder: "请输入支付密码", type: "password", autoComplete: "off"},
+    input: {placeholder: '请输入支付密码', type: 'password', autoComplete: 'off'},
     field: [ 'password', {rules: [ {required: true} ]} ]
   }
 ];
 
 const topupPropsArray = [
   {
-    input: {placeholder: "请输入银行卡号", type: "text", autoComplete: "off"},
+    input: {placeholder: '请输入银行卡号', type: 'text', autoComplete: 'off'},
     field: [ 'card', {rules: [ {required: true} ]} ]
   },
   {
-    input: {placeholder: "请输入充值金额", type: "text", autoComplete: "off"},
-    field: [ 'amount', {rules: [ {required: true} ]} ],
+    input: {placeholder: '请输入充值金额', type: 'text', autoComplete: 'off'},
+    field: [ 'amount', {rules: [ {required: true} ]} ]
   },
   {
-    input: {placeholder: "请输入支付密码", type: "password", autoComplete: "off"},
+    input: {placeholder: '请输入支付密码', type: 'password', autoComplete: 'off'},
     field: [ 'password', {rules: [ {required: true} ]} ]
   }
 ];
@@ -79,12 +77,12 @@ class AccountWelcomePage extends React.Component {
       showWithdrawal: true
     });
   };
-  submitTopup = (e) => {
+  submitTopup = () => {
     this.setState({
       showTopup: false
     });
   };
-  submitWithDrawal = (e) => {
+  submitWithDrawal = () => {
     this.setState({
       showWithdrawal: false
     });
@@ -121,9 +119,9 @@ class AccountWelcomePage extends React.Component {
             <AccountRecordTable data={fakeData} tableProps={tableProps}/>
           </div>
         </div>
-        <FormModal title={"账户充值"} visible={this.state.showTopup} num={3} btnText={"确认充值"} 
+        <FormModal title={'账户充值'} visible={this.state.showTopup} num={3} btnText={'确认充值'} 
                    propsArray={topupPropsArray} btnProps={{onClick: this.submitTopup}}/>
-        <FormModal title={"账户提现"} visible={this.state.showWithdrawal} num={3} btnText={"确认提现"} 
+        <FormModal title={'账户提现'} visible={this.state.showWithdrawal} num={3} btnText={'确认提现'} 
                    propsArray={withdrawalPropsArray} btnProps={{onClick: this.submitWithDrawal}}/>
       </div>
     );
