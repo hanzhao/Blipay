@@ -6,6 +6,15 @@
 
 不少地方需要一个代理支持，这步需要自己折腾。
 
+## Git
+
+安装 Git 后请务必在 `~/.gitconfig` 中加入以下配置。这可以使得每一次调用 `git pull` 等价于调用 `git pull --rebase`，保证 git 用 rebase 的方式让本地分支和远程分支同步，使得 Git 树更好看直观。
+
+```
+[pull]
+rebase = true
+```
+
 ## Redis 和 MySQL
 
 在 Linux 和 OS X 下，这两个东西可以通过软件管理工具(apt-get, pacman, yum, brew 等)自动下载并安装。
