@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "lint": "eslint . --config ./.eslintrc.node.json --ignore-pattern views/ && eslint views/ --config ./.eslintrc.browser.json && sass-lint -c ./.sass-lint.yml -v && echo -e \"\\033[32;49;1mLint Passed.\\033[39;49;0m\"",
+    "build": "NODE_ENV=production webpack -p --config webpack.config.prod.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

@@ -38,3 +38,6 @@ node_modules
 # Merge backup
 *.orig
 
+# Static assets
+public/*.js
+public/*.png
