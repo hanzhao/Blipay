@@ -8,10 +8,14 @@ import styles from './styles';
 class SecurityRow extends React.Component {
   render() {
     return (
-      <div className={styles.container}>
-        <div className={styles.title}>{ this.props.content.title }</div>
-        <div className={styles.brief}>{ this.props.content.brief }</div>
-        <a className={styles.button} onClick={this.props.content.onClick}>{ this.props.content.btnText }</a>
+      <div className={this.props.className}>
+        <div className={styles.container}>
+          <div className={styles.title}>{ this.props.content.title }</div>
+          <div className={styles.brief}>{ this.props.content.brief }</div>
+          <a className={styles.button} onClick={this.props.content.onClick}>
+            { this.props.content.btnText }
+          </a>
+        </div>
       </div>
     );
   }

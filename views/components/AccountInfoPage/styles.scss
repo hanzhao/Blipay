@@ -15,21 +15,25 @@
     margin: 40px;
   }
 
-  .horizontalBar {
-    height: 1px;
-    background-color: #eeeeee;
-  }
+  .wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    border-top: solid #eee 1px;
 
-  .row {
-    font-size: 15px;
+    .row {
+      font-size: 15px;
 
-    .editTitle {
-      display: inline-block;
-      margin: 25px;
-      margin-right: 40px;
-      width: 150px;
-      text-align: right;
+      .editTitle {
+        display: inline-block;
+        margin: 25px;
+        margin-right: 40px;
+        width: 150px;
+        text-align: right;
 
+      }
     }
   }
 }

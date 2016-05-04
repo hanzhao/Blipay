@@ -34,7 +34,12 @@ module.exports = {
       }, {
         test: /\.scss$/,
         exclude: /node_modules/,
-        loaders: ['style', 'css?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]', 'postcss?sourceMap', 'sass?sourceMap']
+        loaders: ['style',
+                  /* eslint-disable */
+                  'css?modules&importLoaders=1&localIdentName=[name]_[local]_[hash:base64:5]',
+                  /* eslint-enable */
+                  'postcss?sourceMap',
+                  'sass?sourceMap']
       }, {
         test: /\.css$/,
         loaders: ['style', 'css']

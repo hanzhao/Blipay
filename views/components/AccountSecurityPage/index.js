@@ -11,45 +11,104 @@ import styles from './styles';
 
 const loginpassPropsArray = [
   {
-    input: {placeholder: '请输入支付密码', type: 'password', autoComplete: 'off'},
-    field: [ 'paypass', {rules: [ {required: true} ]} ]
-  },
-  {
-    input: {placeholder: '请输入新登录密码', type: 'password', autoComplete: 'off'},
-    field: [ 'loginpass', {rules: [ {required: true} ]} ]
-  },
-  {
-    input: {placeholder: '请再次输入新登录密码', type: 'password', autoComplete: 'off'},
-    field: [ 'reloginpass', {rules: [ {required: true} ]} ]
+    input: {
+      placeholder: '请输入支付密码',
+      type: 'password',
+      autoComplete: 'off'
+    },
+    field: [
+      'paypass', {
+        rules: [{ required: true }]
+      }
+    ]
+  }, {
+    input: {
+      placeholder: '请输入新登录密码',
+      type: 'password',
+      autoComplete: 'off'
+    },
+    field: [
+      'loginpass', {
+        rules: [{ required: true }]
+      }
+    ]
+  }, {
+    input: {
+      placeholder: '请再次输入新登录密码',
+      type: 'password',
+      autoComplete: 'off'
+    },
+    field: [
+      'reloginpass', {
+        rules: [{ required: true }]
+      }
+    ]
   }
 ];
 
 const paypassPropsArray = [
   {
-    input: {placeholder: '请输入登录密码', type: 'password', autoComplete: 'off'},
-    field: [ 'loginpass', {rules: [ {required: true} ]} ]
+    input: {
+      placeholder: '请输入登录密码',
+      type: 'password',
+      autoComplete: 'off'
+    },
+    field: [
+      'loginpass', {
+        rules: [{ required: true }]
+      }
+    ]
   },
   {
-    input: {placeholder: '请输入新支付密码', type: 'password', autoComplete: 'off'},
-    field: [ 'paypass', {rules: [ {required: true} ]} ]
+    input: {
+      placeholder: '请输入新支付密码',
+      type: 'password',
+      autoComplete: 'off'
+    },
+    field: [
+      'paypass', {
+        rules: [{ required: true }]
+      }
+    ]
   },
   {
-    input: {placeholder: '请再次输入新支付密码', type: 'password', autoComplete: 'off'},
-    field: [ 'repaypass', {rules: [ {required: true} ]} ]
+    input: {
+      placeholder: '请再次输入新支付密码',
+      type: 'password',
+      autoComplete: 'off'
+    },
+    field: [
+      'repaypass', {
+        rules: [{ required: true }]
+      }
+    ]
   }
 ];
 
 const emailPropsArray = [
   {
-    input: {placeholder: '请输入邮箱地址', type: 'email', autoComplete: 'off'},
-    field: [ 'email', {rules: [ {required: true} ]} ]
+    input: {
+      placeholder: '请输入邮箱地址',
+      type: 'email',
+      autoComplete: 'off'
+    },
+    field: [
+      'email', {
+        rules: [{ required: true }]
+      }
+    ]
   },
   {
-    input: {placeholder: '请输入验证码', type: 'text', autoComplete: 'off'/*, 
-            addonAfter: (<Button type='ghost' size='small' style={{'margin-right': 25, padding: 2, 'font-size':10}}>发送验证码</Button>)
-            */
-           },
-    field: [ 'verification', {rules: [ {required: true} ]} ]
+    input: {
+      placeholder: '请输入验证码',
+      type: 'text',
+      autoComplete: 'off'
+    },
+    field: [
+      'verification', {
+        rules: [{ required: true }]
+      }
+    ]
   }
 ];
 
@@ -61,58 +120,73 @@ class AccountSecurityPage extends React.Component {
     verifyingEmail: false
   };
 
-  changeLoginpass = () => {
-    this.setState({ changingLoginpass: true });
+  toggleLoginpass = () => {
+    this.setState({
+      changingLoginpass: !this.state.changingLoginpass
+    });
   };
 
-  changePaypass = () => {
-    this.setState({ changingPaypass: true });
+  togglePaypass = () => {
+    this.setState({
+      changingPaypass: !this.state.changingPaypass
+    });
   };
 
-  verifyEmail = () => {
-    this.setState({ verifyingEmail: true });
-  };
-
-  handleLoginpass = () => {
-    this.setState({ changingLoginpass: false });
-  };
-
-  handlePaypass = () => {
-    this.setState({ changingPaypass: false });
-  };
-
-  handleEmail = () => {
-    this.setState({ verifyingEmail: false });
+  toggleVerifyEmail = () => {
+    this.setState({
+      verifyingEmail: !this.state.verifyingEmail
+    });
   };
 
   render() {
     const contents = [
-      {title: '账户密码', brief: '账户密码用于登录您的账户', btnText: '修改', onClick: this.changeLoginpass},
-      {title: '支付密码', brief: '支付密码用于保障交易安全', btnText: '修改', onClick: this.changePaypass},
-      {title: '邮箱验证', brief: '您尚未进行邮箱验证', btnText: '验证', onClick: this.verifyEmail}
+      {
+        title: '账户密码',
+        brief: '账户密码用于登录您的账户',
+        btnText: '修改',
+        onClick: this.toggleLoginpass
+      }, {
+        title: '支付密码',
+        brief: '支付密码用于保障交易安全',
+        btnText: '修改',
+        onClick: this.togglePaypass
+      }, {
+        title: '邮箱验证',
+        brief: '您尚未进行邮箱验证',
+        btnText: '验证',
+        onClick: this.toggleVerifyEmail
+      }
     ];
     return (
       <div className={styles.container}>
         {
-          Array(2*contents.length+1).fill(0).map((e, i) => {
-            if (i % 2 === 0) {
-              return (
-                <div key={i} className={styles.horizontalBar}/>
-              );
-            } else {
-              return (
-                <SecurityRow key={i} content={contents[(i-1)/2]}/>
-              );
-            }
-          })
+          contents.map((e, i) => (
+            <SecurityRow className={styles.row} key={i} content={e} />
+          ))
         }
-        <FormModal title={"修改登录密码"} visible={this.state.changingLoginpass} num={3} btnText={"确认修改"} 
-                   propsArray={loginpassPropsArray} btnProps={{onClick: this.handleLoginpass}}/>
-        <FormModal title={"修改支付密码"} visible={this.state.changingPaypass} num={3} btnText={"确认修改"} 
-                   propsArray={paypassPropsArray} btnProps={{onClick: this.handlePaypass}}/>
-        <FormModal title={"验证邮箱"} visible={this.state.verifyingEmail} num={2} btnText={"确认验证"} 
-                   propsArray={emailPropsArray} btnProps={{onClick: this.handleEmail}}/>
-      </div>);
+        <FormModal title="修改登录密码"
+                   visible={this.state.changingLoginpass}
+                   num={3}
+                   btnText="确认修改"
+                   propsArray={loginpassPropsArray}
+                   btnProps={{ onClick: this.handleLoginpass }}
+                   toggleModal={this.toggleLoginpass} />
+        <FormModal title="修改支付密码"
+                   visible={this.state.changingPaypass}
+                   num={3}
+                   btnText="确认修改"
+                   propsArray={paypassPropsArray}
+                   btnProps={{ onClick: this.handlePaypass }}
+                   toggleModal={this.togglePaypass} />
+        <FormModal title="验证邮箱"
+                   visible={this.state.verifyingEmail}
+                   num={2}
+                   btnText="确认验证"
+                   propsArray={emailPropsArray}
+                   btnProps={{ onClick: this.handleEmail }}
+                   toggleModal={this.toggleVerifyEmail} />
+      </div>
+    );
   }
 }
 
