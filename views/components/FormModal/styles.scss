@@ -8,13 +8,11 @@
 .formItem {
   margin-bottom: 2px;
   padding-bottom: 0;
+  border-top: #eee solid 1px;
 }
 
-.formBar {
-  position: relative;
-  height: 1px;
-  width: 100%;
-  background-color: #eeeeee;
+.formItem:nth-child(1) {
+  border-top: none;
 }
 
 .input {

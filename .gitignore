@@ -34,3 +34,7 @@ node_modules
 
 # MacOS
 .DS_Store
+
+# Merge backup
+*.orig
+

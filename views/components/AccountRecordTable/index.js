@@ -33,7 +33,8 @@ class AccountRecordTable extends React.Component {
   render() {
     return (
       <div className={styles.table}>
-        <Table dataSource={wrapAmount(this.props.data || [])} columns={columns} {...this.props.tableProps}/>
+        <Table dataSource={wrapAmount(this.props.data || [])}
+               columns={columns} {...this.props.tableProps} />
       </div>
     );
   }

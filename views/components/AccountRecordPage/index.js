@@ -19,8 +19,9 @@ const fakeData = Array(50).fill({
 
 const tableProps = {
   pagination: {
-    simple: true, 
-    pageSize: Math.floor((window.innerHeight-350)/50) /* 一页能显示的交易记录的最大数目 */
+    simple: true,
+    /* 一页能显示的交易记录的最大数目 */
+    pageSize: Math.floor((window.innerHeight - 350) / 50)
   }
 };
 
@@ -33,7 +34,9 @@ class AccountRecordPage extends React.Component {
         {/* 搜索按钮 */}
         <Button type="ghost" className={styles.button}>搜索</Button>
         <div className={styles.wrapper}>
-          <AccountRecordTable className={styles.table} data={fakeData} tableProps={tableProps}/>
+          <AccountRecordTable className={styles.table}
+                              data={fakeData}
+                              tableProps={tableProps}/>
         </div>
       </div>);
   }
