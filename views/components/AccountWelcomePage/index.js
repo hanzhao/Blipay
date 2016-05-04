@@ -22,36 +22,84 @@ const validateCard = (rule, value, callback) => {
 
 const withdrawalPropsArray = [
   {
-    input: {placeholder: '请输入银行卡号', type: 'text', autoComplete: 'off'},
-    field: [ 'card', {rules: [ {required: true}, {validator: validateCard} ]} ]
+    input: {
+      placeholder: '请输入银行卡号',
+      type: 'text',
+      autoComplete: 'off'
+    },
+    field: [
+      'card', {
+        rules: [{ required: true }, { validator: validateCard }]
+      }
+    ]
   },
   {
-    input: {placeholder: '请输入提现金额', type: 'text', autoComplete: 'off'},
-    field: [ 'amount', {rules: [ {required: true} ]} ]
+    input: {
+      placeholder: '请输入提现金额',
+      type: 'text',
+      autoComplete: 'off'
+    },
+    field: [
+      'amount', {
+        rules: [{ required: true }]
+      }
+    ]
   },
   {
-    input: {placeholder: '请输入支付密码', type: 'password', autoComplete: 'off'},
-    field: [ 'password', {rules: [ {required: true} ]} ]
+    input: {
+      placeholder: '请输入支付密码',
+      type: 'password',
+      autoComplete: 'off'
+    },
+    field: [
+      'password', {
+        rules: [{ required: true }]
+      }
+    ]
   }
 ];
 
 const topupPropsArray = [
   {
-    input: {placeholder: '请输入银行卡号', type: 'text', autoComplete: 'off'},
-    field: [ 'card', {rules: [ {required: true} ]} ]
+    input: {
+      placeholder: '请输入银行卡号',
+      type: 'text',
+      autoComplete: 'off'
+    },
+    field: [
+      'card', {
+        rules: [{ required: true }]
+      }
+    ]
   },
   {
-    input: {placeholder: '请输入充值金额', type: 'text', autoComplete: 'off'},
-    field: [ 'amount', {rules: [ {required: true} ]} ]
+    input: {
+      placeholder: '请输入充值金额',
+      type: 'text',
+      autoComplete: 'off'
+    },
+    field: [
+      'amount', {
+        rules: [{ required: true }]
+      }
+    ]
   },
   {
-    input: {placeholder: '请输入支付密码', type: 'password', autoComplete: 'off'},
-    field: [ 'password', {rules: [ {required: true} ]} ]
+    input: {
+      placeholder: '请输入支付密码',
+      type: 'password',
+      autoComplete: 'off'
+    },
+    field: [
+      'password', {
+        rules: [{ required: true }]
+      }
+    ]
   }
 ];
 
 /* 以下是本页所能显示交易记录的最大数目 */
-const fakeData = Array(Math.floor((window.innerHeight-400)/50)).fill({
+const fakeData = Array(Math.floor((window.innerHeight - 400) / 50)).fill({
   date: '2015.01.01 19:08:32',
   description: '账户充值',
   amount: 100.00,
@@ -67,24 +115,14 @@ class AccountWelcomePage extends React.Component {
     showTopup: false,
     showWithdrawal: false
   };
-  enterTopup = () => {
+  toggleTopup = () => {
     this.setState({
-      showTopup: true
+      showTopup: !this.state.showTopup
     });
   };
-  enterWithDrawal = () => {
+  toggleWithDrawal = () => {
     this.setState({
-      showWithdrawal: true
-    });
-  };
-  submitTopup = () => {
-    this.setState({
-      showTopup: false
-    });
-  };
-  submitWithDrawal = () => {
-    this.setState({
-      showWithdrawal: false
+      showWithdrawal: !this.state.showWithdrawal
     });
   };
   render() {
@@ -106,8 +144,14 @@ class AccountWelcomePage extends React.Component {
                 <span className={styles.balanceTail}>00</span>
               </div>
               <div className={styles.balanceOperation}>
-                <Button className={styles.topup} onClick={this.enterTopup}>充值</Button>
-                <Button className={styles.withdrawal} onClick={this.enterWithDrawal}>提现</Button>
+                <Button className={styles.topup}
+                        onClick={this.toggleTopup}>
+                  充值
+                </Button>
+                <Button className={styles.withdrawal}
+                        onClick={this.toggleWithDrawal}>
+                  提现
+                </Button>
               </div>
             </div>
           </div>
@@ -119,10 +163,20 @@ class AccountWelcomePage extends React.Component {
             <AccountRecordTable data={fakeData} tableProps={tableProps}/>
           </div>
         </div>
-        <FormModal title={'账户充值'} visible={this.state.showTopup} num={3} btnText={'确认充值'} 
-                   propsArray={topupPropsArray} btnProps={{onClick: this.submitTopup}}/>
-        <FormModal title={'账户提现'} visible={this.state.showWithdrawal} num={3} btnText={'确认提现'} 
-                   propsArray={withdrawalPropsArray} btnProps={{onClick: this.submitWithDrawal}}/>
+        <FormModal title="账户充值"
+                   visible={this.state.showTopup}
+                   num={3}
+                   btnText="确认充值"
+                   propsArray={topupPropsArray}
+                   btnProps={{ onClick: this.submitTopup }}
+                   toggleModal={ this.toggleTopup } />
+        <FormModal title="账户提现"
+                   visible={this.state.showWithdrawal}
+                   num={3}
+                   btnText="确认提现"
+                   propsArray={withdrawalPropsArray}
+                   btnProps={{ onClick: this.submitWithDrawal }}
+                   toggleModal={ this.toggleWithDrawal } />
       </div>
     );
   }
