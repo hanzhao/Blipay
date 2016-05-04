@@ -3,33 +3,6 @@ import { Table } from 'antd';
 
 import styles from './styles';
 
-const fakeData = [{
-  date: '2015.01.01 19:08:32',
-  description: '账户充值',
-  amount: 100.00,
-  status: '交易成功'
-}, {
-  date: '2015.01.01 19:08:32',
-  description: '账户充值',
-  amount: 100.00,
-  status: '交易成功'
-}, {
-  date: '2015.01.01 19:08:32',
-  description: '账户充值',
-  amount: 100.00,
-  status: '交易成功'
-}, {
-  date: '2015.01.01 19:08:32',
-  description: '账户充值',
-  amount: 100.00,
-  status: '交易成功'
-}, {
-  date: '2015.01.01 19:08:32',
-  description: '账户充值',
-  amount: 100.00,
-  status: '交易成功'
-}];
-
 const columns = [{
   title: '交易时间',
   dataIndex: 'date',
@@ -60,7 +33,7 @@ class AccountRecordTable extends React.Component {
   render() {
     return (
       <div className={styles.table}>
-        <Table dataSource={wrapAmount(fakeData)} columns={columns} />
+        <Table dataSource={wrapAmount(this.props.data || [])} columns={columns} {...this.props.tableProps}/>
       </div>
     );
   }

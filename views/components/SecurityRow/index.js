@@ -9,9 +9,9 @@ class SecurityRow extends React.Component {
   render() {
     return (
       <div className={styles.container}>
-        <div className={styles.title}>{ this.props.content['title'] }</div>
-        <div className={styles.brief}>{ this.props.content['brief'] }</div>
-        <a className={styles.button}>{ this.props.content['button'] }</a>
+        <div className={styles.title}>{ this.props.content.title }</div>
+        <div className={styles.brief}>{ this.props.content.brief }</div>
+        <a className={styles.button} onClick={this.props.content.onClick}>{ this.props.content.btnText }</a>
       </div>
     );
   }

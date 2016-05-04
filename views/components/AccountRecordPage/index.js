@@ -4,24 +4,26 @@
 import React from 'react';
 
 import { DatePicker, Button, Pagination } from 'antd';
+import AccountRecordTable from '../AccountRecordTable';
 import RecordRow from '../RecordRow';
 
 import styles from './styles';
 
 const RangePicker = DatePicker.RangePicker;
 
-const records = [
-  {date: '2015.01.01', name: '账户充值', amount: 100.0, status: '交易成功'},
-  {date: '2015.01.01', name: '账户充值', amount: 100.0, status: '交易成功'},
-  {date: '2015.01.01', name: '账户充值', amount: 100.0, status: '交易成功'},
-  {date: '2015.01.01', name: '账户充值', amount: 100.0, status: '交易成功'},
-  {date: '2015.01.01', name: '账户充值', amount: 100.0, status: '交易成功'},
-  {date: '2015.01.01', name: '账户充值', amount: 100.0, status: '交易成功'},
-  {date: '2015.01.01', name: '账户充值', amount: 100.0, status: '交易成功'},
-  {date: '2015.01.01', name: '账户充值', amount: 100.0, status: '交易成功'},
-  {date: '2015.01.01', name: '账户充值', amount: 100.0, status: '交易成功'},
-  {date: '2015.01.01', name: '账户充值', amount: 100.0, status: '交易成功'}
-];
+const fakeData = Array(50).fill({
+  date: '2015.01.01 19:08:32',
+  description: '账户充值',
+  amount: 100.00,
+  status: '交易成功'
+});
+
+const tableProps = {
+  pagination: {
+    simple: true, 
+    pageSize: Math.floor((window.innerHeight-350)/50) /* 一页能显示的交易记录的最大数目 */
+  }
+};
 
 class AccountRecordPage extends React.Component {
   render() {
@@ -32,16 +34,8 @@ class AccountRecordPage extends React.Component {
         {/* 搜索按钮 */}
         <Button type="ghost" className={styles.button}>搜索</Button>
         <div className={styles.wrapper}>
-          <table className={styles.records}>
-            <tbody>
-            { records.map((item, index) => (
-              <RecordRow key={index} record={item} inverse={index % 2}/>
-            )) }
-            </tbody>
-          </table>
+          <AccountRecordTable className={styles.table} data={fakeData} tableProps={tableProps}/>
         </div>
-        {/* 页数选择 */}
-        <Pagination simple defaultCurrent={1} total={5} className={styles.pagination}/>
       </div>);
   }
 }

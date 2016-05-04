@@ -20,13 +20,23 @@ class AccountInfoPage extends React.Component {
     return (
       <div className={styles.container}>{/* 外边框 */}
         <div className={styles.mainTitle}>修改个人资料</div>{/* 标题 */}
-        { items.map((i, index) => (
-          <div key={index} className={styles.row}>
-            <div className={styles.horizontalBar}/>{/* 分割线 */}
-            <div className={styles.editTitle}>{ i.title }</div>{/* 每一项前的名称 */}
-            <TogglableInput defaultValue={i.display} />
-          </div>
-        )) }
+        { 
+          Array(items.length*2).fill(0).map((e, i) => {
+            if (i % 2 === 0) {
+              return (
+                <div key={i} className={styles.horizontalBar}/>/* 分割线 */
+              );
+            } else {
+              let k = (i - 1) / 2;
+              return (
+                <div key={i} className={styles.row}>
+                  <div className={styles.editTitle}>{ items[k].title }</div>{/* 每一项前的名称 */}
+                  <TogglableInput defaultValue={items[k].display} />
+                </div>
+              );
+            }
+          })
+        }
       </div>);
   }
 }
