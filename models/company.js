@@ -1,16 +1,15 @@
 const Sequelize = require('sequelize');
 
 module.exports = (db) => {
-  return db.define('item', {
-    remain: {
-      type: Sequelize.INTEGER
-    },
+  return db.define('company', {
     name: {
       type: Sequelize.STRING
     },
-    thumb: {
+    phone: {
       type: Sequelize.STRING
     },
-    price: Sequelize.DECIMAL(12, 2)
+    score: {
+      type: Sequelize.STRING
+    }
   });
 };
