@@ -12,6 +12,12 @@
       "error",
       2
     ],
+    "space-infix-ops": [
+      "error"
+    ],
+    "max-len": [
+      "error"
+    ],
     "no-console": [
       "off"
     ],
@@ -26,6 +32,10 @@
     "semi": [
       "error",
       "always"
+    ],
+    "eol-last": [
+      "error",
+      "unix"
     ]
   }
 }

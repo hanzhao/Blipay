@@ -11,14 +11,17 @@ import styles from './styles';
 class AccountPage extends React.Component {
   render() {
     return (
-      <Container className={styles.container}>
-        <div className={styles.left}>
-          <AccountMenu />
-        </div>
-        <div className={styles.right}>
-          { this.props.children }
-        </div>
-      </Container>
+      <div className={styles.wrapper}
+           style={{ height: window.innerHeight - 85 }}>
+        <Container className={styles.container}>
+          <div className={styles.left}>
+            <AccountMenu />
+          </div>
+          <div className={styles.right}>
+            { this.props.children }
+          </div>
+        </Container>
+      </div>
     );
   }
 }

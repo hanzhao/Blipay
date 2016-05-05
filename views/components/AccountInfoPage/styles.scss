@@ -1,0 +1,39 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  border-radius: 8px;
+  border: #eeeeee solid 1px;
+  height: 88%;
+  margin-top: 4%;
+  margin-bottom: 4%;
+  margin-left: 40px;
+  margin-right: 40px;
+
+  .mainTitle {
+    font-size: 25px;
+    margin: 40px;
+  }
+
+  .wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    border-top: solid #eee 1px;
+
+    .row {
+      font-size: 15px;
+
+      .editTitle {
+        display: inline-block;
+        margin: 25px;
+        margin-right: 40px;
+        width: 150px;
+        text-align: right;
+
+      }
+    }
+  }
+}

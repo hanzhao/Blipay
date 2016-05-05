@@ -1,0 +1,26 @@
+.container {
+  margin-left: 10px;
+  margin-right: 10px;
+
+  .title {
+    font-size: 18px;
+    color: #333333;
+  }
+
+  .brief {
+    display: inline-block;
+    margin-top: 3%;
+    font-size: 18px;
+    color: #aaaaaa; 
+  }
+
+  .button {
+    float: right;
+    font-size: 19px;
+    color: #c63655;
+    
+    &:hover {
+      text-shadow: 1px 1px #aaaaaa;
+    }
+  }
+}

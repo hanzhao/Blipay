@@ -15,6 +15,7 @@ import AccountPage from './components/AccountPage';
 import AccountRecordPage from './components/AccountRecordPage';
 import AccountSecurityPage from './components/AccountSecurityPage';
 import AccountWelcomePage from './components/AccountWelcomePage';
+import AccountInfoPage from './components/AccountInfoPage';
 import AdminIndexPage from './components/AdminIndexPage';
 import NotFoundPage from './components/NotFoundPage';
 import ShoppingPage from './components/ShoppingPage'
@@ -35,6 +36,7 @@ const router = (
         <Route path="/shopping" component={ShoppingPage} />
         <Route path="/account" component={AccountPage}>
           <IndexRoute component={AccountWelcomePage} />
+          <Route path="/account/info" component={AccountInfoPage} />
           <Route path="/account/records" component={AccountRecordPage} />
           <Route path="/account/security" component={AccountSecurityPage} />
         </Route>

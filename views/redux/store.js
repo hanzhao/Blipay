@@ -36,7 +36,8 @@ const _ajaxMiddleware = ajaxMiddleware(ajax);
 const store = createStore(
   reducer, compose(
     applyMiddleware(_routerMiddleware, _ajaxMiddleware),
-    process.env.NODE_ENV === 'development' && window.devToolsExtension ? window.devToolsExtension() : f => f
+    process.env.NODE_ENV === 'development' && window.devToolsExtension ?
+    window.devToolsExtension() : f => f
   )
 );
 

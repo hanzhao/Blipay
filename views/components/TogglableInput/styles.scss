@@ -1,0 +1,49 @@
+@keyframes scale-in {
+  0% {
+    width: 50px;
+  }
+  100% {
+    width: 150px;
+  }
+}
+
+.input {
+  width: 150px;
+  height: 30px;
+  margin-right: 20px;
+  border: solid 1px #c3c3c3;
+  border-radius: 2px;
+  animation: scale-in .5s;
+  &:hover {
+    border-color: #d25f77;
+  }
+  &:focus {
+    border: solid 1px #c63655;
+    border-radius: 2px;
+  }
+}
+.button {
+  margin-left: 10px;
+}
+.cancel {
+  margin-left: 20px;
+  color: #c63655;
+  &:hover {
+    color: #c63655;
+    text-shadow: 1px 1px #aaaaaa;
+  }
+}
+.title {
+
+}
+.edit {
+  color: #c63655;
+  margin-left: 20px;
+  &:hover {
+    text-shadow: 1px 1px #aaaaaa;
+    color: #c63655;
+  }
+}
+.icon {
+  margin-right: 5px;
+}
