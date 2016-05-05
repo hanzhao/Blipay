@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { reduxForm } from 'redux-form';
-import { Form, FormItem, Input, Icon, Button } from 'antd';
+import { Form, Input, Icon, Button } from 'antd';
 
 import styles from './styles';
 
@@ -19,7 +19,7 @@ class LoginForm extends React.Component {
     const { fields: {
       username,
       password
-    }, handleSubmit, submitting } = this.props;
+    }, handleSubmit } = this.props;
     return (
       <Form horizontal onSubmit={handleSubmit}>
         <Form.Item>

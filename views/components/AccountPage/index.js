@@ -19,7 +19,7 @@ class AccountPage extends React.Component {
           { this.props.children }
         </div>
       </Container>
-    )
+    );
   }
 }
 

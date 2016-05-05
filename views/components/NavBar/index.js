@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { Link } from 'react-router';
-import { Menu, Icon } from 'antd';
+import { Menu } from 'antd';
 
 import Container from '../Container';
 import Logo from '../Logo';
@@ -18,9 +18,9 @@ const menus = [
   { to: '/account', text: '个人账户' },
   { to: '/shopping', text: '购买商品' },
   { to: '/booking', text: '在线订票' }
-]
+];
 
-const getFirstPart = () => `/${location.pathname.split('/')[1]}`
+const getFirstPart = () => `/${location.pathname.split('/')[1]}`;
 
 class NavBar extends React.Component {
   render() {

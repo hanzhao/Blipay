@@ -7,7 +7,7 @@ import { Link } from 'react-router';
 import { Menu, Icon } from 'antd';
 
 const menus = [
-  { to: '/shopping', text: '浏览宝贝', icon: 'info-circle-o' },
+  { to: '/shopping/shoppinginfo', text: '浏览宝贝', icon: 'info-circle-o' },
   { to: '/shopping/shoppingcart', text: '购物车', icon: 'file-text' },
   { to: '/shopping/shoppingorder', text: '订单管理', icon: 'unlock' },
 ];

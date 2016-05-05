@@ -5,9 +5,9 @@ import { Button } from 'antd';
 class ShoppingCartPage extends React.Component {
   render() {
     return (
-    <div>
-    	ShoppingCartPage
-  	</div>
+   	<div>
+        shoppingcart
+    </div>
     );
   }
 }

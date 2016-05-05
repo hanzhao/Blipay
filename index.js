@@ -52,6 +52,7 @@ app.use(session({
   cookie: { secure: false },
   store: new RedisStore(config.redis)
 }));
+app.use(favicon(`${ROOT}/public/favicon.ico`));
 
 /* 静态资源 */
 if (env === 'development') {
@@ -76,7 +77,7 @@ app.use((req, res, next) => {
     return this.json({
       code: -1,
       data: data
-    })
+    });
   };
   next();
 });
@@ -90,7 +91,7 @@ glob.sync(`${ROOT}/controllers/*.js`).forEach((controller) => {
 });
 
 // 错误处理
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   res.status(500).send(err.stack);
   console.error(err);
 });
