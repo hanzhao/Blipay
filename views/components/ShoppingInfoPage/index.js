@@ -4,6 +4,7 @@ import { Button } from 'antd';
 import { Cascader } from 'antd';
 import { reduxForm } from 'redux-form';
 import { Form, Input, Checkbox } from 'antd';
+import { Pagination } from 'antd';
 import pic from './gg.png'
 const optionsPrice = [{
   value: 'priceLowToHigh',
@@ -50,7 +51,19 @@ class ShoppingInfoPage extends React.Component {
           <Input placeholder="请输入关键字"
             {...searchString} />
         </searchItem>
-        <img src={pic} />
+        <img src={pic} />  <h1>Hai daren</h1> <p>admin</p> <p>100$</p>
+        <hr />
+        <img src={pic} />  <h1>Hai daren</h1> <p>admin</p> <p>100$</p>
+        <hr />
+        <img src={pic} />  <h1>Hai daren</h1> <p>admin</p> <p>100$</p>
+        <hr />
+        <img src={pic} />  <h1>Hai daren</h1> <p>admin</p> <p>100$</p>
+        <hr />
+        <img src={pic} />  <h1>Hai daren</h1> <p>admin</p> <p>100$</p>
+        <hr />
+        <img src={pic} />  <h1>Hai daren</h1> <p>admin</p> <p>100$</p>
+        <hr />
+        <Pagination simple defaultCurrent={2} total={12450} />
     </div>
     );
   }

@@ -16,6 +16,7 @@ class ShoppingWelcomePage extends React.Component {
           <ShoppingMenu/>
         </div>
     	</div>
+
     );
   }
 
