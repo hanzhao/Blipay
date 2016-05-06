@@ -9,6 +9,7 @@ deploy:
     user: nya
     port: 22
     commands:
+      - . ~/.nvm/nvm.sh
       - cd /srv/http/Blipay
       - git pull
       - npm install
