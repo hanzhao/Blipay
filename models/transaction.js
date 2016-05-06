@@ -15,12 +15,13 @@ module.exports = (db) => {
      *      key: 'id'
      *   }
      * },
-    */
-    /* 操作发生的时间 */
-    date: {
-      type: Sequelize.DATE, 
-      defaultValue: Sequelize.NOW
-    },
+     */
+    /*
+     * 操作发生的时间（该字段由Sequelize自动生成）
+     * createdAt: {
+     *   type: Sequelize.DATE
+     * },
+     */
     /* 操作涉及的金额 */
     amount: {
       type: Sequelize.STRING, 
