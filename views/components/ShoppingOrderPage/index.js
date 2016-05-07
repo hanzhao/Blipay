@@ -5,23 +5,41 @@ import { Checkbox } from 'antd';
 import { InputNumber } from 'antd';
 import { Pagination } from 'antd';
 import pic from './akarin.png'
+import styles from './styles';
+
 class ShoppingOrderPage extends React.Component {
   render() {
     return (
-   		<div>
-   			<hr />
-   			<p>单价</p>
-   			<p>数量</p>
-   			<p>订单编号</p>
-   			<p>订单金额</p>
-   			<p>订单状态</p>
-   			<hr />
-   			 <img src={pic} /> <p> akarin </p> <p>400.00$</p> <p>2</p> <p>09090909090</p>
-   			 <p>800.00$</p>
-   			  <Button type="ghost">确认付款</Button>
-   			<hr/>
-   			<Pagination defaultCurrent={1} total={500} />
-    	</div>
+    <div className={styles.container}>
+   			<table border="0" className={styles.orderTable}>
+        <tr>
+        <th>宝贝</th>
+        <th></th>
+   			<th>单价</th>
+   			<th>数量</th>
+   			<th>订单编号</th>
+   			<th>订单金额</th>
+   			<th>订单状态</th>
+        </tr>
+
+   			<tr>
+   			 <td><img src={pic} /></td> <td>akarin</td> <td>400.00$</td> <td>2</td> 
+         <td>09090909090</td> <td>800.00$</td><td><Button type="ghost">确认付款</Button></td>
+   			</tr>
+
+   			<tr>
+   			 <td><img src={pic} /></td> <td>akarin</td> <td>400.00$</td> <td>2</td> 
+         <td>09090909090</td> <td>800.00$</td><td><Button type="ghost">确认付款</Button></td>
+   			</tr>
+
+   			<tr>
+   			 <td><img src={pic} /></td> <td>akarin</td> <td>400.00$</td> <td>2</td> 
+         <td>09090909090</td> <td>800.00$</td><td><Button type="ghost">确认付款</Button></td>
+   			</tr>
+
+   			</table>
+    <Pagination defaultCurrent={1} total={500} />
+    </div>
     );
   }
 }

@@ -3,43 +3,44 @@
   padding-left: 30px;
   padding-top: 30px;
   padding-right: 30px;
+  padding-bottom: 30px;
 
   .upperHalf {
-		.cascader {
-			padding-left: 10px;
-			width: 150px;
-			padding-right: 10px;
-		}
-		.inputbox {
-			padding-left: 20px;
-			width: 300px;
-		}
-		.button {
-    	margin-left: 20px;
-  	}
+    .cascader {
+      padding-left: 10px;
+      width: 150px;
+      padding-right: 10px;
+    }
+    .inputbox {
+      padding-left: 20px;
+      width: 300px;
+    }
+    .button {
+      margin-left: 20px;
+    }
   }
 
   .lowerHalf {
     clear: both;
     .itemRecord {
-			width: 270px;
-			.itemImage{
-				width: 180px;
-			}
-			.itemName{
-				font-size: 25px;
-				font-type: sans-serif;
-				font-weight: bold;
-			}
-			.sellerName{
-				font-size: 15px;
-			}
-			.price{
-				font-size: 20px;
-				font-weight: bold;
-				float: right;
-				color: #C23456;
-			}
+      width: 270px;
+      .itemImage{
+        width: 180px;
+      }
+      .itemName{
+        font-size: 25px;
+        font-type: sans-serif;
+        font-weight: bold;
+      }
+      .sellerName{
+        font-size: 15px;
+      }
+      .price{
+        font-size: 20px;
+        font-weight: bold;
+        float: right;
+        color: #C23456;
+      }
     }
   }
 }
