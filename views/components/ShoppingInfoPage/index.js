@@ -57,16 +57,92 @@ class ShoppingInfoPage extends React.Component {
 
 
 		<div className={styles.lowerHalf}>
+			<table border="0">
+			<tr>
+			<td>
 			<div className={styles.itemRecord}>
 		    	<img src={pic} className={styles.itemImage}/>  
-					<nobr>
-					<h1>Hai daren</h1> <p>admin</p> <p>100$</p>
-					</nobr>
+					<div className={styles.itemName}>Hai daren</div>
+						<table border="0">
+						<tr>
+							<td> <div className={styles.sellerName}>admin</div> </td>
+							<td> <div className={styles.price}>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; 100.00$</div> </td>
+						</tr>						
+						</table>
+						<br/>
 			</div>
-
+			</td>
+			<td>
+			<div className={styles.itemRecord}>
+		    	<img src={pic} className={styles.itemImage}/>  
+					<div className={styles.itemName}>Hai daren</div>
+						<table border="0">
+						<tr>
+							<td> <div className={styles.sellerName}>admin</div> </td>
+							<td> <div className={styles.price}>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; 100.00$</div> </td>
+						</tr>
+						</table>
+						<br/>
+			</div>
+			</td>
+			<td>
+			<div className={styles.itemRecord}>
+		    	<img src={pic} className={styles.itemImage}/>  
+					<div className={styles.itemName}>Hai daren</div>
+						<table border="0">
+						<tr>
+							<td> <div className={styles.sellerName}>admin</div> </td>
+							<td> <div className={styles.price}>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; 100.00$</div> </td>
+						</tr>
+						</table>
+						<br/>
+			</div>
+			</td>
+			</tr>
+			<br/>
+			<tr>
+			<td>
+			<div className={styles.itemRecord}>
+		    	<img src={pic} className={styles.itemImage}/>  
+					<div className={styles.itemName}>Hai daren</div>
+						<table border="0">
+						<tr>
+							<td> <div className={styles.sellerName}>admin</div> </td>
+							<td> <div className={styles.price}>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; 100.00$</div> </td>
+						</tr>
+						</table>
+						<br/>
+			</div>
+			</td>
+			<td>
+			<div className={styles.itemRecord}>
+		    	<img src={pic} className={styles.itemImage}/>  
+					<div className={styles.itemName}>Hai daren</div>
+						<table border="0">
+						<tr>
+							<td> <div className={styles.sellerName}>admin</div> </td>
+							<td> <div className={styles.price}>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; 100.00$</div> </td>
+						</tr>
+						</table>
+						<br/>
+			</div>
+			</td>
+			<td>
+			<div className={styles.itemRecord}>
+		    	<img src={pic} className={styles.itemImage}/>  
+					<div className={styles.itemName}>Hai daren</div>
+						<table border="0">
+						<tr>
+							<td> <div className={styles.sellerName}>admin</div> </td>
+							<td> <div className={styles.price}>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; 100.00$</div> </td>
+						</tr>
+						</table>
+						<br/>
+			</div>
+			</td>
+			</tr>
+		</table>
 		</div>
-	
-
         <Pagination simple defaultCurrent={2} total={12450} />
     </div>
     );

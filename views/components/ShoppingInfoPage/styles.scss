@@ -12,7 +12,7 @@
 		}
 		.inputbox {
 			padding-left: 20px;
-			width: 270px;
+			width: 300px;
 		}
 		.button {
     	margin-left: 20px;
@@ -21,12 +21,24 @@
 
   .lowerHalf {
     clear: both;
-    padding: 20px 20px;
     .itemRecord {
-      font-size: 10px;
-			width: 100px;
+			width: 270px;
 			.itemImage{
-				width: 200px;
+				width: 180px;
+			}
+			.itemName{
+				font-size: 25px;
+				font-type: sans-serif;
+				font-weight: bold;
+			}
+			.sellerName{
+				font-size: 15px;
+			}
+			.price{
+				font-size: 20px;
+				font-weight: bold;
+				float: right;
+				color: #C23456;
 			}
     }
   }
