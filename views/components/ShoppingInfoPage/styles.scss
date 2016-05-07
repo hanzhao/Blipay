@@ -1,0 +1,33 @@
+.container {
+  background-color: #ffffff;
+  padding-left: 30px;
+  padding-top: 30px;
+  padding-right: 30px;
+
+  .upperHalf {
+		.cascader {
+			padding-left: 10px;
+			width: 150px;
+			padding-right: 10px;
+		}
+		.inputbox {
+			padding-left: 20px;
+			width: 270px;
+		}
+		.button {
+    	margin-left: 20px;
+  	}
+  }
+
+  .lowerHalf {
+    clear: both;
+    padding: 20px 20px;
+    .itemRecord {
+      font-size: 10px;
+			width: 100px;
+			.itemImage{
+				width: 200px;
+			}
+    }
+  }
+}
