@@ -14,18 +14,17 @@ function onChange(value) {
 }
 class ShoppingPage extends React.Component {
   render() {
-  	return(
-      <Container className={styles.container}>
-        <div className={styles.left}>
-        	<ShoppingMenu/>
-        </div>
-        <div className={styles.right}>
-          	{ this.props.children }
-        </div>
-      </Container>
+    return(
+        <Container className={styles.container}>
+          <div className={styles.left}>
+            <ShoppingMenu/>
+          </div>
+          <div className={styles.right}>
+              { this.props.children }
+          </div>
+        </Container>
     )
   }
 }
 
 export default ShoppingPage;
-
