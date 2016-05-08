@@ -6,7 +6,7 @@ import { Button } from 'antd';
 import AccountRecordTable from '../managementrecord';
 import FormModal from '../managementformmodel';
 import styles from './styles';
-
+import { Link } from 'react-router';
 /* 示例validator */
 const validateCard = (rule, value, callback) => {
   if (!value) {
@@ -143,10 +143,12 @@ class AccountWelcomePage extends React.Component {
                 <span className={styles.balanceHead}>根管理员</span>
               </div>
               <div className={styles.balanceOperation}>
-                <Button className={styles.topup}
+                <Link to="/admin/account/manager">
+                  <Button className={styles.topup}
                         onClick={this.toggleTopup}>
                  编辑管理员
-                </Button>
+                 </Button>
+                </Link>
               </div>
             </div>
           </div>
