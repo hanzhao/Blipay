@@ -5,7 +5,7 @@
 import React from 'react';
 import { reduxForm } from 'redux-form';
 import { Form, Input, Icon, Button } from 'antd';
-
+import { Link } from 'react-router';
 import styles from './styles';
 
 @reduxForm({
@@ -37,11 +37,13 @@ class LoginForm extends React.Component {
                  addonBefore={<Icon type="lock" />}
                  {...password} />
         </Form.Item>
+        <Link to="/admin/account/welcome">
         <Button type="primary" size="large"
                 className={styles.btn}
                 htmlType="submit" >
           登录
         </Button>
+        </Link>
       </Form>
     );
   }
