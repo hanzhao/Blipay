@@ -19,14 +19,25 @@ import AccountWelcomePage from './components/AccountWelcomePage';
 import AccountInfoPage from './components/AccountInfoPage';
 import AdminIndexPage from './components/AdminIndexPage';
 import NotFoundPage from './components/NotFoundPage';
+import AdminApp from './components/AdminApp';
+import AdminWelcomePage from './components/AdminWelcomePage';
+import AdminInfoPage from './components/AdminInfoPage';
+import AdminManager from './components/AdminManager';
+import AdminChange from './components/AdminChange';
 
 const history = syncHistoryWithStore(browserHistory, store);
 
 const router = (
   <Provider store={store}>
     <Router history={history}>
-      <Route path="/admin">
+      <Route path="/admin" component={AdminApp}>
         <IndexRoute component={AdminIndexPage} />
+        <Route path="/admin/account" component={AdminInfoPage}>
+          <Route path="/admin/account/welcome" component={AdminWelcomePage} />
+          <Route path="/admin/account/manager" component={AdminManager} />
+          <Route path="/admin/account/change" component={AdminChange} />
+        </Route>
+
       </Route>
       <Route path="/" component={App}>
         <IndexRoute component={MainPage} />
