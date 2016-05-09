@@ -1,4 +1,4 @@
-const User = app.get('models').User;
+const User = require('../models').User;
 const config = require('../config/account');
 const Router = require('express').Router;
 const crypto = require('crypto');
@@ -10,7 +10,7 @@ const cookPassword = (key, salt, saltPos) => {
     .update(salt)
     .update(key.slice(saltPos))
     .digest('base64');
-}
+};
 
 router.post('/account/register', (req, res) => {
   User.findOne()
@@ -20,16 +20,23 @@ router.post('/account/register', (req, res) => {
       }
       const loginSalt = crypto.randomBytes(64).toString('base64');
       const paySalt = crypto.randomBytes(64).toString('base64');
-      const user = {
+      const newUser = {
         userName: req.body.userName,
         loginSalt: loginSalt,
-        loginPass: cookPassword(req.body.loginPass, loginSalt, config.loginSaltPos),
+        loginPass: cookPassword(req.body.loginPass, 
+                                loginSalt, 
+                                config.loginSaltPos),
         paySalt: paySalt,
-        payPass: cookPassword(req.body.payPass, paySalt, config.paySaltPos)
-      }
-      return User.create(user)
+        payPass: cookPassword(req.body.payPass, 
+                              paySalt, 
+                              config.paySaltPos)
+      };
+      return User.create(newUser);
     })
+    /* eslint-disable */
+    /* wait for TODO */
     .then((user) => {
+    /* eslint-enable */
       // TODO: after creating user correctly.
     })
     .catch((err) => {
@@ -37,7 +44,7 @@ router.post('/account/register', (req, res) => {
       return res.json({
         message: err.message
       });
-    })
+    });
 });
 
 router.post('/account/login', (req, res) => {
@@ -52,8 +59,8 @@ router.post('/account/login', (req, res) => {
       // TODO: some error occurs during login
       return res.json({
         message: err.message
-      })
-    })
+      });
+    });
 });
 
 module.exports = router;

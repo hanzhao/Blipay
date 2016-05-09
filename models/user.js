@@ -25,7 +25,7 @@ module.exports = (db) => {
     paySalt: {
       type: Sequelize.STRING,
       allowNull: false
-    }
+    },
     /* 支付密码 */
     payPass: {
       type: Sequelize.STRING,

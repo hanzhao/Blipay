@@ -83,7 +83,7 @@ app.use((req, res, next) => {
 });
 
 // models
-app.set('models', require('./models'));
+require('./models');
 
 // controllers
 glob.sync(`${ROOT}/controllers/*.js`).forEach((controller) => {
