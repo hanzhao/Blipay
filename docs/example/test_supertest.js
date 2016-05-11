@@ -15,6 +15,6 @@ describe('supertest', () => {
           code: 0
         }
       })
-      .expect(200, done)
+      .expect(200, done);
   });
-})
+});

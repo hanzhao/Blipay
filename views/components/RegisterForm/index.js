@@ -3,7 +3,6 @@
  */
 
 import React from 'react';
-import classNames from 'classnames';
 import { reduxForm } from 'redux-form';
 import { Form, Input, Icon, Button } from 'antd';
 import { connect } from 'react-redux';
@@ -30,7 +29,7 @@ const validate = (values) => {
   } else if (!passwordRegex.test(payPass)) {
     errors.payPass = '密码必须包含字母和数字组合，长度至少 8 位。';
   } else if (loginPass === payPass) {
-    errors.payPass = '支付密码不得与登录密码相同。'
+    errors.payPass = '支付密码不得与登录密码相同。';
   }
   return errors;
 };
@@ -46,11 +45,20 @@ const asyncValidate = async (values) => {
       console.log(res);
       if (res.code === 0) {
         return {};
-      } else {
+      } else if (res.code === -1) {
         return { userName: '该用户名已被注册。' };
+      } else {
+        return { userName: '检验用户名失败。' };
       }
     } catch(err) {
-      return { userName: '暂时无法连接服务器。' };
+      console.log(err);
+      if (err.code === -1) {
+        return { userName: '该用户名已被注册。' };
+      } else if (err.code === -2) {
+        return { userName: '检验用户名失败。' };
+      } else {
+        return { userName: '暂时无法连接服务器。' };
+      }
     }
   })();
 }; 
@@ -89,16 +97,18 @@ class RegisterForm extends React.Component {
         loginPass,
         payPass 
       }, 
-      resetForm, 
-      handleSubmit, 
-      submitting } = this.props;
+      /* resetForm ,*/ 
+      handleSubmit 
+      /* submitting */} = this.props;
     return (
       <Form horizontal onSubmit={handleSubmit}>
         <Form.Item className={styles.formItem}
                    labelCol={{ span: 2 }}
                    wrapperCol={{ span: 22 }}
-                   label={<Icon style={{fontSize: 15, marginRight: 4}} type="user" />}
-                   help={userName.touched && userName.error ? userName.error : "　"}
+                   label={<Icon style={{fontSize: 15, marginRight: 4}} 
+                                type="user" />}
+                   help={userName.touched && userName.error ? 
+                         userName.error : '　'}
                    hasFeedback={userName.touched}
                    validateStatus={
                      asyncValidating === 'userName' ? 'validating' :
@@ -112,10 +122,13 @@ class RegisterForm extends React.Component {
         <Form.Item className={styles.formItem}
                    labelCol={{ span: 2 }}
                    wrapperCol={{ span: 22 }}
-                   label={<Icon style={{fontSize: 15, marginRight: 4}} type="lock" />}
-                   help={loginPass.touched && loginPass.error ? loginPass.error : "　"}
+                   label={<Icon style={{fontSize: 15, marginRight: 4}} 
+                                type="lock" />}
+                   help={loginPass.touched && loginPass.error ? 
+                         loginPass.error : '　'}
                    hasFeedback={loginPass.touched}
-                   validateStatus={loginPass.touched && loginPass.error ? 'error' : 'success'}>
+                   validateStatus={loginPass.touched && loginPass.error ? 
+                                   'error' : 'success'}>
           <Input size="large"
                  type="password"
                  placeholder="账户密码"
@@ -124,16 +137,20 @@ class RegisterForm extends React.Component {
         <Form.Item className={styles.formItem}
                    labelCol={{ span: 2 }}
                    wrapperCol={{ span: 22 }}
-                   label={<Icon style={{fontSize: 15, marginRight: 4}} type="pay-circle-o" />}
-                   help={payPass.touched && payPass.error ? payPass.error :  "　"}
+                   label={<Icon style={{fontSize: 15, marginRight: 4}} 
+                                type="pay-circle-o" />}
+                   help={payPass.touched && payPass.error ? 
+                         payPass.error :  '　'}
                    hasFeedback={payPass.touched}
-                   validateStatus={payPass.touched && payPass.error ? 'error' : 'success'}>
+                   validateStatus={payPass.touched && payPass.error ? 
+                                   'error' : 'success'}>
           <Input size="large"
                  type="password"
                  placeholder="支付密码"
                  {...payPass} />
         </Form.Item>
-        <div className={styles.hint}>{this.props.errorMsg ? this.props.errorMsg : '　'}</div>
+        <div className={styles.hint}>{this.props.errorMsg ? 
+                                      this.props.errorMsg : '　'}</div>
         <Button type="primary" size="large"
                 className={styles.btn}
                 htmlType="submit">

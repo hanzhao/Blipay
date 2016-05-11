@@ -6,10 +6,12 @@ proxy.use(router);
 
 describe('POST /accout/login', () => {
 
+  /*
   const correctInfo = {
     userName: 'xxx',
     loginPass: 'xxxx1111'
   };
+  */
 
   const wrongPassword = {
     userName: 'xxx',
@@ -21,13 +23,15 @@ describe('POST /accout/login', () => {
     loginPass: 'xxxxx'
   };
 
+  /*
   const succRes = {
     code: 0,
     data: {
       code: 0
     }
   };
-
+  */
+  
   const noUserRes = {
     code: -1,
     error: {

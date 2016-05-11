@@ -23,18 +23,21 @@ Transaction.belongsTo(User);
   });
 });
 
+const report = (msg) => {
+  console.log(`Error accessing database with following error message.\n${msg}`);
+};
+
 // id为1的用户将作测试用
 User.findOne({where: {id: 1 } })
   .then((user) => {
     if(user) {
-      User.update({userName: 'xxx', balance: 0}, {where: {id: 1}});
+      User.update({userName: 'xxx', balance: 0}, {where: {id: 1}})
+        .catch((err) => {report(err.message);});
     } else {
-      User.create({userName: 'xxx', balance: 0});
+      User.create({userName: 'xxx', balance: 0})
+        .catch((err) => {report(err.message);});
     }
-  }).catch((err) => {
-    console.log('Error accessing database with following error message.'
-                + err.message);
-  });
+  }).catch((err) => {report(err.message);});
 
 module.exports = {
   User, Item, Transaction

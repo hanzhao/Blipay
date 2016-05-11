@@ -1,7 +1,7 @@
 const User = require('../../models').User;
 const Promise = require('bluebird');
 
-export const checkBalance = (userId) => {
+const checkBalance = (userId) => {
   return new Promise((resolve, reject) => {
     User.findOne({
       where: {
@@ -11,17 +11,17 @@ export const checkBalance = (userId) => {
       if (!user) {
         throw new Error('userId is invalid.');
       }
-      resolve(user.balance);
+      return resolve(user.balance);
     }).catch((err) => {
-      reject(err);
+      return reject(err);
     });
   });
 };
 
-export const requestPay = (userId, amount) => {
+const requestPay = (userId, amount) => {
   return new Promise((resolve, reject) => {
     if (isNaN(amount)) {
-      reject(new Error('amount is invalid'));
+      return reject(new Error('amount is invalid'));
     }
     User.findOne({
       where: {
@@ -39,17 +39,23 @@ export const requestPay = (userId, amount) => {
         }
       }).then((res) => {
         if(res) {
-          resolve(user.balance - amount);
+          return resolve(user.balance - amount);
         } else {
-          reject(new Error('error updating database.'))
+          return reject(new Error('error updating database.'));
         }
-      })
+      });
     }).catch((err) => {
-      reject(err);
+      return reject(err);
     });
   });
 };
 
-export const requestReceive = (userId, amount) => {
+const requestReceive = (userId, amount) => {
   return requestPay(userId, -amount);
-}
+};
+
+module.exports = {
+  checkBalance,
+  requestPay,
+  requestReceive
+};

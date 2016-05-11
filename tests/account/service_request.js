@@ -1,10 +1,11 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
-const expect = chai.expect;
 const should = chai.should();
 const requestPay = require('../../controllers/services/account').requestPay;
-const requestReceive =require('../../controllers/services/account').requestReceive;
+const requestReceive = require(
+  '../../controllers/services/account'
+).requestReceive;
 
 describe('service requestReceive', () => {
 
@@ -33,6 +34,6 @@ describe('service requestPay', function() {
 
   it('should reject if amount is not a valid number', () => {
     return requestPay(1, 'a').should.be.rejected;
-  })
+  });
   
 });

@@ -8,30 +8,41 @@ const initialState = {
 };
 
 export default (state = initialState, action) => {
+  let msg;
   switch(action.type) {
-    case LOGIN:
-      return {
-        loggingIn: true
-      };
-    case LOGIN_SUCC:
-      return {
-        loggingIn: false
-      };
-    case LOGIN_FAIL:
-      return {
-        loggingIn: false,
-        errorMsg: action.error.message
-      };
+  case LOGIN:
+    return {
+      loggingIn: true
+    };
+  case LOGIN_SUCC:
+    return {
+      loggingIn: false
+    };
+  case LOGIN_FAIL:
+    switch(action.error.code) {
+    case -1:
+      msg = '用户名未被注册。';
+      break;
+    case -2:
+      msg = '服务器内部错误。';
+      break;
+    case -3:
+      msg = '登录密码有误。';
+      break;
     default:
-      return state;
+      msg = '出现未知错误。';
+      break;
+    }
+    return {
+      loggingIn: false,
+      errorMsg: msg
+    };
+  default:
+    return state;
   }
 };
 
-export const login = (userName, password) => {
-  console.log({
-    userName: userName,
-    password: password
-  })
+export const login = (userName, loginPass) => {
   return {
     types: [
       LOGIN,
@@ -42,8 +53,8 @@ export const login = (userName, password) => {
       console.log('in login promise');
       return client.post('/account/login', {
         userName,
-        password
-      })
+        loginPass
+      });
     }
   };
 };

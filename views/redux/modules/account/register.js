@@ -9,21 +9,21 @@ const initialState = {
 
 export default (state = initialState, action) => {
   switch(action.type) {
-    case REGISTER:
-      return {
-        registering: true
-      };
-    case REGISTER_SUCC:
-      return {
-        registering: false
-      };
-    case REGISTER_FAIL:
-      return {
-        registering: false,
-        errorMsg: action.error.message
-      };
-    default:
-      return state;
+  case REGISTER:
+    return {
+      registering: true
+    };
+  case REGISTER_SUCC:
+    return {
+      registering: false
+    };
+  case REGISTER_FAIL:
+    return {
+      registering: false,
+      errorMsg: action.error.message
+    };
+  default:
+    return state;
   }
 };
 

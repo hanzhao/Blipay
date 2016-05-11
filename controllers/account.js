@@ -39,7 +39,7 @@ router.post('/account/register', (req, res) => {
     };
     return User.create(newUser);
   })
-  .then((user) => {
+  .then(() => {
     return res.success({
       code: 0
     });
@@ -99,10 +99,10 @@ router.get('/account/check_paypass', (req, res) => {
 
 router.get('/account/check_username', (req, res) => {
   console.log('in check_username');
-  console.log(req.body);
+  console.log(req.query);
   User.findOne({
     where: {
-      userName: req.body.userName
+      userName: req.query.userName
     }
   }).then((user) => {
     if (!user) {
@@ -114,11 +114,21 @@ router.get('/account/check_username', (req, res) => {
         code: -1
       });
     }
-  }).catch((err) => {
+  }).catch(() => {
     return res.fail({
       code: -2
     });
   });
-})
+});
+
+router.post('/account/logout', (req, res) => {
+  console.log('in logout');
+  if(req.session.userId) {
+    delete req.session.userId;
+    return res.success({});
+  } else {
+    return res.fail({});
+  }
+});
 
 module.exports = router;

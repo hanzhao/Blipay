@@ -51,7 +51,9 @@ class LoginForm extends React.Component {
                  addonBefore={<Icon type="lock" />}
                  {...password} />
         </Form.Item>
-        <div className={styles.hint}>{this.props.errorMsg ? this.props.errorMsg : '　'}</div>
+        <div className={styles.hint}>
+          {this.props.errorMsg ? this.props.errorMsg : '　'}
+        </div>
         {
           <Button type="primary" size="large"
                   className={styles.btn}

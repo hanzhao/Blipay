@@ -8,7 +8,7 @@ const Promise = require('bluebird');
 describe('chai-as-promised', function() {
 
   it('can test promise with expect', () => {
-    expect(Promise.resolve({ foo: "bar" })).to.eventually.have.property("foo");
+    expect(Promise.resolve({ foo: 'bar' })).to.eventually.have.property('foo');
   });
 
   it('can test promise with should', () => {

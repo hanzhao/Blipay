@@ -37,6 +37,6 @@ describe('POST /account/register', () => {
           code: -2
         } 
       })
-      .expect(200, done)
+      .expect(200, done);
   });
-})
+});

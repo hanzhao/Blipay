@@ -32,7 +32,7 @@ const validatePaypass = async (rule, value, callback) => {
       { paypass: value }
     );
     if (res.code === 0) {
-      callback()
+      callback();
     } else {
       callback(new Error());
     }
@@ -86,7 +86,7 @@ const withdrawalPropsArray = [
     },
     field: [
       'password', {
-        validateTrigger: "onChange",
+        validateTrigger: 'onChange',
         rules: [{ required: true }, { validator: validatePaypass }]
       }
     ]
@@ -126,7 +126,7 @@ const topupPropsArray = [
     },
     field: [
       'password', {
-        validateTrigger: "onChange",
+        validateTrigger: 'onChange',
         rules: [{ required: true }, { validator: validatePaypass }]
       }
     ]

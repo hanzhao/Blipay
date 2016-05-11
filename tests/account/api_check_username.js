@@ -31,7 +31,7 @@ describe('GET /account/check_username', () => {
   it('returns code 0 if username does not exist', (done) => {
     request(proxy)
       .get('/account/check_username')
-      .send(newName)
+      .query(newName)
       .expect(succRes)
       .expect(200, done);
   });
@@ -39,8 +39,8 @@ describe('GET /account/check_username', () => {
   it('returns code -1 if username already exists', (done) => {
     request(proxy)
       .get('/account/check_username')
-      .send(existentName)
+      .query(existentName)
       .expect(failRes)
       .expect(200, done);
   });
-})
+});
