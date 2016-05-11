@@ -6,17 +6,50 @@ import { Button } from 'antd';
 import AccountRecordTable from '../AccountRecordTable';
 import FormModal from '../FormModal';
 import styles from './styles';
+import ajax from '../../common/ajax';
 
-/* 示例validator */
+const validateAmount = (rule, value, callback) => {
+  if (!value) {
+    callback();
+  } else {
+    try {
+      JSON.parse(value);
+    } catch(err) {
+      callback(new Error());
+    }
+    if (!isNaN(value) && JSON.parse(value) > 0) {
+      callback();
+    } else {
+      callback(new Error());
+    }
+  }
+};
+
+const validatePaypass = async (rule, value, callback) => {
+  try {
+    const res = await ajax.get(
+      '/account/check_paypass', 
+      { paypass: value }
+    );
+    if (res.code === 0) {
+      callback()
+    } else {
+      callback(new Error());
+    }
+  } catch(err) {
+    callback(new Error());
+  }
+};
+
 const validateCard = (rule, value, callback) => {
   if (!value) {
     callback();
   } else {
-    /* 在timeout前输入框将处于validating状态 */
-    setTimeout(() => {
-      /* 出现错误只需按以下方式调用callback */
-      callback([new Error()]);
-    }, 1000);
+    if (/^\d{16,19}/.test(value)) {
+      callback();
+    } else {
+      callback(new Error());
+    }
   }
 };
 
@@ -41,7 +74,7 @@ const withdrawalPropsArray = [
     },
     field: [
       'amount', {
-        rules: [{ required: true }]
+        rules: [{ required: true }, { validator: validateAmount }]
       }
     ]
   },
@@ -53,7 +86,8 @@ const withdrawalPropsArray = [
     },
     field: [
       'password', {
-        rules: [{ required: true }]
+        validateTrigger: "onChange",
+        rules: [{ required: true }, { validator: validatePaypass }]
       }
     ]
   }
@@ -68,7 +102,7 @@ const topupPropsArray = [
     },
     field: [
       'card', {
-        rules: [{ required: true }]
+        rules: [{ required: true }, { validator: validateCard }]
       }
     ]
   },
@@ -80,7 +114,7 @@ const topupPropsArray = [
     },
     field: [
       'amount', {
-        rules: [{ required: true }]
+        rules: [{ required: true }, { validator: validateAmount }]
       }
     ]
   },
@@ -92,14 +126,17 @@ const topupPropsArray = [
     },
     field: [
       'password', {
-        rules: [{ required: true }]
+        validateTrigger: "onChange",
+        rules: [{ required: true }, { validator: validatePaypass }]
       }
     ]
   }
 ];
 
 /* 以下是本页所能显示交易记录的最大数目 */
-const fakeData = Array(Math.floor((window.innerHeight - 450) / 50)).fill({
+const fakeData = Array(
+  Math.max(0, Math.floor((window.innerHeight - 450) / 50))
+).fill({
   date: '2015.01.01 19:08:32',
   description: '账户充值',
   amount: 100.00,
@@ -175,7 +212,7 @@ class AccountWelcomePage extends React.Component {
                    num={3}
                    btnText="确认提现"
                    propsArray={withdrawalPropsArray}
-                   btnProps={{ onClick: this.submitWithDrawal }}
+                   btnProps={{ onClick: this.submitWithdrawal }}
                    toggleModal={ this.toggleWithDrawal } />
       </div>
     );

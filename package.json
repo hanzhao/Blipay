@@ -7,7 +7,7 @@
     "start": "node index.js",
     "lint": "eslint . --config ./.eslintrc.node.json --ignore-pattern views/ && eslint views/ --config ./.eslintrc.browser.json && sass-lint -c ./.sass-lint.yml -v && echo -e \"\\033[32;49;1mLint Passed.\\033[39;49;0m\"",
     "build": "NODE_ENV=production webpack -p --config webpack.config.prod.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha-webpack --webpack-config webpack.config.test.js \"tests/**/*.js\" --watch --colors --growl"
   },
   "repository": {
     "type": "git",
@@ -76,6 +76,12 @@
     "webpack": "^1.13.0",
     "webpack-dev-middleware": "^1.6.1",
     "webpack-hot-middleware": "^2.10.0",
-    "sass-lint": "^1.7.0"
+    "sass-lint": "^1.7.0",
+    "mocha": "^2.4.5",
+    "mocha-webpack": "0.3.1",
+    "chai": "^3.5.0",
+    "chai-as-promised": "^5.3.0",
+    "supertest": "^1.2.0",
+    "webpack-node-externals": "^1.2.0" 
   }
 }

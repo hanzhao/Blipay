@@ -41,3 +41,9 @@ node_modules
 # Static assets
 public/*.js
 public/*.png
+
+# Sublime-specific file
+*.sublime*
+
+# mocha-webpack output file
+.tmp/*

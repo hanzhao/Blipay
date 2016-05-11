@@ -76,7 +76,7 @@ app.use((req, res, next) => {
   res.fail = function(data) {
     return this.json({
       code: -1,
-      data: data
+      error: data 
     });
   };
   next();

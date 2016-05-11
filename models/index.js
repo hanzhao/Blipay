@@ -23,6 +23,19 @@ Transaction.belongsTo(User);
   });
 });
 
+// id为1的用户将作测试用
+User.findOne({where: {id: 1 } })
+  .then((user) => {
+    if(user) {
+      User.update({userName: 'xxx', balance: 0}, {where: {id: 1}});
+    } else {
+      User.create({userName: 'xxx', balance: 0});
+    }
+  }).catch((err) => {
+    console.log('Error accessing database with following error message.'
+                + err.message);
+  });
+
 module.exports = {
   User, Item, Transaction
 };

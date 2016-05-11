@@ -22,6 +22,7 @@ import styles from './styles';
 
 const FormItem = Form.Item;
 
+@Form.create({})
 class FormModal extends React.Component {
 
   propTypes: {
@@ -79,17 +80,16 @@ class FormModal extends React.Component {
           }
         </Form>
         <Button className={styles.confirm}
-                type="primary" {...btnProps}>
+                type="primary"
+                disabled={propsArray.reduce((prev, cur) => (
+                  prev || (this.getValidateStatus(...cur.field) === 'error')
+                ), false)}
+                {...btnProps}>
           {this.props.btnText}
         </Button>
       </Modal>
     );
   }
 }
-
-/* eslint-disable */
-/* 官方示例写法*/
-FormModal = Form.create({})(FormModal);
-/* eslint-enable */
 
 export default FormModal;
