@@ -16,6 +16,13 @@ module.exports = (db) => {
     /* 状态 */
     status: {
       type: Sequelize.INTEGER
+    },
+    /* 转账交易信息 */
+    buyerTransId: {
+      type: Sequelize.INTEGER
+    },
+    sellerTransId: {
+      type: Sequelize.INTEGER
     }
   });
 };
