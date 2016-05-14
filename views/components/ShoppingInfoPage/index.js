@@ -7,7 +7,7 @@ import { Form, Input, Checkbox } from 'antd';
 import { Pagination } from 'antd';
 import styles from './styles';
 import pic from './gg.png'
-import ShoppingInfoTable from './ShoppingInfoTable'
+import ShoppingInfoTable from '../ShoppingInfoTable'
 import { Card, Col, Row } from 'antd';
 
 const optionsPrice = [{
@@ -50,14 +50,14 @@ class ShoppingInfoPage extends React.Component {
 
     return (
      <div className={styles.container}>
-    <div className={styles.upperHalf}>
-      <nobr>
+     <div className={styles.upperHalf}>
+        <nobr>
           <Cascader className={styles.cascader} placeholder="请选择排序类型" options={optionsPrice} onChange={onChange} />
           <Cascader className={styles.cascader} placeholder="请选择商品类别" options={optionsCategory} onChange={onChange} />
           <Input className={styles.inputbox} placeholder="请输入关键字" {...searchString} />
           <Button type="ghost" className={styles.button}>搜索</Button>
-      </nobr>
-    </div>
+        </nobr>
+      </div>
         <Pagination simple defaultCurrent={2} total={12450} />
     </div>
     );
