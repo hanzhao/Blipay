@@ -47,7 +47,12 @@ class ShoppingInfoPage extends React.Component {
     const { fields: {
        searchString
     }, handleSubmit } = this.props;
-
+    const contents = Array(50).fill({ 
+        pic:'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png',
+        title: 'sea',
+        price: '$12450.00',
+        publisher: 'woot'
+    });
     return (
      <div className={styles.container}>
      <div className={styles.upperHalf}>
@@ -58,6 +63,11 @@ class ShoppingInfoPage extends React.Component {
           <Button type="ghost" className={styles.button}>搜索</Button>
         </nobr>
       </div>
+        {
+          contents.map((e,i) => (
+            <ShoppingInfoTable className={styles.row} key={i} content={e} />
+          ))
+        }
         <Pagination simple defaultCurrent={2} total={12450} />
     </div>
     );

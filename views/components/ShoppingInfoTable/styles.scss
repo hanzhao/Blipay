@@ -1,26 +1,27 @@
-.container {
-  margin-left: 10px;
-  margin-right: 10px;
 
-  .title {
-    font-size: 18px;
-    color: #333333;
-  }
-
-  .brief {
-    display: inline-block;
-    margin-top: 3%;
-    font-size: 18px;
-    color: #aaaaaa; 
-  }
-
-  .button {
-    float: right;
-    font-size: 19px;
-    color: #c63655;
-    
-    &:hover {
-      text-shadow: 1px 1px #aaaaaa;
-    }
-  }
+  .itemImage{
+        width: 180px;
+      }
+      .itemName{
+        font-size: 25px;
+        font-type: sans-serif;
+        font-weight: bold;
+      }
+      .sellerName{
+        font-size: 15px;
+      }
+      .price{
+        font-size: 20px;
+        font-weight: bold;
+        float: right;
+        color: #C23456;
+      }
+.custom-image img {
+  display: block;
+}
+.custom-card {
+  padding: 10px 10px;
+}
+.custom-card p {
+  color: #999;
 }
