@@ -8,6 +8,9 @@ import pic from './akarin.png'
 import styles from './styles';
 import FormModal from '../FormModal';
 
+
+import { Table } from 'antd';
+
 const topupPropsArray = [
   {
     input: {
@@ -65,43 +68,79 @@ class ShoppingOrderPage extends React.Component {
   };
 
   render() {
+
+    const contents = Array(10).fill({
+        productImage: pic,
+        productName: 'Tesla',
+        price: 100,
+        amount: 2,
+        orderID: '09090909090',
+        totalCost: 200,
+        status:0
+    });
+
+  const columns = [{
+      title: '宝贝',
+      dataIndex: 'productImage',
+      key: 'productImage',
+      render: (d) => {
+        return <img src={d} />
+      }
+    }, {
+      title: '宝贝名称',
+      dataIndex: 'productName',
+      key: 'productName'
+    }, {
+      title: '单价',
+      dataIndex: 'price',
+      key: 'price',
+    }, {
+      title: '数量',
+      dataIndex: 'amount',
+      key: 'amount'
+    }, {
+      title: '订单编号',
+      dataIndex: 'orderID',
+      key: 'orderID'
+    }, {
+      title: '订单金额',
+      dataIndex: 'totalCost',
+      key: 'totalCost'
+    }, {
+      title: '订单状态',
+      dataIndex: 'status',
+      key: 'status',
+      render: (d) => {
+        return <Button type="ghost" onClick={this.toggleTopup} >确认付款</Button>
+      }
+    }];
+
+  const wrapperForOrderTable = (data) => {
+      for ( var i = 0; i <  data.length; i++ ) { 
+        data[i].price = Number(data[i].price).toFixed(2);
+      }
+      return data;
+  };
+
+  const tableProps = {
+    pagination: {
+      simple: true,
+      pageSize: Math.floor((window.innerHeight - 350) / 50)
+    }
+  };
+
     return (
     <div className={styles.container}>
-        <table border="0" className={styles.orderTable}>
-        <tr>
-        <th>宝贝</th>
-        <th></th>
-        <th>单价</th>
-        <th>数量</th>
-        <th>订单编号</th>
-        <th>订单金额</th>
-        <th>订单状态</th>
-        </tr>
-
-        <tr>
-         <td><img src={pic} /></td> <td>akarin</td> <td>400.00$</td> <td>2</td> 
-         <td>09090909090</td> <td>800.00$</td><td><Button type="ghost" onClick={this.toggleTopup} >确认付款</Button></td>
-        </tr>
-
-        <tr>
-         <td><img src={pic} /></td> <td>akarin</td> <td>400.00$</td> <td>2</td> 
-         <td>09090909090</td> <td>800.00$</td><td><Button type="ghost"  onClick={this.toggleTopup} >确认付款</Button></td>
-        </tr>
-
-        <tr>
-         <td><img src={pic} /></td> <td>akarin</td> <td>400.00$</td> <td>2</td> 
-         <td>09090909090</td> <td>800.00$</td><td><Button type="ghost"  onClick={this.toggleTopup} >确认付款</Button></td>
-        </tr>
-
-        </table>
-    <Pagination defaultCurrent={1} total={500} />
+          <Table columns={columns} dataSource={wrapperForOrderTable(contents)} {...tableProps} />
+        <br/>
+        <br/>
         <FormModal title="确认支付订单"
-                   visible={this.state.showTopup}
-                   num={2}
-                   btnText="确认支付"
-                   propsArray={topupPropsArray}
-                   btnProps={{ onClick: this.submitTopup }}
-                   toggleModal={ this.toggleTopup } />
+                     visible={this.state.showTopup}
+                     num={2}
+                     btnText="确认支付"
+                     propsArray={topupPropsArray}
+                     btnProps={{ onClick: this.submitTopup }}
+                     toggleModal={ this.toggleTopup } />
     </div>
     );
   }
