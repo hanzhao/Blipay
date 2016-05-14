@@ -23,6 +23,8 @@ import ShoppingWelcomePage from './components/ShoppingWelcomePage'
 import ShoppingCartPage from './components/ShoppingCartPage'
 import ShoppingOrderPage from './components/ShoppingOrderPage'
 import ShoppingInfoPage from './components/ShoppingInfoPage'
+import ShoppingItemAdd from './components/ShoppingItemAdd'
+import ShoppingItemManage from './components/ShoppingItemManage'
 const history = syncHistoryWithStore(browserHistory, store);
 
 const router = (
@@ -33,21 +35,20 @@ const router = (
       </Route>
       <Route path="/" component={App}>
         <IndexRoute component={MainPage} />
-        <Route path="/shopping" component={ShoppingPage} />
         <Route path="/account" component={AccountPage}>
           <IndexRoute component={AccountWelcomePage} />
           <Route path="/account/info" component={AccountInfoPage} />
           <Route path="/account/records" component={AccountRecordPage} />
           <Route path="/account/security" component={AccountSecurityPage} />
         </Route>
-
         <Route path="/shopping" component={ShoppingPage}>
-          <IndexRoute component={ShoppingWelcomePage} />
+          <IndexRoute component={ShoppingInfoPage} />
           <Route path="/shopping/shoppinginfo" component={ShoppingInfoPage} />
           <Route path="/shopping/shoppingcart" component={ShoppingCartPage} />
           <Route path="/shopping/shoppingorder" component={ShoppingOrderPage} />
+          <Route path="/shopping/shoppingitemadd" component={ShoppingItemAdd} />
+          <Route path="/shopping/shoppingitemmanage" component={ShoppingItemManage} />
         </Route>
-
         <Route path="*" component={NotFoundPage} />
       </Route>
     </Router>

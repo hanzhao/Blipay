@@ -8,8 +8,10 @@ import { Menu, Icon } from 'antd';
 
 const menus = [
   { to: '/shopping/shoppinginfo', text: '浏览宝贝', icon: 'info-circle-o' },
-  { to: '/shopping/shoppingcart', text: '购物车', icon: 'file-text' },
-  { to: '/shopping/shoppingorder', text: '订单管理', icon: 'unlock' },
+  { to: '/shopping/shoppingcart', text: '购物车', icon: 'shopping-cart' },
+  { to: '/shopping/shoppingorder', text: '订单管理', icon: 'exception' },
+  { to: '/shopping/shoppingitemadd', text: '商品添加', icon: 'plus-square' },
+  { to: '/shopping/shoppingitemmanage', text: '商品管理', icon: 'exception' },
 ];
 
 
@@ -17,7 +19,6 @@ class ShoppingMenu extends React.Component {
   render() {
     return (
       <Menu onClick={this.handleClick}
-        style={{ width: 240 }}
         defaultOpenKeys={['sub1']}
         selectedKeys={[location.pathname]}
         mode="inline">
