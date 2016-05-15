@@ -32,42 +32,43 @@ const createItem = Promise.coroutine(function* (sellerId, item) {
   }
 });
 
-const createOrder = Promise.coroutine(function* (sellerId, buyerId, count, cost, items) {
-  console.log('service: createOrder:');
-  console.log(items);
-  try {
-    const seller = yield User.findOne({ where: { id: sellerId } });
-    const buyer = yield User.findOne({ where: { id: buyerId } });
-    if (!seller || !buyer) {
-      throw new Error('User Not Found');
-    }
-    let newOrder = yield Order.create({
-      count: count,
-      cost: cost,
-      status: 0
-    });
-    let newCost = 0;
-    for (var i = 0; i < items.length; i++) {
-      const element = items[i];
-      const item = yield Item.findOne({ where: { id: element.itemId } });
-      if (!item) {
-        throw new Error('Item Not Found:' + element.itemId);
+const createOrder = Promise.coroutine(
+  function* (sellerId, buyerId, count, cost, items) {
+    console.log('service: createOrder:');
+    console.log(items);
+    try {
+      const seller = yield User.findOne({ where: { id: sellerId } });
+      const buyer = yield User.findOne({ where: { id: buyerId } });
+      if (!seller || !buyer) {
+        throw new Error('User Not Found');
       }
-      yield newOrder.addItem(item, {
-        count: element.count,
-        cost: item.price * element.count
+      let newOrder = yield Order.create({
+        count: count,
+        cost: cost,
+        status: 0
       });
-      newCost += item.price * element.count;
+      let newCost = 0;
+      for (var i = 0; i < items.length; i++) {
+        const element = items[i];
+        const item = yield Item.findOne({ where: { id: element.itemId } });
+        if (!item) {
+          throw new Error('Item Not Found:' + element.itemId);
+        }
+        yield newOrder.addItem(item, {
+          count: element.count,
+          cost: item.price * element.count
+        });
+        newCost += item.price * element.count;
+      }
+      if (newCost.toFixed(2) != cost.toFixed(2)) {
+        newOrder.destroy();
+        throw new Error('price chaged.' + newCost + '::' + cost);
+      }
     }
-    if (newCost.toFixed(2) != cost.toFixed(2)) {
-      newOrder.destroy();
-      throw new Error('price chaged.' + newCost + "::" + cost);
+    catch (e) {
+      console.error('Error in service newOrder:' + require('util').inspect(e));
     }
-  }
-  catch (e) {
-    console.error('Error in service newOrder:' + require('util').inspect(e));
-  }
-});
+  });
 
 module.exports = {
   createItem,

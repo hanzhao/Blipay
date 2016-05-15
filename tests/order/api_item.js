@@ -39,7 +39,7 @@ describe('POST /item/new', () => {
 
 });
 
-describe('POST /item/update', ()=>{
+describe('POST /item/update', () => {
   const listItem_update = {
     id: 2,
     name: 'editedlisttestItem',
@@ -47,13 +47,13 @@ describe('POST /item/update', ()=>{
     remain: 11,
     thumb: 'a.com/a'
   };
-  it('return code 0 if succ', (done)=>{
+  it('return code 0 if succ', (done) => {
     request(proxy)
-    .post('/item/update')
-    .send(listItem_update)
-    .expect({code: 0})
-    .expect(200, done);
-  })
+      .post('/item/update')
+      .send(listItem_update)
+      .expect({ code: 0 })
+      .expect(200, done);
+  });
 });
 
 describe('POST /item/item_list', () => {
@@ -119,16 +119,16 @@ describe('POST /order/new', () => {
     buyerId: 1,
     count: 2,
     cost: 46.63,
-    items:[
-        {
-          itemId: 1,
-          count: 1
-        },
-        {
-          itemId: 2,
-          count: 1
-        }
-      ]
+    items: [
+      {
+        itemId: 1,
+        count: 1
+      },
+      {
+        itemId: 2,
+        count: 1
+      }
+    ]
   };
   const newOrderRes = {
     code: 0
