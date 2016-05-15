@@ -1,10 +1,10 @@
-'use strict'
+'use strict';
 
 const Promise = require('bluebird');
 const Item = require('../models').Item;
-const User = require('../models').User;
 const Router = require('express').Router;
 const router = Router();
+const createItem = require('./services/order').createItem;
 
 router.post('/item/new', (req, res) => {
   console.log('in /item/new');
@@ -12,63 +12,109 @@ router.post('/item/new', (req, res) => {
   Promise.coroutine(function* () {
     try {
       // TODO: Fetch user from session
-      // const user = yield User.findOne({ where: { id: req.session.userId } });
-      const user = yield User.findOne({ where: { id: 1 } });
-      console.log("debug");
-      if (req.body.remain < 0 || req.body.price < 0) {
-        throw new Error("illegal parameter.");
-      }
-      const newItem = yield Item.create({
-        name: req.body.name,
-        price: req.body.price,
-        remain: req.body.remain,
-        thumb: req.body.thumb
-      });
-      yield newItem.setSeller(user);
+      createItem(1, req.body);
       return res.json({ code: 0 });
     }
     catch (e) {
       console.error('error in /item/new: \t' + e.message);
-      return res.json({code: 1, error: "Error inserting new item:"+e.message});
+      return res.json({
+        code: 1,
+        error: 'Error inserting new item:' + e.message
+      });
     }
   })();
 });
 
 const validate = (i) => {
-  return typeof (i) != "undefined";
-}
+  return typeof (i) != 'undefined';
+};
 
 router.post('/item/item_list', (req, res) => {
   console.log('in /item/item_list');
   console.log(req.body);
-  const body = req.body;
-  const order = [body.base, body.order];
+  // const order = [req.body.base, req.body.order];
   Promise.coroutine(function* () {
     try {
-      if (validate(body.id)) {
-        return res.json({ items: [yield Item.findOne({ where: { id: body.id }, order: order })] });
+      if (validate(req.body.id)) {
+        const item = yield Item.findOne({
+          where: { id: req.body.id }, order: req.body.base + req.body.order
+        });
+        return res.json({ items: [item] });
       }
-      const filter = {};
-      if (validate(body.filter.price)) {
-        filter.price = body.filter.price;
+      let filter = {};
+      if (validate(req.body.sellerId)){
+        filter.sellerId = req.body.sellerId;
       }
-      if (validate(body.filter.time)) {
-        filter.createAt = body.filter.time;
+      if (validate(req.body.filter.price)) {
+        filter.price = req.body.filter.price;
       }
-      if (validate(body.filter.remain)) {
-        filter.remain = body.filter.remain;
+      if (validate(req.body.filter.time)) {
+        filter.createdAt = req.body.filter.time;
+      }
+      if (validate(req.body.filter.remain)) {
+        filter.remain = req.body.filter.remain;
       }
       return res.json({
         items: yield Item.findAll({
           where: filter,
-          order: order
+          order: req.body.base + req.body.order,
+          offset: req.body.head,
+          limit: req.body.length
         })
       });
     }
     catch (e) {
-      return res.fail('in /item/item_list\t' + e.message);
+      return res.fail('in /item/item_list   ' + e.message);
     }
   })();
 });
+
+router.post('/item/update', (req, res) => {
+  console.log('in /item/update');
+  console.log(req.body);
+  Promise.coroutine(function* () {
+    try {
+      const item = Item.findOne({ where: { id: req.body.id } });
+      // TODO: check item owner and authentication 
+      if (!item) {
+        throw new Error('Item Not Found.');
+      }
+      yield item.update(req.body);
+      return res.success('Item updated.');
+    }
+    catch (e) {
+      return res.fail('in /item/update   ' + e.message);
+    }
+  })();
+});
+
+router.post('/item/delete', (req, res) => {
+  console.log('in /item/delete');
+  console.log(req.body);
+  Promise.coroutine(function* () {
+    try {
+      const item = Item.findOne({ where: { id: req.body.id } });
+      // TODO: check item owner and authentication 
+      if (!item) {
+        throw new Error('Item Not Found.');
+      }
+      yield item.destroy();
+      return res.success('Item destroyed');
+    }
+    catch (e) {
+      return res.fail('in /item/delete   ' + e.message);
+    }
+  })();
+});
+
+// router.post('/order/new', (req, res) => {
+//   console.log('in /order/new');
+//   console.log(req.body);
+//   Promise.coroutine(function* () {
+//     try{
+      
+//     }
+//   })();
+// });
 
 module.exports = router
