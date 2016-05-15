@@ -4,28 +4,27 @@ const router = require('../../controllers/account');
 
 proxy.use(router);
 
-describe('POST /account/register', () => {
+describe('POST /account/charge', () => {
 
-  const infoUserExist = {
+  const user = {
     userName: 'user1',
-    loginPass: 'loginpass1',
-    payPass: 'paypass1'
+    amount: 1
   };
 
-  const infoUserNew = {
-    userName: 'user2',
-    loginPass: 'loginpass2',
-    payPass: 'paypass2'
+  const userNew = {
+    userName: 'user3',
+    amount: 1
   };
 
-  it('returns code 0 on successful registration', (done) => {
+  it('returns code 0 on successful charging', (done) => {
     request(proxy)
-      .post('/account/register')
-      .send(infoUserNew)
+      .post('/account/charge')
+      .send(user)
       .expect({ 
         code: 0, 
         data: { 
-          code: 0
+          code: 0,
+          balance: 2
         }
       })
       .expect(200, done);
@@ -33,8 +32,8 @@ describe('POST /account/register', () => {
 
   it('returns code -1 if userName exists', (done) => {
     request(proxy)
-      .post('/account/register')
-      .send(infoUserExist)
+      .post('/account/charge')
+      .send(userNew)
       .expect({ 
         code: -1,
         error: {

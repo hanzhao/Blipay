@@ -4,21 +4,21 @@ const router = require('../../controllers/account');
 
 proxy.use(router);
 
-describe('POST /accout/login', () => {
+describe('GET /account/check_paypass', () => {
 
   const correctInfo = {
     userName: 'user1',
-    loginPass: 'loginpass1'
-  };
-
-  const wrongPassword = {
-    userName: 'user1',
-    loginPass: 'loginpass2'
+    payPass: 'paypass1'
   };
 
   const noUser = {
     userName: 'user3',
-    loginPass: 'loginpass1'
+    payPass: 'paypass1'
+  };
+
+  const wrongPaypass = {
+    userName: 'user1',
+    payPass: 'paypass2'
   };
 
   const succRes = {
@@ -27,7 +27,7 @@ describe('POST /accout/login', () => {
       code: 0
     }
   };
-  
+
   const noUserRes = {
     code: -1,
     error: {
@@ -35,35 +35,35 @@ describe('POST /accout/login', () => {
     }
   };
 
-  const wrongPassRes = {
+  const wrongPaypassRes = {
     code: -1,
     error: {
       code: -3
     }
   };
 
-  it('returns code 0 on successful login', (done) => {
+  it('returns code 0 if paypass is correct', (done) => {
     request(proxy)
-      .post('/account/login')
-      .send(correctInfo)
+      .get('/account/check_paypass')
+      .query(correctInfo)
       .expect(succRes)
       .expect(200, done);
   });
-  
-  it('returns code -3 if login password is wrong', (done) => {
-    request(proxy)
-      .post('/account/login')
-      .send(wrongPassword)
-      .expect(wrongPassRes)
-      .expect(200, done);
-  });
 
-  it('returns code -1 if userName does not exist', (done) => {
+  it('returns code -1 if username does not exist', (done) => {
     request(proxy)
-      .post('/account/login')
-      .send(noUser)
+      .get('/account/check_paypass')
+      .query(noUser)
       .expect(noUserRes)
       .expect(200, done);
   });
 
+  it('returns code -3 if paypass is wrong', (done) => {
+    request(proxy)
+      .get('/account/check_paypass')
+      .query(wrongPaypass)
+      .expect(wrongPaypassRes)
+      .expect(200, done);
+  });
 });
+

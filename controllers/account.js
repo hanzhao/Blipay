@@ -1,4 +1,5 @@
 const User = require('../models').User;
+const Transaction = require('../models').Transaction;
 const config = require('../config/account');
 const Router = require('express').Router;
 const crypto = require('crypto');
@@ -22,7 +23,10 @@ router.post('/account/register', (req, res) => {
   })
   .then((user) => {
     if (user) {
-      throw new Error('The same userName exists.');
+      //throw new Error('The same userName exists.');
+      return res.fail({
+        code: -1
+      });
     }
     const loginSalt = crypto.randomBytes(64).toString('base64');
     const paySalt = crypto.randomBytes(64).toString('base64');
@@ -37,13 +41,18 @@ router.post('/account/register', (req, res) => {
                             paySalt, 
                             config.paySaltPos)
     };
-    return User.create(newUser);
+    User.create(newUser)
+      .then(() => {
+        return res.success({
+          code: 0
+        });
+      });
   })
-  .then(() => {
+  /*.then(() => {
     return res.success({
       code: 0
     });
-  })
+  })*/
   .catch((err) => {
     console.error('Error occurs in /accout/register with following message.\n' +
                  err.message);
@@ -71,7 +80,7 @@ router.post('/account/login', (req, res) => {
           req.body.loginPass, 
           user.loginSalt, 
           config.loginSaltPos)  === user.loginPass) {
-      res.success({
+      return res.success({
         code: 0
       });
     } else {
@@ -89,11 +98,38 @@ router.post('/account/login', (req, res) => {
   });
 });
 
-// TODO
 router.get('/account/check_paypass', (req, res) => {
   console.log('in check_paypass');
-  return res.success({
-    code: 0
+  console.log(req.query);
+  User.findOne({
+    where: {
+      userName: req.query.userName
+    }
+  }).then((user) => {
+    if (!user) {
+      console.log('check_paypass: userName not exists');
+      return res.fail({
+        code: -1
+      });
+    }
+    if (cookPassword(
+          req.query.payPass, 
+          user.paySalt, 
+          config.paySaltPos)  === user.payPass) {
+      return res.success({
+        code: 0
+      });
+    } else {
+      console.log('check_paypass: payPass wrong');
+      return res.fail({
+        code: -3
+      });
+    }
+  }).catch((err) => {
+    console.error('check_username: fail\n' + err.message);
+    return res.fail({
+      code: -2
+    });
   });
 });
 
@@ -106,15 +142,18 @@ router.get('/account/check_username', (req, res) => {
     }
   }).then((user) => {
     if (!user) {
+      console.log('check_username: not exists');
       return res.success({
         code: 0
       });
     } else {
+      console.log('check_username: user exists');
       return res.fail({
         code: -1
       });
     }
-  }).catch(() => {
+  }).catch((err) => {
+    console.error('check_username: fail\n' + err.message);
     return res.fail({
       code: -2
     });
@@ -129,6 +168,304 @@ router.post('/account/logout', (req, res) => {
   } else {
     return res.fail({});
   }
+});
+
+router.post('/account/change_userinfo', (req, res) => {
+  console.log('in /account/change_userinfo');
+  console.log(req.body);
+  User.findOne({
+    where: {
+      userName: req.body.userName
+    }
+  })
+  .then((user) => {
+    if (!user) {
+      return res.fail({
+        code: -1
+      });
+    }
+    User.update({
+      realName: req.body.realName,
+      idNumber: req.body.idNumber, 
+      email: req.body.email, 
+      phone: req.body.phone
+    }, {
+      where: {
+        userName: req.body.userName
+      }
+    })
+    .then(() => {
+      return res.success({
+        code: 0
+      });
+    });
+  })
+  .catch((err) => {
+    console.error('Error occurs in /accout/register with following message.\n' +
+                 err.message);
+    return res.fail({
+      code: -2
+    });
+  });
+});
+
+router.get('/account/get_userinfo', (req, res) => {
+  console.log('in /account/get_userinfo');
+  console.log(req.query);
+  User.findOne({
+    where: {
+      userName: req.query.userName
+    }
+  })
+  .then((user) => {
+    if (!user) {
+      return res.fail({
+        code: -1
+      });
+    } else {
+      return res.success({
+        code: 0,
+        userName: user.userName,
+        realName: user.realName,
+        idNumber: user.idNumber, 
+        email: user.email, 
+        phone: user.phone
+      })
+    }
+  })
+  .catch((err) => {
+    console.error('Error occurs in /accout/register with following message.\n' +
+                 err.message);
+    return res.fail({
+      code: -2
+    });
+  });
+});
+
+router.post('/account/change_paypass', (req, res) => {
+  console.log('in /account/change_paypass');
+  console.log(req.body);
+  User.findOne({
+    where: {
+      userName: req.body.userName
+    }
+  })
+  .then((user) => {
+    if (!user) {
+      return res.fail({
+        code: -1
+      });
+    }
+    User.update({
+      payPass: cookPassword(req.body.payPass, 
+                            user.paySalt, 
+                            config.paySaltPos)
+    }, {
+      where: {
+        userName: req.body.userName
+      }
+    })
+    .then(() => {
+      return res.success({
+        code: 0
+      });
+    });
+  })
+  .catch((err) => {
+    console.error('Error occurs in /accout/register with following message.\n' +
+                 err.message);
+    return res.fail({
+      code: -2
+    });
+  });
+});
+
+router.get('/account/get_balance', (req, res) => {
+  console.log('in /account/get_balance');
+  console.log(req.query);
+  User.findOne({
+    where: {
+      userName: req.query.userName
+    }
+  })
+  .then((user) => {
+    if (!user) {
+      return res.fail({
+        code: -1
+      });
+    } else {
+      return res.success({
+        code: 0,
+        balance: user.balance
+      })
+    }
+  })
+  .catch((err) => {
+    console.error('Error occurs in /accout/register with following message.\n' +
+                 err.message);
+    return res.fail({
+      code: -2
+    });
+  });
+});
+
+router.post('/account/charge', (req, res) => {
+  console.log('in /account/charge');
+  console.log(req.body);
+  User.findOne({
+    where: {
+      userName: req.body.userName
+    }
+  })
+  .then((user) => {
+    if (!user) {
+      return res.fail({
+        code: -1
+      });
+    }
+    if (true){
+      const newBalance = user.balance + req.body.amount;
+      User.update({
+        balance: newBalance
+      }, {
+        where: {
+          userName: req.body.userName
+        }
+      })
+      .then(() => {
+        const newTransaction = {
+          userId: user.id,
+          amount: req.body.amount,
+          type: 1,
+          status: 1
+        }
+        Transaction.create(newTransaction)
+        .then(() => {
+          return res.success({
+            code: 0,
+            balance: newBalance
+          });
+        })
+      })
+    }
+    /*
+    else {
+      const newTransaction = {
+        userId: user.id,
+        amount: req.body.amount,
+        type: 1,
+        status: 0
+      }
+      Transaction.create(newTransaction)
+      .then(() => {
+        return res.fail({
+          code: -3
+        });
+      })
+    }*/
+  })
+  .catch((err) => {
+    console.error('Error occurs in /accout/charge with following message.\n' +
+                 err.message);
+    return res.fail({
+      code: -2
+    });
+  });
+});
+
+router.post('/account/withdraw', (req, res) => {
+  console.log('in /account/withdraw');
+  console.log(req.body);
+  User.findOne({
+    where: {
+      userName: req.body.userName
+    }
+  })
+  .then((user) => {
+    if (!user) {
+      return res.fail({
+        code: -1
+      });
+    }
+    if (user.balance < req.body.amount){
+      const newTransaction = {
+        userId: user.id,
+        amount: req.body.amount,
+        type: 2,
+        status: 0
+      }
+      Transaction.create(newTransaction);
+      return res.fail({
+        code: -3
+      });
+    }
+    const newBalance = user.balance - req.body.amount;
+    User.update({
+      balance: newBalance
+    }, {
+      where: {
+        userName: req.body.userName
+      }
+    })
+    .then(() => {
+      const newTransaction = {
+        userId: user.id,
+        amount: req.body.amount,
+        type: 2,
+        status: 1
+      }
+      Transaction.create(newTransaction)
+      .then(() => {
+        return res.success({
+          code: 0,
+          balance: newBalance
+        });
+      });
+    });
+  })
+  .catch((err) => {
+    console.error('Error occurs in /accout/withdraw with following message.\n' +
+                 err.message);
+    return res.fail({
+      code: -2
+    });
+  });
+});
+
+router.get('/account/get_transaction', (req, res) => {
+  console.log('in /account/get_transaction');
+  console.log(req.query);
+  User.findOne({
+    where: {
+      userName: req.query.userName
+    }
+  })
+  .then((user) => {
+    if (!user) {
+      return res.fail({
+        code: -1
+      });
+    } else {
+      Transaction.findAll({
+        where: {
+          userID: user.id
+        }
+      })
+      .then((tran) => {
+        return res.success({
+          code: 0,
+          transaction: tran
+        });
+      });
+    }
+  })
+  .catch((err) => {
+    console.error('Error occurs in /accout/register with following message.\n' +
+                 err.message);
+    return res.fail({
+      code: -2
+    });
+  });
 });
 
 module.exports = router;

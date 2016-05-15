@@ -7,11 +7,12 @@ const checkBalance = require('../../controllers/services/account').checkBalance;
 describe('service checkBalance', function() {
 
   it('should resolve and return balance', () => {
-    return checkBalance(1).should.eventually.equal(0);
+    return checkBalance(5).should.eventually.equal(1);
   });
   
   it('should reject if userId is invalid', () => {
-    return checkBalance(-1).should.be.rejected;
+    return checkBalance(6666).should.be.rejected;
   });
   
 });
+
