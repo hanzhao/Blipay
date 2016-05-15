@@ -32,33 +32,35 @@
   }
 
   .lowerHalf {
-    float: right;
+    
     margin-top: 20px;
     margin-bottom: 50px;
-    .operationCol {
-      width: 300px;
+    .lowerLeft{
+      float: left;
       .operationButton {
-        margin-left: 10px;
-        margin-right: 10px;
+          margin-left: 10px;
+          margin-right: 10px;
       }
     }
-    .totalCaption {
-        width: 60px;
-        font-size: 20px;
-        font-weight: bold;
-    }
-    .total {
-        width: 60px;
-        font-size: 20px;
-        font-weight: bold;
-        color: #C23456;
-    }
-    .placeHolder {
-      width: 200px;    
-    }
-    .payButton {
-        padding-left: 30px;
-        padding-right: 30px;
+    .lowerRight{
+      float: right;
+      .totalCaption{
+          margin-left: 30px;
+          margin-right: 10px;
+          font-size: 20px;
+          font-weight: bold;
+      }
+      .total {
+          width: 60px;
+          font-size: 20px;
+          font-weight: bold;
+          color: #C23456;
+      }
+      .payButton {
+          margin-left: 10px;
+          margin-right: 10px;
+          font-size: 16px;        
+      }
     }
   }
 }

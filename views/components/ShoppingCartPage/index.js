@@ -87,15 +87,10 @@ class ShoppingCartPage extends React.Component {
     </div>
 
     <div className={styles.lowerHalf}>
-      <table border="0">
-        <td className={styles.operationCol}>
-        <Button className={styles.operationButton} type="ghost">全选 </Button> 
-        <Button className={styles.operationButton} type="ghost">删除 </Button>
-        </td>
-        <td className={styles.placeHolder}></td>
-        <td className={styles.totalCaption}><div >总价</div> </td><td className={styles.total}><div>$1245.00</div></td>
-        <td/><td/><td/><td ><Button type="primary" size="large" className={styles.payButton}>结算</Button></td>
-        </table>
+        <span className={styles.lowerLeft}><Button className={styles.operationButton} type="ghost">全选 </Button> 
+        <Button className={styles.operationButton} type="ghost">删除 </Button></span>
+        <span className={styles.lowerRight}><span className={styles.totalCaption}>总价</span><span className={styles.total}>$1245.00</span>
+        <Button type="primary" className={styles.payButton}>结算</Button></span>
     </div>
    </div>
     );
