@@ -39,6 +39,23 @@ describe('POST /item/new', () => {
 
 });
 
+describe('POST /item/update', ()=>{
+  const listItem_update = {
+    id: 2,
+    name: 'editedlisttestItem',
+    price: 23.31,
+    remain: 11,
+    thumb: 'a.com/a'
+  };
+  it('return code 0 if succ', (done)=>{
+    request(proxy)
+    .post('/item/update')
+    .send(listItem_update)
+    .expect({code: 0})
+    .expect(200, done);
+  })
+});
+
 describe('POST /item/item_list', () => {
   const listItem = {
     name: 'listtestItem',
@@ -90,6 +107,37 @@ describe('POST /item/item_list', () => {
       .post('/item/item_list')
       .send(filter_query)
       .expect({ items: [newItem, listItem] })
+      .expect(200, done);
+  });
+});
+
+
+
+describe('POST /order/new', () => {
+  const newOrder = {
+    sellerId: 1,
+    buyerId: 1,
+    count: 2,
+    cost: 46.63,
+    items:[
+        {
+          itemId: 1,
+          count: 1
+        },
+        {
+          itemId: 2,
+          count: 1
+        }
+      ]
+  };
+  const newOrderRes = {
+    code: 0
+  };
+  it('returns code 0 if success', (done) => {
+    request(proxy)
+      .post('/order/new')
+      .send(newOrder)
+      .expect(newOrderRes)
       .expect(200, done);
   });
 });

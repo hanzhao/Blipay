@@ -1,64 +1,75 @@
 'use strict';
 
+
+
 const Promise = require('bluebird');
 const Item = require('../../models').Item;
 const User = require('../../models').User;
 const Order = require('../../models').Order;
 
-const createItem = (sellerId, item) => {
+const createItem = Promise.coroutine(function* (sellerId, item) {
   console.log('service: createItem:');
   console.log(item);
-  Promise.coroutine(function* () {
-    try {
-      const user = yield User.findOne({ where: { id: sellerId } });
-      if (!user) {
-        throw new Error('User Not Found.');
-      }
-      if (item.remain < 0 || item.price < 0) {
-        throw new Error('illegal parameter.');
-      }
-      const newItem = yield Item.create({
-        name: item.name,
-        price: item.price,
-        remain: item.remain,
-        thumb: item.thumb
-      });
-      console.log('newItemId: ' + newItem.id);
-      newItem.setSeller(user);
+  try {
+    const user = yield User.findOne({ where: { id: sellerId } });
+    if (!user) {
+      throw new Error('User Not Found.');
     }
-    catch (e) {
-      console.error('Error in service newItem:' + e.message);
+    if (item.remain < 0 || item.price < 0) {
+      throw new Error('illegal parameter.');
     }
-  })();
-};
+    const newItem = yield Item.create({
+      name: item.name,
+      price: item.price,
+      remain: item.remain,
+      thumb: item.thumb
+    });
+    console.log('newItemId: ' + newItem.id);
+    newItem.setSeller(user);
+  }
+  catch (e) {
+    console.error('Error in service newItem:' + e.message);
+  }
+});
 
-const createOrder = (sellerId, buyerId, count, cost, items) => {
+const createOrder = Promise.coroutine(function* (sellerId, buyerId, count, cost, items) {
   console.log('service: createOrder:');
-  console.log(item);
-  Promise.coroutine(function* () {
-    try {
-      const seller = yield User.findOne({ where: { id: sellerId } });
-      const buyer = yield User.findOne({ where: { id: buyerId } });
-      if (!seller || !buyer) {
-        throw new Error('User Not Found');
+  console.log(items);
+  try {
+    const seller = yield User.findOne({ where: { id: sellerId } });
+    const buyer = yield User.findOne({ where: { id: buyerId } });
+    if (!seller || !buyer) {
+      throw new Error('User Not Found');
+    }
+    let newOrder = yield Order.create({
+      count: count,
+      cost: cost,
+      status: 0
+    });
+    let newCost = 0;
+    for (var i = 0; i < items.length; i++) {
+      const element = items[i];
+      const item = yield Item.findOne({ where: { id: element.itemId } });
+      if (!item) {
+        throw new Error('Item Not Found:' + element.itemId);
       }
-      const newOrder = yield Order.create({
-        
+      yield newOrder.addItem(item, {
+        count: element.count,
+        cost: item.price * element.count
       });
-      items.forEach(function (element) {
-        let item = yield Item.findOne({ where: { id: element.itemId } });
-        if (!item) {
-          throw new Error('Item Not Found.');
-        }
-
-      }, this);
+      newCost += item.price * element.count;
     }
-    catch (e) {
-      console.error('Error in service newOrder:' + e.message);
+    if (newCost.toFixed(2) != cost.toFixed(2)) {
+      newOrder.destroy();
+      throw new Error('price chaged.' + newCost + "::" + cost);
     }
-  })();
-}
+  }
+  catch (e) {
+    console.error('Error in service newOrder:' + require('util').inspect(e));
+  }
+});
 
 module.exports = {
-  createItem
+  createItem,
+  createOrder
 };
