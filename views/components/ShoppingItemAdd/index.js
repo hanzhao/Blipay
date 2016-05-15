@@ -47,37 +47,6 @@ let BasicDemo = React.createClass({
     });
   },
 
-  userExists(rule, value, callback) {
-    if (!value) {
-      callback();
-    } else {
-      setTimeout(() => {
-        if (value === 'JasonWood') {
-          callback([new Error('抱歉，该用户名已被占用。')]);
-        } else {
-          callback();
-        }
-      }, 800);
-    }
-  },
-
-  checkPass(rule, value, callback) {
-    const { validateFields } = this.props.form;
-    if (value) {
-      validateFields(['rePasswd'], { force: true });
-    }
-    callback();
-  },
-
-  checkPass2(rule, value, callback) {
-    const { getFieldValue } = this.props.form;
-    if (value && value !== getFieldValue('passwd')) {
-      callback('两次输入密码不一致！');
-    } else {
-      callback();
-    }
-  },
-
   render() {
     const { getFieldProps, getFieldError, isFieldValidating } = this.props.form;
     const nameProps = getFieldProps('name', {
@@ -99,15 +68,6 @@ let BasicDemo = React.createClass({
           { required: true },
         ],
         trigger: 'onBlur',
-      }],
-    });
-    const rePasswdProps = getFieldProps('rePasswd', {
-      rules: [{
-        required: true,
-        whitespace: true,
-        message: '请再次输入密码',
-      }, {
-        validator: this.checkPass2,
       }],
     });
     const textareaProps = getFieldProps('textarea', {
