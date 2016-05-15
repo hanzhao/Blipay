@@ -3,6 +3,7 @@ import Container from '../Container';
 import ShoppingMenu from '../ShoppingMenu';
 import { Form, Input, Row, Col, Button,  InputNumber,DatePicker } from 'antd';
 import { Upload, Icon, Modal } from 'antd';
+import styles from './styles';
 const FormItem = Form.Item;
 const createForm = Form.create;
 
@@ -120,10 +121,7 @@ let BasicDemo = React.createClass({
     };
     return (
       
-
-
       <Form horizontal form={this.props.form}>
-        <h1> 添加商品 </h1>
         <FormItem
           {...formItemLayout}
           label="商品名："
@@ -136,34 +134,36 @@ let BasicDemo = React.createClass({
           {...formItemLayout}
           label="商品价格："
           hasFeedback>
-          <InputNumber min={0} step={0.01} {...priceProps} type="price" placeholder="请输入商品价格" />
+          <InputNumber className={styles.priceInput} min={0} step={0.01} {...priceProps} type="price" placeholder="请输入商品价格" />
         </FormItem>
 
      	<FormItem
           {...formItemLayout}
           label="商品库存："
           hasFeedback>
-          <InputNumber min={0} step={1} {...storeProps} type="store" placeholder="请输入商品库存" />
+          <InputNumber className={styles.storageInput}  min={0} step={1} {...storeProps} type="store" placeholder="请输入商品库存" />
         </FormItem>
 
         <FormItem
           {...formItemLayout}
           label="商品介绍：">
           <Input {...textareaProps} type="textarea" placeholder="请输入商品介绍" id="textarea" name="textarea" />
+          <Input/>
         </FormItem>
 
         <FormItem wrapperCol={{ span: 12, offset: 7 }}>
-          <Button type="primary" onClick={this.handleSubmit}>确定</Button>
-          &nbsp;&nbsp;&nbsp;
-          <Button type="ghost" onClick={this.handleReset}>重置</Button>
+          <Upload {...props}>
+              <Button type="ghost">
+              <Icon type="upload" /> 点击上传照片
+              </Button>
+          </Upload>
         </FormItem>
 
         <FormItem wrapperCol={{ span: 12, offset: 7 }}>
-        	<Upload {...props}>
-          		<Button type="ghost">
-            	<Icon type="upload" /> 点击上传照片
-          		</Button>
-        	</Upload>
+          <span>
+          <Button className={styles.buttonSummit} type="primary" onClick={this.handleSubmit}>确定</Button>
+          <Button className={styles.buttonReset} type="ghost" onClick={this.handleReset}>重置</Button>
+          </span>
         </FormItem>
 
       </Form>

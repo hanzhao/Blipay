@@ -68,30 +68,36 @@ class ShoppingOrderPage extends React.Component {
   render() {
 
     const contents = Array(10).fill({
-        productImage: pic,
-        productName: 'Tesla',
-        price: 100,
+        productImage: 'http://img11.360buyimg.com/n7/jfs/t2431/190/606622558/88271/c7f60a45/561dd18bN3a0afa3e.jpg',
+        productName: '惠普Z640工作站',
+        price: 48299,
         amount: 2,
         orderID: '09090909090',
-        totalCost: 200,
+        totalCost: 48299*2,
         status:0
     });
 
   const columns = [{
-      title: '宝贝',
+      title: '',
       dataIndex: 'productImage',
       key: 'productImage',
       render: (d) => {
-        return <img src={d} />
+        return <img src={d}  className={styles.itemImage}/>
       }
     }, {
-      title: '宝贝名称',
+      title: '宝贝',
       dataIndex: 'productName',
-      key: 'productName'
+      key: 'productName',
+      render: (d) => {
+           return <span className={styles.itemName}>{d}</span>;   
+      }
     }, {
       title: '单价',
       dataIndex: 'price',
       key: 'price',
+      render: (d) => {
+           return <span className={styles.itemPrice}>{Number(d).toFixed(2)}</span>;   
+      }
     }, {
       title: '数量',
       dataIndex: 'amount',
@@ -103,7 +109,10 @@ class ShoppingOrderPage extends React.Component {
     }, {
       title: '订单金额',
       dataIndex: 'totalCost',
-      key: 'totalCost'
+      key: 'totalCost',
+      render: (d) => {
+           return <span className={styles.itemTotalCost}>{Number(d).toFixed(2)}</span>;   
+      }
     }, {
       title: '订单状态',
       dataIndex: 'status',
@@ -112,13 +121,6 @@ class ShoppingOrderPage extends React.Component {
         return <Button type="ghost" onClick={this.toggleTopup} >确认付款</Button>
       }
     }];
-
-  const wrapperForOrderTable = (data) => {
-      for ( var i = 0; i <  data.length; i++ ) { 
-        data[i].price = Number(data[i].price).toFixed(2);
-      }
-      return data;
-  };
 
   const tableProps = {
     pagination: {
@@ -129,7 +131,7 @@ class ShoppingOrderPage extends React.Component {
 
     return (
     <div className={styles.container}>
-          <Table columns={columns} dataSource={wrapperForOrderTable(contents)} {...tableProps} />
+        <Table columns={columns} dataSource={contents} {...tableProps} />
         <br/>
         <br/>
         <FormModal title="确认支付订单"
