@@ -1,27 +1,27 @@
+.shoppingInfoCard {
+      width: 200px;
+      margin-top: 30px;
+      margin-bottom: 30px;
 
-  .itemImage{
-        width: 180px;
+      .itemImageDiv{
+        width: 100%;
       }
       .itemName{
-        font-size: 25px;
+        font-size: 20px;
         font-type: sans-serif;
         font-weight: bold;
       }
       .sellerName{
-        font-size: 15px;
+        font-size: 16px;
       }
       .price{
-        font-size: 20px;
+        padding-top: 0px;
+        font-size: 18px;
         font-weight: bold;
-        float: right;
+        float: left;
         color: #C23456;
       }
-.custom-image img {
-  display: block;
-}
-.custom-card {
-  padding: 10px 10px;
-}
-.custom-card p {
-  color: #999;
+      .button {
+        float: right;
+      }
 }

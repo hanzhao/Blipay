@@ -4,15 +4,9 @@
   padding-top: 30px;
   padding-right: 30px;
   padding-bottom: 30px;
-  .row {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 30px 0;
-    border-bottom: solid #aaa 1px;
-  }
+
   .upperHalf {
+    margin-bottom: 0px;
     .cascader {
       padding-left: 10px;
       width: 150px;
@@ -28,35 +22,13 @@
   }
 
   .lowerHalf {
-    clear: both;
-    .itemRecord {
-      width: 270px;
-      .itemImage{
-        width: 180px;
-      }
-      .itemName{
-        font-size: 25px;
-        font-type: sans-serif;
-        font-weight: bold;
-      }
-      .sellerName{
-        font-size: 15px;
-      }
-      .price{
-        font-size: 20px;
-        font-weight: bold;
-        float: right;
-        color: #C23456;
-      }
+    .row {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 30px 0;
+      border-bottom: solid #aaa 1px;
     }
   }
-}
-.custom-image img {
-  display: block;
-}
-.custom-card {
-  padding: 10px 16px;
-}
-.custom-card p {
-  color: #999;
 }

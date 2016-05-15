@@ -48,10 +48,10 @@ class ShoppingInfoPage extends React.Component {
        searchString
     }, handleSubmit } = this.props;
     const contents = Array(5).fill({ 
-        pic:'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png',
-        title: 'sea',
+        pic:'https://img.alicdn.com/bao/uploaded/i3/TB1WLCUMXXXXXaBXFXXXXXXXXXX_!!0-item_pic.jpg_430x430q90.jpg',
+        title: '高腰牛仔半身裙',
         price: '$12450.00',
-        publisher: 'woot'
+        publisher: '缔花之都'
     });
     return (
      <div className={styles.container}>
@@ -63,16 +63,18 @@ class ShoppingInfoPage extends React.Component {
           <Button type="ghost" className={styles.button}>搜索</Button>
         </nobr>
       </div>
-      <Row type="flex" justify="start" align="left">
-        {
-          contents.map((e,i) => (
-            <Col span={8}>
-            <ShoppingInfoTable className={styles.row} key={i} content={e} />
-            </Col>
-          ))
-        }   
-      </Row>
+      <div className={styles.lowerHalf}>
+        <Row type="flex" justify="start" align="left">
+          {
+            contents.map((e,i) => (
+              <Col span={8}>
+              <ShoppingInfoTable className={styles.row} key={i} content={e} />
+              </Col>
+            ))
+          }   
+        </Row>
         <Pagination simple defaultCurrent={2} total={12450} />
+      </div>
     </div>
     );
   }
