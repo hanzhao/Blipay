@@ -6,36 +6,20 @@
   padding-bottom: 30px;
   
   .upperHalf {
-    .itemRecord {
-      width: 850px;
-
-      .checkboxCol {
-        width: 30px;
-      }
-
-      .imgCol {
-        padding-right: 20px;
-      }
-
-       .img {
-        width: 130px;
-      }   
-
-      .itemNameCol {
-        width: 300px;
-        font-size: 25px;
-        font-type: sans-serif;
-      }
-
-      .amountCol{
-        width: 200px;
-      }
-      .priceCol{
-        width: 200px;
-        font-size: 20px;
-        font-weight: bold;
-        color: #C23456;
-      }
+    .itemName {
+          width: 300px;
+          font-type: sans-serif;
+    }
+    .itemImage {
+          width: 100px;
+    }   
+    .itemPrice{
+            font-weight: bold;
+            color: #eeeee;
+    }
+    .itemTotalCost{
+            font-weight: bold;
+            color: #C23456;
     }
   }
 
@@ -47,8 +31,10 @@
     background-color: #dddddd;
   }
 
-
   .lowerHalf {
+    float: right;
+    margin-top: 20px;
+    margin-bottom: 50px;
     .operationCol {
       width: 300px;
       .operationButton {
@@ -56,24 +42,20 @@
         margin-right: 10px;
       }
     }
-
     .totalCaption {
         width: 60px;
         font-size: 20px;
         font-weight: bold;
     }
-
     .total {
         width: 60px;
         font-size: 20px;
         font-weight: bold;
         color: #C23456;
     }
-
     .placeHolder {
       width: 200px;    
     }
-
     .payButton {
         padding-left: 30px;
         padding-right: 30px;

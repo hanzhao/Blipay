@@ -7,8 +7,6 @@ import { Pagination } from 'antd';
 import pic from './akarin.png'
 import styles from './styles';
 import FormModal from '../FormModal';
-
-
 import { Table } from 'antd';
 
 const topupPropsArray = [
