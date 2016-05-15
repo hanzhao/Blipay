@@ -1,36 +1,30 @@
 .container {
   background-color: #ffffff;
-  padding-left: 30px;
-  padding-top: 30px;
-  padding-right: 30px;
+  padding: 5%;
 
   .upperHalf {
     .info {
-      padding: 0 20px;
-      margin-bottom: 20px;
-      padding-bottom: 5px;
-      float: left;
-      width: 45%;
-      margin-right: 5%;
+      width: 50%;
       border-right: solid #aaa 1px;
+      padding: 0 5%;
+      float: left;
       .greeting {
-        font-size: 30px;
+        font-size: 1.6rem;
       }
       .lastLogin {
-        font-size: 15px;
-        margin-top: 15px;
+        font-size: 1rem;
+        line-height: 2.5rem;
       }
     }
     .balance {
-      float: left;
       width: 50%;
-      padding: 0 20px;
+      padding: 0 5%;
+      float: right;
       .balanceTitle {
-        margin-top: 5px;
-        font-size: 15px;
+        font-size: 1rem;
+        line-height: 2.5rem;
       }
       .balanceLower{
-        margin-top: 15px;
         .balanceValue {
           float: left;
           width: 40%;
@@ -38,39 +32,34 @@
             position: relative;
             bottom: 0;
             color: #c63655;
-            font-size: 30px
+            font-size: 1.6rem;
+            line-height: 2rem;
           }
           .balanceTail {
             position: relative;
-            bottom: 0;
             color: #c63655;
-            font-size: 20px;
+            font-size: 1rem;
           }
         }
         .balanceOperation {
-          padding-top: 10px;
+          height: 2rem;
           .withdrawal {
-            margin-left: 20px;
+            margin-left: 5%;
           }
         }
       }
     }
   }
   .horizontalBar {
-    clear: both;
-    position: relative;
-    margin-top: 20px;
     height: 1px;
     background-color: #aaaaaa;
+    clear: both;
   }
   .lowerHalf {
-    clear: both;
-    padding: 20px 20px;
+    padding: 3% 5%;
     .title {
-      font-size: 20px;
-    }
-    .tableWrapper {
-      margin-top: 15px;
+      font-size: 1.2rem;
+      line-height: 3rem;
     }
   }
 }
