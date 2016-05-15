@@ -48,13 +48,13 @@ let BasicDemo = React.createClass({
   },
 
   render() {
-    const { getFieldProps, getFieldError, isFieldValidating } = this.props.form;
-    const nameProps = getFieldProps('name', {
+    var { getFieldProps, getFieldError, isFieldValidating } = this.props.form;
+    var nameProps = getFieldProps('name', {
       rules: [
         { required: true, min: 5, message: '商品名至少为 5 个字符' },
       ],
     });
-    const priceProps = getFieldProps('price', {
+    var priceProps = getFieldProps('price', {
       validate: [{
         rules: [
           { required: true },
@@ -62,7 +62,7 @@ let BasicDemo = React.createClass({
         trigger: 'onBlur',
       }],
     });
-    const storeProps = getFieldProps('store', {
+    var storeProps = getFieldProps('store', {
       validate: [{
         rules: [
           { required: true },
@@ -70,7 +70,7 @@ let BasicDemo = React.createClass({
         trigger: 'onBlur',
       }],
     });
-    const textareaProps = getFieldProps('textarea', {
+    var textareaProps = getFieldProps('textarea', {
       rules: [
         { required: true, message: '真的不打算写点什么吗？' },
       ],
@@ -108,7 +108,6 @@ let BasicDemo = React.createClass({
           {...formItemLayout}
           label="商品介绍：">
           <Input {...textareaProps} type="textarea" placeholder="请输入商品介绍" id="textarea" name="textarea" />
-          <Input/>
         </FormItem>
 
         <FormItem wrapperCol={{ span: 12, offset: 7 }}>
