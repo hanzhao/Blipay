@@ -69,7 +69,7 @@ router.post('/item/update', Promise.coroutine(function* (req, res) {
   console.log('in /item/update');
   console.log(req.body);
   try {
-    const item = yield  Item.findOne({ where: { id: req.body.id } });
+    const item = yield Item.findOne({ where: { id: req.body.id } });
     // TODO: check item owner and authentication 
     if (!item) {
       throw new Error('Item Not Found.');
@@ -108,6 +108,49 @@ router.post('/order/new', Promise.coroutine(function* (req, res) {
   }
   catch (e) {
     return res.fail('in /order/new   ' + e.message);
+  }
+}));
+
+router.post('/order/delete', Promise.coroutine(function* (req, res) {
+  console.log('/order/delete');
+  console.log(req.body);
+  try {
+    const order = yield Order.findOne({ where: { id: req.body.orderId } });
+    if (!order) {
+      throw new Error('Order Not Found.');
+    }
+    yield order.destroy();
+    return res.success("Order deleted");
+  }
+  catch (e) {
+    return res.fail('in /order/delete   ' + e.message);
+  }
+}));
+
+router.post('/order/update', Promise.coroutine(function* (req, res) {
+  console.log('/order/update');
+  console.log(req.body);
+  try {
+    const order = yield Order.findOne({ where: { id: req.body.orderId } });
+    switch (req.body.op) {
+      case 'pay':
+        // TODO:
+        break;
+      case 'ship':
+        // TODO:
+        break;
+      case 'confirm':
+        // TODO:
+        break;
+      case 'reqRefund':
+        // TODO:
+        break;
+      default:
+        return res.fail('Illegal operation.');
+    }
+  }
+  catch (e) {
+    return res.fail('in /order/update   ' + e.message);
   }
 }));
 
