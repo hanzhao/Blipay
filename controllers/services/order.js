@@ -27,6 +27,7 @@ const createItem = Promise.coroutine(function* (sellerId, item) {
     });
     console.log('newItemId: ' + newItem.id);
     newItem.setSeller(user);
+    return newItem.id;
   }
   catch (e) {
     console.error('Error in service newItem:' + e.message);
@@ -69,7 +70,7 @@ const createOrder = Promise.coroutine(
         newOrder.destroy();
         throw new Error('price chaged.' + newCost + '::' + cost);
       }
-      if (count != newCount){
+      if (count != newCount) {
         newOrder.destroy();
         throw new Error('count dismatch!');
       }
@@ -77,7 +78,31 @@ const createOrder = Promise.coroutine(
     catch (e) {
       console.error('Error in service newOrder:' + require('util').inspect(e));
     }
-  });
+  }
+);
+
+const handleRefund = Promise.coroutine(function* (orderId, res, buyerRes, sellerRes) {
+  console.log('service: handleRefund:');
+  try {
+    const order = yield Order.findOne({where: {id:orderId}});
+    if(!order){
+      throw new Error('Fatal error, from B5 or data failure');
+    }
+    yield order.update({
+      buyerRes: buyerRes,
+      sellerRes: sellerRes,
+      status: 7
+    });
+    if(res){
+      // TODO: 
+    }
+    else{
+      
+    }
+  } catch (e) {
+    console.error('Error in service handleRefund:' + require('util').inspect(e));
+  }
+});
 
 module.exports = {
   createItem,

@@ -12,10 +12,12 @@ const Item = require('./item')(db);
 const Transaction = require('./transaction')(db);
 const Order = require('./order')(db);
 const OrderItem = require('./orderitem')(db);
+
 // 表关联
 Item.belongsTo(User, {
   as: 'seller'
 });
+
 Transaction.belongsTo(User);
 
 Order.belongsTo(User, {as: 'seller'});

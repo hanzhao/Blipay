@@ -23,6 +23,19 @@ module.exports = (db) => {
     },
     sellerTransId: {
       type: Sequelize.INTEGER
+    },
+    /* 退款理由等信息 */
+    buyerText: {
+      type: Sequelize.TEXT
+    },
+    sellerText: {
+      type: Sequelize.TEXT
+    },
+    buyerRes: {
+      type: Sequelize.TEXT
+    },
+    sellerRes: {
+      type: Sequelize.TEXT
     }
   });
 };

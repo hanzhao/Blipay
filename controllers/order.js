@@ -4,6 +4,8 @@ const Promise = require('bluebird');
 const User = require('../models').User;
 const Item = require('../models').Item;
 const Order = require('../models').Order;
+const RefundText = require('../models').RefundText;
+
 const Router = require('express').Router;
 const router = Router();
 const createItem = require('./services/order').createItem;
@@ -17,9 +19,9 @@ router.post('/item/new', Promise.coroutine(function* (req, res) {
   try {
     // TODO: Fetch user from session
     // createItem(req.session.userId, req.body);    
-    createItem(1, req.body);
+    const id = yield createItem(1, req.body);
     // return res.json({ code: 0 });
-    return res.success("");
+    return res.success("newItem id: " + id);
   }
   catch (e) {
     console.error('error in /item/new: \t' + e.message);
@@ -198,7 +200,44 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
         });
         break;
       case 'reqRefund':
+        if (order.status != 2 || order.status != 3) {
+          throw new Error('illegal operation');
+        }
         // TODO:
+        if (req.session.userId != order.buyerId) {
+          throw new Error('Auth Failed.');
+        }
+        if (!validate(req.body.refundReason)) {
+          throw new Error('Expect refundReason');
+        }
+        yield order.update({
+          buyerText: req.body.refundReason,
+          status: 4
+        });
+        break;
+      case 'refuseRefund':
+        if (order.status != 4) {
+          throw new Error('illegal operation');
+        }
+        // TODO:
+        if (!validate(req.body.refuseReason)) {
+          throw new Error('Expect refuseReason');
+        }
+        yield order.update({
+          sellerText: req.body.refuseReason,
+          status: 6
+        });
+        // TODO: Call B5
+        break;
+      case 'confirmRefund':
+        if (order.status != 4) {
+          throw new Error('illegal operation');
+        }
+        // TODO:
+        const refundTrans = requestReceive(order.buyerId, order.cost);
+        yield order.update({
+          status: 5
+        });
         break;
       default:
         return res.fail('Illegal operation.');
