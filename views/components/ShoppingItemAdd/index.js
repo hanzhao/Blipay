@@ -42,6 +42,14 @@ let BasicDemo = React.createClass({
         console.log('Errors in form!!!');
         return;
       }
+      let res=await ajax.post('/item/new', 
+        {
+          name: 'testItem',
+          price: 23.32,
+          remain: 1,
+          thumb: 'a.com/a'
+        } );
+      console.log(JSON.stringify(res));
       console.log('Submit!!!');
       console.log(values);
     });
@@ -124,11 +132,11 @@ let BasicDemo = React.createClass({
           <Button className={styles.buttonReset} type="ghost" onClick={this.handleReset}>重置</Button>
           </span>
         </FormItem>
-
       </Form>
     );
   },
 });
+
 
 
 BasicDemo = createForm()(BasicDemo);
