@@ -89,6 +89,7 @@ let BasicDemo = React.createClass({
     };
     return (
       
+      <div className={styles.container}>
       <Form horizontal form={this.props.form}>
         <FormItem
           {...formItemLayout}
@@ -133,6 +134,7 @@ let BasicDemo = React.createClass({
           </span>
         </FormItem>
       </Form>
+      </div>
     );
   },
 });

@@ -3,6 +3,7 @@ import styles from './styles';
 import { Button , Card ,Input} from 'antd';
 import { InputNumber } from 'antd';
 
+
 class ShoppingItenManageTable extends React.Component {
   render() {
     return (
