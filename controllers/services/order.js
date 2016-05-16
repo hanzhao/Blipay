@@ -22,7 +22,8 @@ const createItem = Promise.coroutine(function* (sellerId, item) {
       name: item.name,
       price: item.price,
       remain: item.remain,
-      thumb: item.thumb
+      thumb: item.thumb,
+      description: item.description
     });
     console.log('newItemId: ' + newItem.id);
     newItem.setSeller(user);
@@ -47,7 +48,10 @@ const createOrder = Promise.coroutine(
         cost: cost,
         status: 0
       });
+      yield newOrder.setSeller(seller);
+      yield newOrder.setBuyer(buyer);
       let newCost = 0;
+      let newCount = 0;
       for (var i = 0; i < items.length; i++) {
         const element = items[i];
         const item = yield Item.findOne({ where: { id: element.itemId } });
@@ -58,11 +62,16 @@ const createOrder = Promise.coroutine(
           count: element.count,
           cost: item.price * element.count
         });
-        newCost += item.price * element.count;
+        newCost += item.price.toFixed(2) * element.count;
+        newCount += element.count;
       }
       if (newCost.toFixed(2) != cost.toFixed(2)) {
         newOrder.destroy();
         throw new Error('price chaged.' + newCost + '::' + cost);
+      }
+      if (count != newCount){
+        newOrder.destroy();
+        throw new Error('count dismatch!');
       }
     }
     catch (e) {

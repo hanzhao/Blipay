@@ -7,7 +7,7 @@ proxy.use(router);
 describe('POST /item/new', () => {
   const newItem = {
     name: 'testItem',
-    price: 23.32,
+    price: 11,
     remain: 1,
     thumb: 'a.com/a'
   };
@@ -16,7 +16,7 @@ describe('POST /item/new', () => {
   };
   const listItem = {
     name: 'listtestItem',
-    price: 23.31,
+    price: 22,
     remain: 11,
     thumb: 'a.com/a'
   };
@@ -43,7 +43,6 @@ describe('POST /item/update', () => {
   const listItem_update = {
     id: 2,
     name: 'editedlisttestItem',
-    price: 23.31,
     remain: 11,
     thumb: 'a.com/a'
   };
@@ -57,22 +56,21 @@ describe('POST /item/update', () => {
 });
 
 describe('POST /item/item_list', () => {
-  const listItem = {
-    name: 'listtestItem',
-    price: 23.31,
-    remain: 11,
-    thumb: 'a.com/a'
-  };
-  const newItem = {
-    name: 'testItem',
-    price: 23.32,
-    remain: 1,
-    thumb: 'a.com/a'
-  };
   const id_query = {
     id: 2
   };
-
+  const newItem = {
+    name: 'testItem',
+    price: 11,
+    remain: 1,
+    thumb: 'a.com/a'
+  };
+  const listItem = {
+    name: 'listtestItem',
+    price: 22,
+    remain: 11,
+    thumb: 'a.com/a'
+  };
   const filter_query = {
     sellerId: 1,
     head: 0,
@@ -99,45 +97,14 @@ describe('POST /item/item_list', () => {
     request(proxy)
       .post('/item/item_list')
       .send(id_query)
-      .expect({ items: [listItem] })
+      .expect({ code: 0, data: { items: [listItem] } })
       .expect(200, done);
   });
   it('return itemList', (done) => {
     request(proxy)
       .post('/item/item_list')
       .send(filter_query)
-      .expect({ items: [newItem, listItem] })
-      .expect(200, done);
-  });
-});
-
-
-
-describe('POST /order/new', () => {
-  const newOrder = {
-    sellerId: 1,
-    buyerId: 1,
-    count: 2,
-    cost: 46.63,
-    items: [
-      {
-        itemId: 1,
-        count: 1
-      },
-      {
-        itemId: 2,
-        count: 1
-      }
-    ]
-  };
-  const newOrderRes = {
-    code: 0
-  };
-  it('returns code 0 if success', (done) => {
-    request(proxy)
-      .post('/order/new')
-      .send(newOrder)
-      .expect(newOrderRes)
+      .expect({ code: 0, data: { items: [newItem, listItem] } })
       .expect(200, done);
   });
 });

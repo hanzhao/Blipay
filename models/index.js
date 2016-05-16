@@ -19,7 +19,7 @@ Item.belongsTo(User, {
 Transaction.belongsTo(User);
 
 Order.belongsTo(User, {as: 'seller'});
-Order.belongsTo(User, {as: 'customer'});
+Order.belongsTo(User, {as: 'buyer'});
 Order.belongsToMany(Item, {through: OrderItem});
 
 const report = (msg) => {
