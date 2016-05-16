@@ -1,34 +1,15 @@
-.buttonSummit{
-  margin: 10px;
-}
-.buttonReset{
-  margin: 10px; 
-}
-.priceInput{
-  width:300px;
-}
-.storageInput{
-  width:300px;
-}
-
-.ant-advanced-search-form {
-  padding: 16px 8px;
-  background: #f8f8f8;
-  border: 1px solid #d9d9d9;
-  border-radius: 6px;
-}
-
-/* 由于输入标签长度不确定，所以需要微调使之看上去居中 */
-.ant-advanced-search-form > .row {
-  position: relative;
-  left: -6px;
-}
-
-.ant-advanced-search-form .ant-btn + .ant-btn {
-  margin-left: 8px;
-}
-.upload-list-inline .ant-upload-list-item {
-  display: inline-block;
-  width: 200px;
-  margin-right: 8px;
+.container{
+  margin-top: 30px;
+  .buttonSummit{
+    margin: 10px;
+  }
+  .buttonReset{
+    margin: 10px; 
+  }
+  .priceInput{
+    width:300px;
+  }
+  .storageInput{
+    width:300px;
+  }
 }
