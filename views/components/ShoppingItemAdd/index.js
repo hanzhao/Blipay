@@ -3,6 +3,7 @@ import Container from '../Container';
 import ShoppingMenu from '../ShoppingMenu';
 import { Form, Input, Row, Col, Button,  InputNumber,DatePicker } from 'antd';
 import { Upload, Icon, Modal } from 'antd';
+import ajax from '../../common/ajax';
 import styles from './styles';
 const FormItem = Form.Item;
 const createForm = Form.create;
@@ -37,21 +38,23 @@ let BasicDemo = React.createClass({
 
   handleSubmit(e) {
     e.preventDefault();
-    this.props.form.validateFields((errors, values) => {
+    this.props.form.validateFields(async(errors, values) => {
       if (!!errors) {
         console.log('Errors in form!!!');
         return;
       }
-      let res=await ajax.post('/item/new', 
-        {
-          name: 'testItem',
-          price: 23.32,
-          remain: 1,
-          thumb: 'a.com/a'
-        } );
-      console.log(JSON.stringify(res));
-      console.log('Submit!!!');
-      console.log(values);
+      else{
+        let res=await ajax.post('/item/new', 
+          {
+            name:  name ,
+            price: 23.32,
+            remain: 1,
+            thumb: 'https://os.alipayobjects.com/rmsportal/NDbkJhpzmLxtPhB.png',
+            description: ''
+          } );
+          console.log('Submit!!!');
+          console.log(values);
+      }
     });
   },
 
@@ -89,7 +92,6 @@ let BasicDemo = React.createClass({
     };
     return (
       
-      <div className={styles.container}>
       <Form horizontal form={this.props.form}>
         <FormItem
           {...formItemLayout}
@@ -134,7 +136,6 @@ let BasicDemo = React.createClass({
           </span>
         </FormItem>
       </Form>
-      </div>
     );
   },
 });
