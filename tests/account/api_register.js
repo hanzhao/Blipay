@@ -1,6 +1,7 @@
 const request = require('supertest');
 const proxy = require('../helper');
 const router = require('../../controllers/account');
+const User = require('../../models').User;
 
 proxy.use(router);
 
@@ -42,5 +43,21 @@ describe('POST /account/register', () => {
         } 
       })
       .expect(200, done);
+  });
+
+  before(() => {
+    User.destroy({
+      where: {
+        userName: 'user2'
+      }
+    })
+  });
+
+  after(() => {
+    User.destroy({
+      where: {
+        userName: 'user2'
+      }
+    })
   });
 });

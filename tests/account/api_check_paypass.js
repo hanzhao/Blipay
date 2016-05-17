@@ -7,17 +7,17 @@ proxy.use(router);
 describe('GET /account/check_paypass', () => {
 
   const correctInfo = {
-    userName: 'user1',
+    userId: 10001,
     payPass: 'paypass1'
   };
 
   const noUser = {
-    userName: 'user3',
+    userId: 10003,
     payPass: 'paypass1'
   };
 
   const wrongPaypass = {
-    userName: 'user1',
+    userId: 10001,
     payPass: 'paypass2'
   };
 

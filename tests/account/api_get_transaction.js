@@ -7,18 +7,22 @@ proxy.use(router);
 describe('GET /account/get_transaction', () => {
 
   const user = {
-    userName: 'user1'
+    userId: 10001,
+    queryStartDate: '2016-05-14 19:04:14',
+    queryEndDate: '2016-05-14 19:07:56'
   };
 
   const userNew = {
-    userName: 'user3'
+    userId: 10003,
+    queryStartDate: '2016-05-17 06:39:36',
+    queryEndDate: '2016-05-17 06:40:56'
   };
 
   const userRes = {
     code: 0,
     data: {
       code: 0,
-      transaction:{}
+      transaction:'???'
     }
   };
 

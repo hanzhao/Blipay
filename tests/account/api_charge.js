@@ -7,12 +7,12 @@ proxy.use(router);
 describe('POST /account/charge', () => {
 
   const user = {
-    userName: 'user1',
+    userId: 10001,
     amount: 1
   };
 
   const userNew = {
-    userName: 'user3',
+    userId: 10003,
     amount: 1
   };
 

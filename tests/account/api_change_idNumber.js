@@ -4,26 +4,21 @@ const router = require('../../controllers/account');
 
 proxy.use(router);
 
-describe('POST /account/change_userinfo', () => {
+describe('POST /account/change_idNumber', () => {
 
   const user = {
-    userName: 'user1',
-    realName: 'realName1',
-    idNumber: 'idNumber1',
-    email: 'email1',
-    phone: 'phone1'
+    userId: 10001,
+    idNumber: 'idNumber1'
   };
 
   const userNew = {
-    userName: 'user3',
-    idNumber: 'idNumber3',
-    email: 'email3',
-    phone: 'phone3'
+    userId: 10003,
+    idNumber: 'idNumber3'
   };
 
   it('returns code 0 on successful user information change', (done) => {
     request(proxy)
-      .post('/account/change_userinfo')
+      .post('/account/change_idNumber')
       .send(user)
       .expect({ 
         code: 0, 
@@ -34,9 +29,9 @@ describe('POST /account/change_userinfo', () => {
       .expect(200, done);
   });
 
-  it('returns code -1 if userName exists', (done) => {
+  it('returns code -1 if userName does not exist', (done) => {
     request(proxy)
-      .post('/account/change_userinfo')
+      .post('/account/change_idNumber')
       .send(userNew)
       .expect({ 
         code: -1,

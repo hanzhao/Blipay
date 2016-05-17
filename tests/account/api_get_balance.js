@@ -7,11 +7,11 @@ proxy.use(router);
 describe('GET /account/get_balance', () => {
 
   const user = {
-    userName: 'user1'
+    userId: 10001,
   };
 
   const userNew = {
-    userName: 'user3'
+    userId: 10003,
   };
 
   const userRes = {

@@ -54,7 +54,7 @@ router.post('/account/register', (req, res) => {
     });
   })*/
   .catch((err) => {
-    console.error('Error occurs in /accout/register with following message.\n' +
+    console.error('Error occurs in /account/register with following message.\n' +
                  err.message);
     return res.fail({
       code: -2
@@ -91,7 +91,7 @@ router.post('/account/login', (req, res) => {
     }
   })
   .catch((err) => {
-    console.error('Error occurs in /accout/login with following message.\n' +
+    console.error('Error occurs in /account/login with following message.\n' +
                  err.message);
     return res.fail({
       code: -2
@@ -199,7 +199,7 @@ router.post('/account/change_userName', (req, res) => {
     });
   })
   .catch((err) => {
-    console.error('Error occurs in /accout/change_userName with following message.\n' +
+    console.error('Error occurs in /account/change_userName with following message.\n' +
                  err.message);
     return res.fail({
       code: -2
@@ -235,7 +235,7 @@ router.post('/account/change_realName', (req, res) => {
     });
   })
   .catch((err) => {
-    console.error('Error occurs in /accout/change_realName with following message.\n' +
+    console.error('Error occurs in /account/change_realName with following message.\n' +
                  err.message);
     return res.fail({
       code: -2
@@ -271,7 +271,7 @@ router.post('/account/change_idNumber', (req, res) => {
     });
   })
   .catch((err) => {
-    console.error('Error occurs in /accout/change_idNumber with following message.\n' +
+    console.error('Error occurs in /account/change_idNumber with following message.\n' +
                  err.message);
     return res.fail({
       code: -2
@@ -307,7 +307,7 @@ router.post('/account/change_email', (req, res) => {
     });
   })
   .catch((err) => {
-    console.error('Error occurs in /accout/change_email with following message.\n' +
+    console.error('Error occurs in /account/change_email with following message.\n' +
                  err.message);
     return res.fail({
       code: -2
@@ -343,7 +343,7 @@ router.post('/account/change_phone', (req, res) => {
     });
   })
   .catch((err) => {
-    console.error('Error occurs in /accout/change_phone with following message.\n' +
+    console.error('Error occurs in /account/change_phone with following message.\n' +
                  err.message);
     return res.fail({
       code: -2
@@ -377,7 +377,7 @@ router.get('/account/get_userinfo', (req, res) => {
     }
   })
   .catch((err) => {
-    console.error('Error occurs in /accout/get_userinfo with following message.\n' +
+    console.error('Error occurs in /accountn/get_userinfo with following message.\n' +
                  err.message);
     return res.fail({
       code: -2
@@ -405,7 +405,7 @@ router.post('/account/change_paypass', (req, res) => {
                             config.paySaltPos)
     }, {
       where: {
-        userName: req.body.userName
+        id: req.body.userId
       }
     })
     .then(() => {
@@ -415,7 +415,7 @@ router.post('/account/change_paypass', (req, res) => {
     });
   })
   .catch((err) => {
-    console.error('Error occurs in /accout/register with following message.\n' +
+    console.error('Error occurs in /account/register with following message.\n' +
                  err.message);
     return res.fail({
       code: -2
@@ -444,7 +444,7 @@ router.get('/account/get_balance', (req, res) => {
     }
   })
   .catch((err) => {
-    console.error('Error occurs in /accout/get_balance with following message.\n' +
+    console.error('Error occurs in /account/get_balance with following message.\n' +
                  err.message);
     return res.fail({
       code: -2
@@ -508,7 +508,7 @@ router.post('/account/charge', (req, res) => {
     }*/
   })
   .catch((err) => {
-    console.error('Error occurs in /accout/charge with following message.\n' +
+    console.error('Error occurs in /account/charge with following message.\n' +
                  err.message);
     return res.fail({
       code: -2
@@ -567,7 +567,7 @@ router.post('/account/withdraw', (req, res) => {
     });
   })
   .catch((err) => {
-    console.error('Error occurs in /accout/withdraw with following message.\n' +
+    console.error('Error occurs in /account/withdraw with following message.\n' +
                  err.message);
     return res.fail({
       code: -2
@@ -606,7 +606,7 @@ router.get('/account/get_transaction', (req, res) => {
     }
   })
   .catch((err) => {
-    console.error('Error occurs in /accout/get_transaction with following message.\n' +
+    console.error('Error occurs in /account/get_transaction with following message.\n' +
                  err.message);
     return res.fail({
       code: -2
