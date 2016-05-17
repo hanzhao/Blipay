@@ -1,4 +1,5 @@
 const User = require('../../models').User;
+const Transaction = require('../../models').Transaction;
 const Promise = require('bluebird');
 const config = require('../../config/account');
 const crypto = require('crypto');
@@ -44,19 +45,28 @@ const requestPay = (userId, amount) => {
       if (user.balance < amount) {
         throw new Error('balance is not enough.');
       }
-      User.update({
-        balance: user.balance - amount
-      }, {
-        where: {
-          id: userId
-        }
-      }).then((res) => {
-        if(res) {
-          return resolve(user.balance - amount);
-        } else {
-          return reject(new Error('error updating database.'));
-        }
-      });
+      const newTransaction = {
+        userId: user.id,
+        amount: amount,
+        type: 3,
+        status: 1
+      }
+      Transaction.create(newTransaction)
+      .then(() => {
+        User.update({
+          balance: user.balance - amount
+        }, {
+          where: {
+            id: userId
+          }
+        }).then((res) => {
+          if(res) {
+            return resolve(user.balance - amount);
+          } else {
+            return reject(new Error('error updating database.'));
+          }
+        });
+      })
     }).catch((err) => {
       return reject(err);
     });
@@ -76,19 +86,28 @@ const requestReceive = (userId, amount) => {
       if (!user) {
         throw new Error('userId is invalid.');
       }
-      User.update({
-        balance: user.balance + amount
-      }, {
-        where: {
-          id: userId
-        }
-      }).then((res) => {
-        if(res) {
-          return resolve(user.balance + amount);
-        } else {
-          return reject(new Error('error updating database.'));
-        }
-      });
+      const newTransaction = {
+        userId: user.id,
+        amount: amount,
+        type: 4,
+        status: 1
+      }
+      Transaction.create(newTransaction)
+      .then(() => {
+        User.update({
+          balance: user.balance + amount
+        }, {
+          where: {
+            id: userId
+          }
+        }).then((res) => {
+          if(res) {
+            return resolve(user.balance + amount);
+          } else {
+            return reject(new Error('error updating database.'));
+          }
+        });
+      })
     }).catch((err) => {
       return reject(err);
     });

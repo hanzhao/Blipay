@@ -24,7 +24,8 @@ describe('POST /accout/login', () => {
   const succRes = {
     code: 0,
     data: {
-      code: 0
+      code: 0,
+      userId: 5
     }
   };
   

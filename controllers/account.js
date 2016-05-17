@@ -81,7 +81,8 @@ router.post('/account/login', (req, res) => {
           user.loginSalt, 
           config.loginSaltPos)  === user.loginPass) {
       return res.success({
-        code: 0
+        code: 0,
+        userId: user.id
       });
     } else {
       res.fail({
@@ -90,7 +91,7 @@ router.post('/account/login', (req, res) => {
     }
   })
   .catch((err) => {
-    console.error('Error occurs in /accout/register with following message.\n' +
+    console.error('Error occurs in /accout/login with following message.\n' +
                  err.message);
     return res.fail({
       code: -2
@@ -103,7 +104,7 @@ router.get('/account/check_paypass', (req, res) => {
   console.log(req.query);
   User.findOne({
     where: {
-      userName: req.query.userName
+      id: req.query.userId
     }
   }).then((user) => {
     if (!user) {
@@ -126,7 +127,7 @@ router.get('/account/check_paypass', (req, res) => {
       });
     }
   }).catch((err) => {
-    console.error('check_username: fail\n' + err.message);
+    console.error('check_paypass: fail\n' + err.message);
     return res.fail({
       code: -2
     });
@@ -170,12 +171,12 @@ router.post('/account/logout', (req, res) => {
   }
 });
 
-router.post('/account/change_userinfo', (req, res) => {
-  console.log('in /account/change_userinfo');
+router.post('/account/change_userName', (req, res) => {
+  console.log('in /account/change_userName');
   console.log(req.body);
   User.findOne({
     where: {
-      userName: req.body.userName
+      id: req.body.userId
     }
   })
   .then((user) => {
@@ -185,13 +186,10 @@ router.post('/account/change_userinfo', (req, res) => {
       });
     }
     User.update({
-      realName: req.body.realName,
-      idNumber: req.body.idNumber, 
-      email: req.body.email, 
-      phone: req.body.phone
+      userName: req.body.userName
     }, {
       where: {
-        userName: req.body.userName
+        id: req.body.userId
       }
     })
     .then(() => {
@@ -201,7 +199,151 @@ router.post('/account/change_userinfo', (req, res) => {
     });
   })
   .catch((err) => {
-    console.error('Error occurs in /accout/register with following message.\n' +
+    console.error('Error occurs in /accout/change_userName with following message.\n' +
+                 err.message);
+    return res.fail({
+      code: -2
+    });
+  });
+});
+
+router.post('/account/change_realName', (req, res) => {
+  console.log('in /account/change_realName');
+  console.log(req.body);
+  User.findOne({
+    where: {
+      id: req.body.userId
+    }
+  })
+  .then((user) => {
+    if (!user) {
+      return res.fail({
+        code: -1
+      });
+    }
+    User.update({
+      realName: req.body.realName
+    }, {
+      where: {
+        id: req.body.userId
+      }
+    })
+    .then(() => {
+      return res.success({
+        code: 0
+      });
+    });
+  })
+  .catch((err) => {
+    console.error('Error occurs in /accout/change_realName with following message.\n' +
+                 err.message);
+    return res.fail({
+      code: -2
+    });
+  });
+});
+
+router.post('/account/change_idNumber', (req, res) => {
+  console.log('in /account/change_idNumber');
+  console.log(req.body);
+  User.findOne({
+    where: {
+      id: req.body.userId
+    }
+  })
+  .then((user) => {
+    if (!user) {
+      return res.fail({
+        code: -1
+      });
+    }
+    User.update({
+      idNumber: req.body.idNumber
+    }, {
+      where: {
+        id: req.body.userId
+      }
+    })
+    .then(() => {
+      return res.success({
+        code: 0
+      });
+    });
+  })
+  .catch((err) => {
+    console.error('Error occurs in /accout/change_idNumber with following message.\n' +
+                 err.message);
+    return res.fail({
+      code: -2
+    });
+  });
+});
+
+router.post('/account/change_email', (req, res) => {
+  console.log('in /account/change_email');
+  console.log(req.body);
+  User.findOne({
+    where: {
+      id: req.body.userId
+    }
+  })
+  .then((user) => {
+    if (!user) {
+      return res.fail({
+        code: -1
+      });
+    }
+    User.update({
+      email: req.body.email
+    }, {
+      where: {
+        id: req.body.userId
+      }
+    })
+    .then(() => {
+      return res.success({
+        code: 0
+      });
+    });
+  })
+  .catch((err) => {
+    console.error('Error occurs in /accout/change_email with following message.\n' +
+                 err.message);
+    return res.fail({
+      code: -2
+    });
+  });
+});
+
+router.post('/account/change_phone', (req, res) => {
+  console.log('in /account/change_phone');
+  console.log(req.body);
+  User.findOne({
+    where: {
+      id: req.body.userId
+    }
+  })
+  .then((user) => {
+    if (!user) {
+      return res.fail({
+        code: -1
+      });
+    }
+    User.update({
+      phone: req.body.phone
+    }, {
+      where: {
+        id: req.body.userId
+      }
+    })
+    .then(() => {
+      return res.success({
+        code: 0
+      });
+    });
+  })
+  .catch((err) => {
+    console.error('Error occurs in /accout/change_phone with following message.\n' +
                  err.message);
     return res.fail({
       code: -2
@@ -214,7 +356,7 @@ router.get('/account/get_userinfo', (req, res) => {
   console.log(req.query);
   User.findOne({
     where: {
-      userName: req.query.userName
+      id: req.query.userId
     }
   })
   .then((user) => {
@@ -225,6 +367,7 @@ router.get('/account/get_userinfo', (req, res) => {
     } else {
       return res.success({
         code: 0,
+        userId: user.id,
         userName: user.userName,
         realName: user.realName,
         idNumber: user.idNumber, 
@@ -234,7 +377,7 @@ router.get('/account/get_userinfo', (req, res) => {
     }
   })
   .catch((err) => {
-    console.error('Error occurs in /accout/register with following message.\n' +
+    console.error('Error occurs in /accout/get_userinfo with following message.\n' +
                  err.message);
     return res.fail({
       code: -2
@@ -247,7 +390,7 @@ router.post('/account/change_paypass', (req, res) => {
   console.log(req.body);
   User.findOne({
     where: {
-      userName: req.body.userName
+      id: req.body.userId
     }
   })
   .then((user) => {
@@ -285,7 +428,7 @@ router.get('/account/get_balance', (req, res) => {
   console.log(req.query);
   User.findOne({
     where: {
-      userName: req.query.userName
+      id: req.query.userId
     }
   })
   .then((user) => {
@@ -301,7 +444,7 @@ router.get('/account/get_balance', (req, res) => {
     }
   })
   .catch((err) => {
-    console.error('Error occurs in /accout/register with following message.\n' +
+    console.error('Error occurs in /accout/get_balance with following message.\n' +
                  err.message);
     return res.fail({
       code: -2
@@ -314,7 +457,7 @@ router.post('/account/charge', (req, res) => {
   console.log(req.body);
   User.findOne({
     where: {
-      userName: req.body.userName
+      id: req.body.userId
     }
   })
   .then((user) => {
@@ -378,7 +521,7 @@ router.post('/account/withdraw', (req, res) => {
   console.log(req.body);
   User.findOne({
     where: {
-      userName: req.body.userName
+      id: req.body.userId
     }
   })
   .then((user) => {
@@ -437,7 +580,7 @@ router.get('/account/get_transaction', (req, res) => {
   console.log(req.query);
   User.findOne({
     where: {
-      userName: req.query.userName
+      id: req.query.userId
     }
   })
   .then((user) => {
@@ -448,7 +591,10 @@ router.get('/account/get_transaction', (req, res) => {
     } else {
       Transaction.findAll({
         where: {
-          userID: user.id
+          userID: user.id,
+          createdAt: {
+            $between: [req.query.queryStartDate, req.query.queryEndDate]
+          }
         }
       })
       .then((tran) => {
@@ -460,7 +606,7 @@ router.get('/account/get_transaction', (req, res) => {
     }
   })
   .catch((err) => {
-    console.error('Error occurs in /accout/register with following message.\n' +
+    console.error('Error occurs in /accout/get_transaction with following message.\n' +
                  err.message);
     return res.fail({
       code: -2

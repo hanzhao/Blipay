@@ -18,6 +18,7 @@ describe('GET /account/get_userinfo', () => {
     code: 0,
     data: {
       code: 0,
+      userId: 5,
       userName: 'user1',
       realName: 'realName1',
       idNumber: 'idNumber1', 
