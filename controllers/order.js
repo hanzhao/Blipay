@@ -51,17 +51,20 @@ router.post('/item/item_list', Promise.coroutine(function* (req, res) {
     if (validate(req.body.sellerId)) {
       filter.sellerId = req.body.sellerId;
     }
-    if (validate(req.body.filter.price)) {
-      filter.price = req.body.filter.price;
-    }
-    if (validate(req.body.filter.time)) {
-      filter.createdAt = req.body.filter.time;
-    }
-    if (validate(req.body.filter.remain)) {
-      filter.remain = req.body.filter.remain;
-    }
-    if (validate(req.body.filter.name)) {
-      filter.name = req.body.filter.name;
+    if (validate(req.body.filter)) {
+
+      if (validate(req.body.filter.price)) {
+        filter.price = req.body.filter.price;
+      }
+      if (validate(req.body.filter.time)) {
+        filter.createdAt = req.body.filter.time;
+      }
+      if (validate(req.body.filter.remain)) {
+        filter.remain = req.body.filter.remain;
+      }
+      if (validate(req.body.filter.name)) {
+        filter.name = req.body.filter.name;
+      }
     }
     return res.success({
       items: yield Item.findAll({
