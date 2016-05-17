@@ -6,31 +6,28 @@ proxy.use(router);
 
 describe('POST /accout/login', () => {
 
-  /*
   const correctInfo = {
-    userName: 'xxx',
-    loginPass: 'xxxx1111'
+    userName: 'user1',
+    loginPass: 'loginpass1'
   };
-  */
 
   const wrongPassword = {
-    userName: 'xxx',
-    loginPass: 'xxxx111'
+    userName: 'user1',
+    loginPass: 'loginpass2'
   };
 
   const noUser = {
-    userName: 'jkawjkcvnjkasnk',
-    loginPass: 'xxxxx'
+    userName: 'user3',
+    loginPass: 'loginpass1'
   };
 
-  /*
   const succRes = {
     code: 0,
     data: {
-      code: 0
+      code: 0,
+      userId: 10001
     }
   };
-  */
   
   const noUserRes = {
     code: -1,
@@ -46,7 +43,6 @@ describe('POST /accout/login', () => {
     }
   };
 
-  /*
   it('returns code 0 on successful login', (done) => {
     request(proxy)
       .post('/account/login')
@@ -54,7 +50,6 @@ describe('POST /accout/login', () => {
       .expect(succRes)
       .expect(200, done);
   });
-  */
   
   it('returns code -3 if login password is wrong', (done) => {
     request(proxy)

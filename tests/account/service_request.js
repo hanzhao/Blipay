@@ -10,30 +10,34 @@ const requestReceive = require(
 describe('service requestReceive', () => {
 
   it('should resolve and return updated balance', () => {
-    return requestReceive(1, 10).should.eventually.equal(10);
+    return requestReceive(10001, 10).should.eventually.equal(11);
   });
 
   it('should reject if userId is invalid', () => {
-    return requestReceive(-1, 10).should.be.rejected;
+    return requestReceive(10003, 10).should.be.rejected;
   });
 
   it('should reject if amount is not a valid number', () => {
-    return requestReceive(1, 'a').should.be.rejected;
+    return requestReceive(10001, 'a').should.be.rejected;
   });
 });
 
 describe('service requestPay', function() {
 
   it('should resolve and return updated balance', () => {
-    return requestPay(1, 10).should.eventually.equal(0);
+    return requestPay(10001, 10).should.eventually.equal(1);
+  });
+
+  it('should reject if balance is not enough', () => {
+    return requestPay(10001, 6666).should.be.rejected;
   });
   
   it('should reject if userId is invalid', () => {
-    return requestPay(-1, 10).should.be.rejected;
+    return requestPay(10003, 10).should.be.rejected;
   });
 
   it('should reject if amount is not a valid number', () => {
-    return requestPay(1, 'a').should.be.rejected;
+    return requestPay(10001, 'a').should.be.rejected;
   });
   
 });
