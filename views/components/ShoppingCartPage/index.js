@@ -77,6 +77,14 @@ class ShoppingCartPage extends React.Component {
       }
     };
 
+    var total_price = 0;
+    for (var i in contents) {
+      var content = contents[i];
+      total_price += content.price * content.amount;
+    }
+    console.log(total_price);
+    total_price = total_price.toFixed(2);
+    
     return (
     <div className={styles.container}>
     <div className={styles.upperHalf}>
@@ -87,9 +95,9 @@ class ShoppingCartPage extends React.Component {
     </div>
 
     <div className={styles.lowerHalf}>
-        <span className={styles.lowerLeft}><Button className={styles.operationButton} type="ghost">全选 </Button> 
-        <Button className={styles.operationButton} type="ghost">删除 </Button></span>
-        <span className={styles.lowerRight}><span className={styles.totalCaption}>总价</span><span className={styles.total}>$1245.00</span>
+        <span className={styles.lowerLeft}><Button className={styles.operationButton} type="ghost">全选</Button> 
+        <Button className={styles.operationButton} type="ghost">删除</Button></span>
+        <span className={styles.lowerRight}><span className={styles.totalCaption}>总价</span><span className={styles.total}>${total_price}</span>
         <Button type="primary" className={styles.payButton}>结算</Button></span>
     </div>
    </div>
