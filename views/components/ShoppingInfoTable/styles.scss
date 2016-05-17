@@ -1,20 +1,18 @@
 .shoppingInfoCard {
-      width: 200px;
-      margin-top: 30px;
-      margin-bottom: 30px;
+      width: 80%;
+      margin: 2rem 10%;
 
       .itemImageDiv{
         width: 100%;
       }
       .itemName{
-        font-size: 16px;
+        font-size: 1rem;
         font-type: sans-serif;
       }
       .sellerName{
       }
       .price{
-        padding-top: 0px;
-        font-size: 18px;
+        font-size: 1rem;
         font-weight: bold;
         float: left;
         color: #C23456;
