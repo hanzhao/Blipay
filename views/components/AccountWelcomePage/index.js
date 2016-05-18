@@ -6,7 +6,31 @@ import { Button } from 'antd';
 import AccountRecordTable from '../AccountRecordTable';
 import FormModal from '../FormModal';
 import styles from './styles';
+import { connect } from 'react-redux';
 import ajax from '../../common/ajax';
+import { submittopup, toggleTopup }
+    from '../../redux/modules/account/submittopup';
+import { submitwithdrawal, toggleWithDrawal }
+    from '../../redux/modules/account/submitwithdrawal';
+import { getUserId, getUserName,
+  getBalance, getRecentTransaction } from '../../redux/modules/account/login';
+import store from '../../redux/store';
+
+
+const userId = getUserId(store.getState());
+const userName = getUserName(store.getState()); // 获取用户名
+let balance = getBalance(store.getState()); // 获取余额
+let integerBalance = Math.floor(balance); // 获取余额整数部分
+// 获取余额小数部分，固定长度为2位
+let fractionBalance = (balance % 1).toFixed(2).toString().substring(2);
+const recentTransaction = getRecentTransaction(store.getState()); // 获取最近交易记录
+// 上次登录时间 TODO
+
+export const updateBalance = (newBalance) => { // 充值或提现成功后，更新余额
+  balance = newBalance;
+  integerBalance = Math.floor(balance);
+  fractionBalance = (balance % 1).toFixed(2).toString().substring(2);
+};
 
 const validateAmount = (rule, value, callback) => {
   if (!value) {
@@ -28,7 +52,7 @@ const validateAmount = (rule, value, callback) => {
 const validatePaypass = async (rule, value, callback) => {
   try {
     const res = await ajax.get(
-      '/account/check_paypass', 
+      '/account/check_paypass',
       { paypass: value }
     );
     if (res.code === 0) {
@@ -134,42 +158,46 @@ const topupPropsArray = [
 ];
 
 /* 以下是本页所能显示交易记录的最大数目 */
-const fakeData = Array(
-  Math.max(0, Math.floor((window.innerHeight - 450) / 50))
-).fill({
-  date: '2015.01.01 19:08:32',
-  description: '账户充值',
-  amount: 100.00,
-  status: '交易成功'
-});
+// const fakeData = Array(
+  // Math.max(0, Math.floor((window.innerHeight - 450) / 50))
+// ).fill({
+  // date: '2015.01.01 19:08:32',
+  // description: '账户充值',
+  // amount: 100.00,
+  // status: '交易成功'
+// });
 
 const tableProps = {
   pagination: false
 };
 
+@connect(
+  (state) => ({
+    submittingTopup: state.account.submittopup.submittingTopup,
+    errorMsgTopup: state.account.submittopup.errorMsg,
+    errorMsgWithdrawal: state.account.submitwithdrawal.errorMsg,
+    showTopup: state.account.submittopup.showTopup,
+    showWithdrawal: state.account.submitwithdrawal.showWithdrawal
+  }),
+  {
+    submittopup, submitwithdrawal, toggleTopup, toggleWithDrawal
+  }
+)
 class AccountWelcomePage extends React.Component {
-  state = {
-    showTopup: false,
-    showWithdrawal: false
+  topupWrapper = (amount) => {
+    this.submittopup(userId, amount);
   };
-  toggleTopup = () => {
-    this.setState({
-      showTopup: !this.state.showTopup
-    });
-  };
-  toggleWithDrawal = () => {
-    this.setState({
-      showWithdrawal: !this.state.showWithdrawal
-    });
+  withdrawalWrapper = (amount) => {
+    this.submitwithdrawal(userId, amount);
   };
   render() {
     return (
       <div className={styles.container}>
         <div className={styles.upperHalf}>
           <div className={styles.info}>
-            <div className={styles.greeting}>下午好，老王！</div>
+            <div className={styles.greeting}>下午好，{userName}！</div>
             <div className={styles.lastLogin}>
-              上次登录时间：2015.01.01 12:00
+              上次登录时间：2015.01.01 12:00 // TODO
             </div>
           </div>
           <div className={styles.verticalBar}/>
@@ -177,8 +205,8 @@ class AccountWelcomePage extends React.Component {
             <div className={styles.balanceTitle}>账户余额</div>
             <div className={styles.balanceLower}>
               <div className={styles.balanceValue}>
-                <span className={styles.balanceHead}>￥0.</span>
-                <span className={styles.balanceTail}>00</span>
+                <span className={styles.balanceHead}>￥{integerBalance}.</span>
+                <span className={styles.balanceTail}>{fractionBalance}</span>
               </div>
               <div className={styles.balanceOperation}>
                 <Button className={styles.topup}
@@ -197,22 +225,25 @@ class AccountWelcomePage extends React.Component {
         <div className={styles.lowerHalf}>
           <div className={styles.title}>最近交易</div>
           <div className={styles.tableWrapper}>
-            <AccountRecordTable data={fakeData} tableProps={tableProps}/>
+            <AccountRecordTable data={recentTransaction}
+                tableProps={tableProps}/>
           </div>
         </div>
         <FormModal title="账户充值"
                    visible={this.state.showTopup}
                    num={3}
                    btnText="确认充值"
+                   errorMsg={this.state.errorMsgTopup}
                    propsArray={topupPropsArray}
-                   btnProps={{ onClick: this.submitTopup }}
+                   callback={this.topupWrapper}
                    toggleModal={ this.toggleTopup } />
         <FormModal title="账户提现"
                    visible={this.state.showWithdrawal}
                    num={3}
                    btnText="确认提现"
+                   errorMsg={this.state.errorMsgWithdrawal}
                    propsArray={withdrawalPropsArray}
-                   btnProps={{ onClick: this.submitWithdrawal }}
+                   callback={this.withdrawalWrapper}
                    toggleModal={ this.toggleWithDrawal } />
       </div>
     );
