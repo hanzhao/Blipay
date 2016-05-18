@@ -9,35 +9,45 @@ const initialState = {
 
 const fakeData = Array(50).fill({
   date: '2015.01.01 19:08:32',
-  description: 'ÕË»§³äÖµ',
+  description: 'è´¦æˆ·å……å€¼',
   amount: 100.00,
-  status: '½»Ò×³É¹¦'
+  status: 'äº¤æ˜“æˆåŠŸ'
 });
+
+const descriptionType = ['è´¦æˆ·å……å€¼', 'è´¦æˆ·æçŽ°'];
+const statusType = ['äº¤æ˜“æˆåŠŸ'];
 
 export default (state = initialState, action) => {
   let msg;
   let tran;
+  let queryData;
   switch(action.type) {
   case QUERY:
     return state;
   case QUERY_SUCC:
-    //tran = res.data.transaction;
+    tran = action.result.transaction;
+    queryData = Array(tran.length);
+    for (let i = 0; i < tran.length; i++) {
+      queryData[i] = {
+        date: tran[i].createdAt.substring(0,10)+" "+tran[i].createdAt.substring(11,19),
+        description: descriptionType[tran[i].type-1],
+        amount: tran[i].amount,
+        status: statusType[tran[i].status-1]
+      };
+    }
     return {
-      queryResult: fakeData
+      queryResult: queryData
     };
   case QUERY_FAIL:
     switch(action.error.code) {
     case -1:
-      msg = 'ÓÃ»§²»´æÔÚ¡£';
+      msg = 'ç”¨æˆ·ä¸å­˜åœ¨';
       break;
     case -2:
-      msg = '·þÎñÆ÷ÄÚ²¿´íÎó¡£';
-      break;
-    case -3:
-      msg = 'Î´Ñ¡ÔñÊ±¼äÇø¼ä¡£';
+      msg = 'æœåŠ¡å™¨å†…éƒ¨é”™è¯¯';
       break;
     default:
-      msg = '³öÏÖÎ´Öª´íÎó¡£';
+      msg = 'å‡ºçŽ°æœªçŸ¥é”™è¯¯';
       break;
     }
     return {
@@ -49,7 +59,9 @@ export default (state = initialState, action) => {
   }
 };
 
-export const query = (userId, queryStartDate, queryEndDate) => {
+export const query = (userId, startDate, endDate) => {
+  let queryStartDate = startDate ? startDate.getFullYear()+"-"+(startDate.getMonth()+1)+"-"+startDate.getDate() : null;
+  let queryEndDate = endDate ? endDate.getFullYear()+"-"+(endDate.getMonth()+1)+"-"+endDate.getDate() : null;
   return {
     types: [
       QUERY,
@@ -58,7 +70,7 @@ export const query = (userId, queryStartDate, queryEndDate) => {
     ],
     promise: (client) => {
       console.log('in promise');
-      return client.post('/account/get_transaction', {
+      return client.get('/account/get_transaction', {
         userId,
         queryStartDate,
         queryEndDate
