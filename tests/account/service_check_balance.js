@@ -12,7 +12,8 @@ describe('service checkBalance', function() {
   });
   
   it('should reject if userId is invalid', () => {
-    return checkBalance(-1).should.be.rejected;
+    return checkBalance(10003).should.be.rejected;
   });
   
 });
+

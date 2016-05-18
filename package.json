@@ -1,7 +1,7 @@
 {
   "name": "blipay",
   "version": "0.0.1",
-  "description": "Massive dirty.py transaction online.",
+  "description": "Blipay!",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -83,6 +83,6 @@
     "chai": "^3.5.0",
     "chai-as-promised": "^5.3.0",
     "supertest": "^1.2.0",
-    "webpack-node-externals": "^1.2.0" 
+    "webpack-node-externals": "^1.2.0"
   }
 }

@@ -8,7 +8,7 @@ const LOGOUT_FAIL = 'Blipay/account/LOGOUT_FAIL';
 const initialState = {
   loggingIn: false,
   errorMsg: null
-}
+};
 
 export default (state=initialState, action) => {
   let msg;
@@ -77,7 +77,7 @@ export const isLoggedIn = (globalState) => {
   return globalState.account && 
          globalState.account.auth &&
          globalState.account.auth.userId;
-}
+};
 
 export const login = (userName, loginPass) => {
   return {
@@ -89,7 +89,7 @@ export const login = (userName, loginPass) => {
       });
     }
   }
-}
+};
 
 export const logout = () => {
   return {
@@ -98,4 +98,20 @@ export const logout = () => {
       return clent.post('/account/logout');
     }
   };
+};
+
+export const getUserId = (globalState) => {
+  if (globalState.account &&
+      globalState.account.auth)
+    return globalState.account.auth.userId;
+  else
+    return undefined;
+};
+
+export const getErrorMsg = (globalState) => {
+  if (globalState.account &&
+      globalState.account.auth)
+    return globalState.account.auth.errorMsg;
+  else
+    return undefined;
 }

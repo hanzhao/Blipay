@@ -7,6 +7,8 @@ import AccountRecordTable from '../AccountRecordTable';
 import FormModal from '../FormModal';
 import styles from './styles';
 import ajax from '../../common/ajax';
+import { getUserId } from '../../redux/modules/account/auth';
+import store from '../../redux/store';
 
 const validateAmount = (rule, value, callback) => {
   if (!value) {
@@ -27,9 +29,13 @@ const validateAmount = (rule, value, callback) => {
 
 const validatePaypass = async (rule, value, callback) => {
   try {
+    console.log(value);
     const res = await ajax.get(
       '/account/check_paypass', 
-      { paypass: value }
+      { 
+        userId: getUserId(store.getState()),
+        payPass: value,
+      }
     );
     if (res.code === 0) {
       callback();
@@ -86,7 +92,7 @@ const withdrawalPropsArray = [
     },
     field: [
       'password', {
-        validateTrigger: 'onChange',
+        validateTrigger: 'onBlur',
         rules: [{ required: true }, { validator: validatePaypass }]
       }
     ]
@@ -126,7 +132,7 @@ const topupPropsArray = [
     },
     field: [
       'password', {
-        validateTrigger: 'onChange',
+        validateTrigger: 'onBlur',
         rules: [{ required: true }, { validator: validatePaypass }]
       }
     ]

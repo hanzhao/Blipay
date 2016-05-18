@@ -7,11 +7,11 @@ proxy.use(router);
 describe('GET /account/check_username', () => {
 
   const existentName = {
-    userName: 'xxx'
+    userName: 'user1'
   };
 
   const newName = {
-    userName: 'ijoifhvoehuifwqhiu'
+    userName: 'user3'
   };
 
   const succRes = {

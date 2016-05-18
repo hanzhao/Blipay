@@ -13,7 +13,7 @@
  *              }, ... ]。
  * 其中input项为传递给输入框的props，field将作为参数传递给getFieldProps，
  * item项将作为props传递给Form.Item。其中input和item为可选项。
- * btnProps: 【可选】将传递给按钮的props
+ * btnCallback: 【可选】按钮被按下的回调函数，将会把表单中输入的值传入
  * btnText: 【必需】按钮的提示文字
  */
 import React from 'react';
@@ -57,7 +57,10 @@ class FormModal extends React.Component {
       field: this.props.propsArray[i].field
     }));
     const btnProps = this.props.btnProps || {};
-
+    const onBtnClick = () => {
+      if (this.props.btnCallback)
+        this.props.btnCallback(this.props.form.getFieldsValue());
+    };
     return (
       <Modal visible={this.props.visible}
              width="400px"
@@ -84,7 +87,7 @@ class FormModal extends React.Component {
                 disabled={propsArray.reduce((prev, cur) => (
                   prev || (this.getValidateStatus(...cur.field) === 'error')
                 ), false)}
-                {...btnProps}>
+                onClick={onBtnClick}>
           {this.props.btnText}
         </Button>
       </Modal>

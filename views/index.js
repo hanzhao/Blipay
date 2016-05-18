@@ -30,9 +30,6 @@ const checkLogin = (nextState, replace, callback) => {
   if (!isLoggedIn(store.getState()) && 
       (nextState.location.pathname !== '/'))
     replace('/');
-  else if (isLoggedIn(store.getState()) && 
-           (nextState.location.pathname === '/'))
-    replace('/account');
   callback();
 };
 
@@ -44,12 +41,14 @@ const router = (
       </Route>
       <Route path="/" component={App}>
         <IndexRoute component={MainPage} />
-        <Route path="/shopping" component={ShoppingPage} />
-        <Route path="/account" component={AccountPage} >
-          <IndexRoute component={AccountWelcomePage} />
-          <Route path="/account/info" component={AccountInfoPage} />
-          <Route path="/account/records" component={AccountRecordPage} />
-          <Route path="/account/security" component={AccountSecurityPage} />
+        <Route onEnter={checkLogin}>
+          <Route path="/shopping" component={ShoppingPage} />
+          <Route path="/account" component={AccountPage} >
+            <IndexRoute component={AccountWelcomePage} />
+            <Route path="/account/info" component={AccountInfoPage} />
+            <Route path="/account/records" component={AccountRecordPage} />
+            <Route path="/account/security" component={AccountSecurityPage} />
+          </Route>
         </Route>
       </Route>
       <Route path="*" component={NotFoundPage} />
