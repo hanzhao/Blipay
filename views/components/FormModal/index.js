@@ -22,6 +22,7 @@ import styles from './styles';
 
 const FormItem = Form.Item;
 
+@Form.create({})
 class FormModal extends React.Component {
 
   propTypes: {
@@ -29,8 +30,9 @@ class FormModal extends React.Component {
     visible: React.PropTypes.bool.isRequired,
     title: React.PropTypes.string,
     propsArray: React.PropTypes.array.isRequired,
-    btnProps: React.PropTypes.object,
-    btnText: React.PropTypes.string.isRequired
+    callback: React.PropTypes.object,
+    btnText: React.PropTypes.string.isRequired,
+    errorMsg: React.PropTypes.string
   }
 
   getValidateStatus = (field) => {
@@ -45,6 +47,10 @@ class FormModal extends React.Component {
     }
   };
 
+  deliverAmountValue = () => { // 取表单中amount字段的输入值
+    this.props.callback(this.props.form.getFieldValue('amount'));
+  }
+
   render() {
     const { getFieldProps
             /*, getFieldError, isFieldValidating */ } = this.props.form;
@@ -55,7 +61,6 @@ class FormModal extends React.Component {
       item: this.props.propsArray[i].item || {},
       field: this.props.propsArray[i].field
     }));
-    const btnProps = this.props.btnProps || {};
 
     return (
       <Modal visible={this.props.visible}
@@ -78,18 +83,20 @@ class FormModal extends React.Component {
             ))
           }
         </Form>
+        <div className={styles.errorInfo}> // TODO
+          {this.props.errorMsg} // 如果错误，将错误信息打印在输入框与button之间
+        </div>
         <Button className={styles.confirm}
-                type="primary" {...btnProps}>
+                type="primary"
+                disabled={propsArray.reduce((prev, cur) => (
+                  prev || (this.getValidateStatus(...cur.field) === 'error')
+                ), false)}
+                onClick={this.deliverAmountValue}>
           {this.props.btnText}
         </Button>
       </Modal>
     );
   }
 }
-
-/* eslint-disable */
-/* 官方示例写法*/
-FormModal = Form.create({})(FormModal);
-/* eslint-enable */
 
 export default FormModal;

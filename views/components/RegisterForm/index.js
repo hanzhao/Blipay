@@ -5,46 +5,152 @@
 import React from 'react';
 import { reduxForm } from 'redux-form';
 import { Form, Input, Icon, Button } from 'antd';
-
+import { connect } from 'react-redux';
+import { register } from '../../redux/modules/account/register';
+import store from '../../redux/store';
+import ajax from '../../common/ajax';
 import styles from './styles';
 
+const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+const validate = (values) => {
+  const errors = {};
+  const { userName, loginPass, payPass } = values;
+  if (!userName) {
+    errors.userName = '请填写用户名。';
+  }
+  if (!loginPass) {
+    errors.loginPass = '请填写登录密码。';
+  } else if (!passwordRegex.test(loginPass)) {
+    errors.loginPass = '密码必须包含字母和数字组合，长度至少 8 位。';
+  } 
+  if (!payPass) {
+    errors.payPass = '请填写支付密码。';
+  } else if (!passwordRegex.test(payPass)) {
+    errors.payPass = '密码必须包含字母和数字组合，长度至少 8 位。';
+  } else if (loginPass === payPass) {
+    errors.payPass = '支付密码不得与登录密码相同。';
+  }
+  return errors;
+};
+
+const asyncValidate = async (values) => {
+  if (!values.userName) {
+    return { userName: '请输入用户名。' };
+  }
+  return (async () => {
+    try {
+      let res = await ajax.get('/account/check_username', 
+                               { userName: values.userName });
+      console.log(res);
+      if (res.code === 0) {
+        return {};
+      } else if (res.code === -1) {
+        return { userName: '该用户名已被注册。' };
+      } else {
+        return { userName: '检验用户名失败。' };
+      }
+    } catch(err) {
+      console.log(err);
+      if (err.code === -1) {
+        return { userName: '该用户名已被注册。' };
+      } else if (err.code === -2) {
+        return { userName: '检验用户名失败。' };
+      } else {
+        return { userName: '暂时无法连接服务器。' };
+      }
+    }
+  })();
+}; 
+
+@connect(
+  (state) => ({
+    registering: state.account.register.registering,
+    errorMsg: state.account.register.errorMsg
+  }), 
+  {
+    register
+  }
+)
 @reduxForm({
   form: 'user-register',
-  fields: ['username', 'password', 'repassword']
+  fields: ['userName', 'loginPass', 'payPass'],
+  asyncValidate,
+  asyncBlurFields: [ 'userName' ],
+  validate
 }, undefined, {
-  onSubmit: (data) => console.log(data)
+  onSubmit: (data) => {
+    store.dispatch(register(data.userName, data.loginPass, data.payPass));
+  }
 })
 class RegisterForm extends React.Component {
+  
+  componentWillUnmount() {
+    this.props.resetForm();
+  }
+  
   render() {
-    const { fields: {
-      username,
-      password,
-      repassword
-    }, handleSubmit } = this.props;
+    const { 
+      asyncValidating, 
+      fields: { 
+        userName, 
+        loginPass,
+        payPass 
+      }, 
+      /* resetForm ,*/ 
+      handleSubmit 
+      /* submitting */} = this.props;
     return (
       <Form horizontal onSubmit={handleSubmit}>
-        <Form.Item>
+        <Form.Item className={styles.formItem}
+                   labelCol={{ span: 2 }}
+                   wrapperCol={{ span: 22 }}
+                   label={<Icon style={{fontSize: 15, marginRight: 4}} 
+                                type="user" />}
+                   help={userName.touched && userName.error ? 
+                         userName.error : '　'}
+                   hasFeedback={userName.touched}
+                   validateStatus={
+                     asyncValidating === 'userName' ? 'validating' :
+                     userName.touched && userName.error ? 'error' : 'success' }>
           <Input size="large"
-                 placeholder="账户"
-                 addonBefore={<Icon type="user" />}
+                 placeholder="用户名"
                  autoFocus
                  autoComplete="off"
-                 {...username} />
+                 {...userName} />
         </Form.Item>
-        <Form.Item>
+        <Form.Item className={styles.formItem}
+                   labelCol={{ span: 2 }}
+                   wrapperCol={{ span: 22 }}
+                   label={<Icon style={{fontSize: 15, marginRight: 4}} 
+                                type="lock" />}
+                   help={loginPass.touched && loginPass.error ? 
+                         loginPass.error : '　'}
+                   hasFeedback={loginPass.touched}
+                   validateStatus={loginPass.touched && loginPass.error ? 
+                                   'error' : 'success'}>
           <Input size="large"
                  type="password"
-                 placeholder="密码"
-                 addonBefore={<Icon type="lock" />}
-                 {...password} />
+                 placeholder="账户密码"
+                 {...loginPass} />
         </Form.Item>
-        <Form.Item>
+        <Form.Item className={styles.formItem}
+                   labelCol={{ span: 2 }}
+                   wrapperCol={{ span: 22 }}
+                   label={<Icon style={{fontSize: 15, marginRight: 4}} 
+                                type="pay-circle-o" />}
+                   help={payPass.touched && payPass.error ? 
+                         payPass.error :  '　'}
+                   hasFeedback={payPass.touched}
+                   validateStatus={payPass.touched && payPass.error ? 
+                                   'error' : 'success'}>
           <Input size="large"
                  type="password"
-                 placeholder="重复密码"
-                 addonBefore={<Icon type="lock" />}
-                 {...repassword} />
+                 placeholder="支付密码"
+                 {...payPass} />
         </Form.Item>
+        <div className={styles.hint}>{this.props.errorMsg ? 
+                                      this.props.errorMsg : '　'}</div>
         <Button type="primary" size="large"
                 className={styles.btn}
                 htmlType="submit">

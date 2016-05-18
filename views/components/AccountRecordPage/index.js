@@ -21,7 +21,7 @@ const tableProps = {
   pagination: {
     simple: true,
     /* 一页能显示的交易记录的最大数目 */
-    pageSize: Math.floor((window.innerHeight - 350) / 50)
+    pageSize: Math.max(0, Math.floor((window.innerHeight - 350) / 50))
   }
 };
 

@@ -28,10 +28,10 @@ const router = (
       <Route path="/admin">
         <IndexRoute component={AdminIndexPage} />
       </Route>
-      <Route path="/" component={App}>
+      <Route path="/" component={App} >
         <IndexRoute component={MainPage} />
         <Route path="/shopping" component={ShoppingPage} />
-        <Route path="/account" component={AccountPage}>
+        <Route path="/account" component={AccountPage} >
           <IndexRoute component={AccountWelcomePage} />
           <Route path="/account/info" component={AccountInfoPage} />
           <Route path="/account/records" component={AccountRecordPage} />
