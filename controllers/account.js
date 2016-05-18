@@ -72,7 +72,8 @@ router.post('/account/login', (req, res) => {
           user.loginSalt, 
           config.loginSaltPos)  === user.loginPass) {
       res.success({
-        code: 0
+        code: 0,
+        userId: user.id
       });
     } else {
       res.fail({

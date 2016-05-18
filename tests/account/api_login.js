@@ -51,8 +51,16 @@ describe('POST /accout/login', () => {
     request(proxy)
       .post('/account/login')
       .send(correctInfo)
-      .expect(succRes)
-      .expect(200, done);
+      .expect((res) => {
+        if(res.data.code !== 0) {
+          throw new Error('It does not return code 0.');
+        }
+        if(!res.data.userId) {
+          throw new Error('Result does not contain userId.');
+        }
+      })
+      .expect(200)
+      .end(done);
   });
   */
   

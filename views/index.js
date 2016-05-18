@@ -20,7 +20,21 @@ import AccountInfoPage from './components/AccountInfoPage';
 import AdminIndexPage from './components/AdminIndexPage';
 import NotFoundPage from './components/NotFoundPage';
 
+import { isLoggedIn } from './redux/modules/account/auth';
+
 const history = syncHistoryWithStore(browserHistory, store);
+
+const checkLogin = (nextState, replace, callback) => {
+  console.log(nextState.location.pathname);
+  console.log(!!isLoggedIn(store.getState()));
+  if (!isLoggedIn(store.getState()) && 
+      (nextState.location.pathname !== '/'))
+    replace('/');
+  else if (isLoggedIn(store.getState()) && 
+           (nextState.location.pathname === '/'))
+    replace('/account');
+  callback();
+};
 
 const router = (
   <Provider store={store}>
@@ -28,7 +42,7 @@ const router = (
       <Route path="/admin">
         <IndexRoute component={AdminIndexPage} />
       </Route>
-      <Route path="/" component={App} >
+      <Route path="/" component={App}>
         <IndexRoute component={MainPage} />
         <Route path="/shopping" component={ShoppingPage} />
         <Route path="/account" component={AccountPage} >
@@ -37,8 +51,8 @@ const router = (
           <Route path="/account/records" component={AccountRecordPage} />
           <Route path="/account/security" component={AccountSecurityPage} />
         </Route>
-        <Route path="*" component={NotFoundPage} />
       </Route>
+      <Route path="*" component={NotFoundPage} />
     </Router>
   </Provider>
 );

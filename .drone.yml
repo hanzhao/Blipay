@@ -3,7 +3,6 @@ build:
   commands:
     - npm install --silent
     - npm run lint
-    - npm run test
 deploy:
   ssh:
     host: 0u0.moe

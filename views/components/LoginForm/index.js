@@ -6,14 +6,14 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { Form, Input, Icon, Button } from 'antd';
-import { login } from '../../redux/modules/account/login';
+import { login } from '../../redux/modules/account/auth';
 import store from '../../redux/store';
 import styles from './styles';
 
 @connect(
   (state) => ({
-    loggingIn: state.account.login.loggingIn,
-    errorMsg: state.account.login.errorMsg
+    loggingIn: state.account.auth.loggingIn,
+    errorMsg: state.account.auth.errorMsg
   }), 
   {
     login
