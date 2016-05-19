@@ -20,16 +20,11 @@ router.post('/item/new', Promise.coroutine(function* (req, res) {
   try {
     // TODO: Fetch user from session
     // createItem(req.session.userId, req.body);    
-    const id = yield createItem(1, req.body);
-    // return res.json({ code: 0 });
+    const id = yield createItem(req.session.userId, req.body);
     return res.success("newItem id: " + id);
   }
   catch (e) {
     console.error('error in /item/new: \t' + e.message);
-    // return res.json({
-    //   code: 1,
-    //   error: 'Error inserting new item:' + e.message
-    // });
     return res.fail('Error inserting new item:' + e.message);
   }
 }));
@@ -170,8 +165,8 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
         // if (req.session.userId != order.buyerId) {
         //   throw new Error('Auth Failed.');
         // }
-        // const payTrans = requestPay(order.buyerId, order.cost);
-        const payTrans = 1;
+        const payTrans = yield requestPay(order.buyerId, order.cost);
+        // const payTrans = 1;
         yield order.update({
           buyerTransId: payTrans,
           status: 1
@@ -197,7 +192,7 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
         if (req.session.userId != order.buyerId) {
           throw new Error('Auth Failed.');
         }
-        const confirmTrans = requestReceive(order.sellerId, order.cost);
+        const confirmTrans = yield requestReceive(order.sellerId, order.cost);
         yield order.update({
           sellerTransId: confirmTrans,
           status: 3
@@ -307,9 +302,6 @@ router.post('/order/order_list', Promise.coroutine(function* (req, res) {
       ]
     });
     
-    // for (var index = 0; index < orders.length; index++) {
-    //   orders.items = ((yield orders[index].getItems()));
-    // }
     return res.success({ orders: orders});
   }
   catch (e) {
