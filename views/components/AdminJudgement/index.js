@@ -6,22 +6,22 @@ import styles from './styles';
 
 
 const columns = [{
-  title: 'tousufang',
+  title: '投诉方',
   dataIndex: 'sname',
   key: 'sname'
 },{
-  title: 'beitousufang',
+  title: '被投诉方',
   dataIndex: 'mname',
   key: 'mname'
 },{
-  title: 'tousuxijie',
+  title: '投诉细节',
   key: 'operation',
   render(){
     return(
       <div>
       <span>
         <Button className={styles.addBtn}>
-        xijie
+        细节
         </Button>
       </span>
       </div>
@@ -35,12 +35,12 @@ const columns = [{
       <div>
       <span>
         <Button className={styles.addBtn}>
-        tongguo
+        通过
         </Button>
       </span>
       <span>
         <Button className={styles.addBtn}>
-        jujue
+        拒绝
         </Button>
       </span>
       </div>
