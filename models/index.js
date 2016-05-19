@@ -1,3 +1,4 @@
+'use strict'
 const Sequelize = require('sequelize');
 const config = require('../config').database;
 
@@ -18,15 +19,17 @@ Item.belongsTo(User, {
 });
 Transaction.belongsTo(User);
 
-Order.belongsTo(User, {as: 'seller'});
-Order.belongsTo(User, {as: 'customer'});
-Order.belongsToMany(Item, {through: OrderItem});
+Order.belongsTo(User, { as: 'seller' });
+Order.belongsTo(User, { as: 'customer' });
+Order.belongsToMany(Item, { through: OrderItem });
 
-[User, Item, Transaction, Order, OrderItem].forEach((t) => {
-  t.sync().then(() => {
+// Sync table to database
+(Promise.coroutine(function* () {
+  for (let t of [User, Item, Transaction, Order, OrderItem]) {
+    yield t.sync({ force: true })
     console.log(`Table ${t.name} synced`);
-  });
-});
+  }
+}))()
 
 module.exports = {
   User, Item, Transaction, Order, OrderItem
