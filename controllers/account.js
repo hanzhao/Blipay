@@ -4,6 +4,8 @@ const config = require('../config/account');
 const Router = require('express').Router;
 const crypto = require('crypto');
 const router = Router();
+const Promise = require('bluebird');
+const Sequelize = require('sequelize');
 
 const cookPassword = (key, salt, saltPos) => {
   var hash = crypto.createHash('sha512');
@@ -23,7 +25,6 @@ router.post('/account/register', (req, res) => {
   })
   .then((user) => {
     if (user) {
-      //throw new Error('The same userName exists.');
       return res.fail({
         code: -1
       });
@@ -42,17 +43,14 @@ router.post('/account/register', (req, res) => {
                             config.paySaltPos)
     };
     User.create(newUser)
-      .then(() => {
+      .then((user) => {
         return res.success({
-          code: 0
+          code: 0,
+          userId: user.id,
+          userName: user.userName
         });
       });
   })
-  /*.then(() => {
-    return res.success({
-      code: 0
-    });
-  })*/
   .catch((err) => {
     console.error('Error occurs in /account/register with following message.\n' +
                  err.message);
@@ -62,6 +60,63 @@ router.post('/account/register', (req, res) => {
   });
 });
 
+router.get('/account/get_recent_transaction', Promise.coroutine(function *(req, res) {
+  try {
+    const transactions = yield Transaction.findAll({ 
+                                   where: {userId: req.query.userId},
+                                   order: ['createdAt'],
+                                   limit: 10
+                                 });
+    return res.success({
+      code: 0,
+      transactions: transactions
+    });
+  } catch (e) {
+    console.error(e.message);
+    return res.fail({code: -2});
+  }
+}));
+
+router.post('/account/login', Promise.coroutine(function *(req, res) {
+  console.log('in /account/login');
+  console.log(req.body);
+  try {
+    const user = yield User.findOne({where: {userName: req.body.userName}});
+    if (!user) {
+      return res.fail({code: -1});
+    }
+    if (cookPassword(
+          req.body.loginPass, 
+          user.loginSalt, 
+          config.loginSaltPos
+        ) === user.loginPass) {
+      yield User.update({lastLogin: Date().toString()}, {where: {id: user.id}});
+      const transactions = yield Transaction.findAll({ 
+                                   where: {userId: user.id},
+                                   order: ['createdAt'],
+                                   limit: 10
+                                 });
+      return res.success({
+        code: 0,
+        userId: user.id,
+        userName: user.userName,
+        balance: user.balance,
+        lastLogin: (new Date(user.lastLogin)).toLocaleString(),
+        email: user.email,
+        phone: user.phone,
+        realName: user.realName,
+        idNumber: user.idNumber,
+        transactions: transactions
+      });
+    } else {
+      return res.fail({code: -3});
+    }
+  } catch (e) {
+    console.error(e.message)
+    return res.fail({code: -2});
+  }
+}));
+/*
 router.post('/account/login', (req, res) => {
   console.log('in /account/login');
   console.log(req.body);
@@ -82,7 +137,10 @@ router.post('/account/login', (req, res) => {
           config.loginSaltPos)  === user.loginPass) {
       return res.success({
         code: 0,
-        userId: user.id
+        userId: user.id,
+        userName: user.userName,
+        balance: user.balance,
+        lastLogin: user.updatedAt
       });
     } else {
       res.fail({
@@ -98,6 +156,7 @@ router.post('/account/login', (req, res) => {
     });
   });
 });
+*/
 
 router.get('/account/check_paypass', (req, res) => {
   console.log('in check_paypass');
@@ -128,6 +187,41 @@ router.get('/account/check_paypass', (req, res) => {
     }
   }).catch((err) => {
     console.error('check_paypass: fail\n' + err.message);
+    return res.fail({
+      code: -2
+    });
+  });
+});
+
+router.get('/account/check_loginpass', (req, res) => {
+  console.log('in check_loginpass');
+  console.log(req.query);
+  User.findOne({
+    where: {
+      id: req.query.userId
+    }
+  }).then((user) => {
+    if (!user) {
+      console.log('check_loginpass: userId not exists');
+      return res.fail({
+        code: -1
+      });
+    }
+    if (cookPassword(
+          req.query.loginPass, 
+          user.loginSalt, 
+          config.loginSaltPos)  === user.loginPass) {
+      return res.success({
+        code: 0
+      });
+    } else {
+      console.log('check_paypass: loginPass wrong');
+      return res.fail({
+        code: -3
+      });
+    }
+  }).catch((err) => {
+    console.error('check_loginpass: fail\n' + err.message);
     return res.fail({
       code: -2
     });
@@ -510,7 +604,7 @@ router.post('/account/charge', (req, res) => {
         balance: newBalance
       }, {
         where: {
-          userName: req.body.userName
+          id: req.body.userId
         }
       })
       .then(() => {
@@ -585,7 +679,7 @@ router.post('/account/withdraw', (req, res) => {
       balance: newBalance
     }, {
       where: {
-        userName: req.body.userName
+        id: req.body.userId
       }
     })
     .then(() => {

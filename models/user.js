@@ -48,6 +48,10 @@ module.exports = (db) => {
     phone: {
       type: Sequelize.STRING
     },
+    /* 上次登录时间 */
+    lastLogin: {
+      type: Sequelize.DATE
+    },
     /* 账户余额 */
     balance: {
       type: Sequelize.DECIMAL(12, 2),

@@ -1,16 +1,20 @@
 import { combineReducers } from 'redux';
 import register from './register';
-import login from './login';
-import logout from './logout';
 import auth from './auth';
-import changePaypass from './changePaypass';
-import changeLoginpass from './changeLoginpass';
+import paypass from './paypass';
+import loginpass from './loginpass';
+import query from './query';
+import topup from './topup';
+import withdraw from './withdraw';
+import info from './info';
 
 export default combineReducers({
   auth,
   register, 
-  login,
-  logout,
-  changePaypass,
-  changeLoginpass
+  paypass,
+  loginpass,
+  query,
+  topup,
+  withdraw,
+  info
 });

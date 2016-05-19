@@ -34,6 +34,9 @@ module.exports = (db) => {
     /* 交易状态 */
     status: {
       type: Sequelize.INTEGER
+    },
+    info: {
+      type: Sequelize.STRING
     }
   });
 };

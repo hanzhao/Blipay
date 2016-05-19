@@ -25,7 +25,7 @@ const wrapAmount = (data) => {
   return data.map((d, index) => ({
     ...d,
     key: index,
-    amount: `${d.amount > 0 ? '+' : ''}${d.amount.toFixed(2)}`
+    amount: `${d.amount.toFixed(2)}`
   }));
 };
 

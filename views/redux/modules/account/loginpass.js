@@ -34,13 +34,13 @@ export default (state=initialSate, action) => {
     case CHANGE_LOGINPASS_FAIL:
       switch (action.error.code) {
       case -1:
-        msg = "用户ID不存在。";
+        msg = '用户ID不存在。';
         break;
       case -2:
-        msg = "服务器内部错误。";
+        msg = '服务器内部错误。';
         break;
       default:
-        msg = "出现位置错误。";
+        msg = '出现未知错误。';
         break;
       }
       return {

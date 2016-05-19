@@ -25,8 +25,6 @@ import { isLoggedIn } from './redux/modules/account/auth';
 const history = syncHistoryWithStore(browserHistory, store);
 
 const checkLogin = (nextState, replace, callback) => {
-  console.log(nextState.location.pathname);
-  console.log(!!isLoggedIn(store.getState()));
   if (!isLoggedIn(store.getState()) && 
       (nextState.location.pathname !== '/'))
     replace('/');
