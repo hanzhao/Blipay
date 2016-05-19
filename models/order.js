@@ -10,7 +10,7 @@ module.exports = (db) => {
       type: Sequelize.INTEGER
     },
     /* 订单价格 */
-    cost: {
+    totalCost: {
       type: Sequelize.DECIMAL(10, 2)
     },
     /* 状态 */

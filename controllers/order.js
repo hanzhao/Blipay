@@ -4,6 +4,7 @@ const Promise = require('bluebird');
 const User = require('../models').User;
 const Item = require('../models').Item;
 const Order = require('../models').Order;
+const OrderItem = require('../models').OrderItem;
 const RefundText = require('../models').RefundText;
 
 const Router = require('express').Router;
@@ -275,25 +276,41 @@ router.post('/order/order_list', Promise.coroutine(function* (req, res) {
         filter.status = req.body.filter.status;
       }
     }
+    // if (validate(req.body.base)) {
+    //   orders = yield Order.findAll({
+    //     where: filter,
+    //     order: req.body.base + ' ' + req.body.order,
+    //     offset: req.body.head,
+    //     limit: req.body.length
+    //   });
+    // }
+    // else {
+    //   orders = yield Order.findAll({
+    //     where: filter,
+    //     offset: req.body.head,
+    //     limit: req.body.length
+    //   });
+    // }
+    let queryOrder = '';
     if (validate(req.body.base)) {
-      return res.success({
-        items: yield Order.findAll({
-          where: filter,
-          order: req.body.base + ' ' + req.body.order,
-          offset: req.body.head,
-          limit: req.body.length
-        })
-      });
+      queryOrder = req.body.base + ' ' + req.body.order;
     }
-    else {
-      return res.success({
-        items: yield Order.findAll({
-          where: filter,
-          offset: req.body.head,
-          limit: req.body.length
-        })
-      });
-    }
+    const orders = yield Order.findAll({
+      where: filter,
+      order: req.body.base + ' ' + req.body.order,
+      offset: req.body.head,
+      limit: req.body.length,
+      include:[
+        {
+          model: Item
+        }
+      ]
+    });
+    
+    // for (var index = 0; index < orders.length; index++) {
+    //   orders.items = ((yield orders[index].getItems()));
+    // }
+    return res.success({ orders: orders});
   }
   catch (e) {
     return res.fail('in /order/order_list   ' + require('util').inspect(e));

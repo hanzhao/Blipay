@@ -46,7 +46,7 @@ const createOrder = Promise.coroutine(
       }
       let newOrder = yield Order.create({
         count: count,
-        cost: cost,
+        totalCost: cost,
         status: 0
       });
       yield newOrder.setSeller(seller);
@@ -97,7 +97,7 @@ const handleRefund = Promise.coroutine(function* (orderId, res, buyerRes, seller
       // TODO: 
     }
     else{
-      
+      // TODO:
     }
   } catch (e) {
     console.error('Error in service handleRefund:' + require('util').inspect(e));
