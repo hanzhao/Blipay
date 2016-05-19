@@ -25,6 +25,7 @@ import AdminInfoPage from './components/AdminInfoPage';
 import AdminManager from './components/AdminManager';
 import AdminChange from './components/AdminChange';
 import AdminVerify from './components/AdminVerify';
+import AdminVerifyDetail from './components/AdminVerifyDetail';
 
 const history = syncHistoryWithStore(browserHistory, store);
 
@@ -38,8 +39,8 @@ const router = (
           <Route path="/admin/account/manager" component={AdminManager} />
           <Route path="/admin/account/change" component={AdminChange} />
           <Route path="/admin/account/verification" component={AdminVerify} />
+          <Route path="/admin/account/verification/detail" component={AdminVerifyDetail} />
         </Route>
-
       </Route>
       <Route path="/" component={App}>
         <IndexRoute component={MainPage} />

@@ -2,6 +2,7 @@
  * Admin for users' verification
 */
 import React from 'react';
+import { Link } from 'react-router';
 import { Input, Button, Col, Table} from 'antd';
 import styles from './styles';
 
@@ -13,6 +14,7 @@ const tableProps = {
   }
 };
 
+/*
 const wrapAmount = (data) => {
   return data.map((d, index) => ({
     ...d,
@@ -20,24 +22,33 @@ const wrapAmount = (data) => {
     amount: `${d.amount > 0 ? '+' : ''}${d.amount.toFixed(2)}`
   }));
 };
+*/
 
 const columns = [{
   title: '用户名',
   dataIndex: 'name',
   key: 'name',
+  sorter: (a, b) => a < b ? -1: 1,
   render(text) {
-    return <a href="#">{text}</a>;
+    return <Link to="/admin/account/verification/detail">{text}</Link>;
   }
 }, {
   title: '用户ID',
-  dataIndex: 'ID',
-  key: 'ID'
+  dataIndex: 'id',
+  key: 'id',
+  sorter: (a, b) => a < b ? -1: 1
 },{
   title: '用户真实姓名',
   dataIndex: 'realname',
   key: 'realname'
-},{
-  title: '    操作',
+/* ,  render(text, record) {
+    return (
+      <Button onClick={() => alert(record.id)}>{ text }</Button>
+    )
+  }
+*/
+}/*,{
+  title: '操作',
   key: 'operation',
   render(text, record) {
     return (
@@ -54,42 +65,52 @@ const columns = [{
       </span>
       </div>
     );
-  }
-}];
+  }*/
+];
 
 const data = [{
   key: '1',
   name: 'Shirley',
-  ID: '3130100668',
+  id: '3130100668',
   realname: '陈雪儿'
 }, {
   key: '2',
   name: 'Mark',
-  ID: '3130100669',
+  id: '3130100669',
   realname: '马总'
 }, {
   key: '3',
   name: 'Harry',
-  ID: '3130100670',
+  id: '3130100670',
   realname: '破特'
 }];
 
 const datatest = Array(60).fill({
   name: 'Shirley',
-  ID: '3130100668',
+  id: '3130100668',
   realname: '陈雪儿'
 });
 
-const datanull=null;//暂无数据这个是哪里写的？
+const datanull=null; //暂无数据这个是哪里写的？antd的Table样式
 
 class AdminVerify extends React.Component {
   render() {
+/*     return (
+      React.createElement('div', { className: styles.container },
+        React.createElement(Table, { text: true, className: styles.table,
+                                     columns: columns, dataSource: datatest,
+                                     pagination: {
+
+                                     } })
+                                   )
+    )
+    ) */
     return (
       <div className={styles.container}>
         <Table
                className={styles.table}
                columns={columns}
-               dataSource={datatest}
+               dataSource={data}
                {...tableProps}/>
       </div>
     );
@@ -97,3 +118,13 @@ class AdminVerify extends React.Component {
 }
 
 export default AdminVerify;
+
+//跳转：参考AdminWelcomePage： 在需要跳转的内容那个标签前加<Link to="/admin/account/manager"> </Link>
+
+/*
+const a = [1, 2, 3]
+const b = [...a, 4] // b==[1, 2, 3, 4]
+
+const a = { a: 1, b: 2 }
+const b = { ...a, a: 3 } // b { a:3, b:2 }
+*/
