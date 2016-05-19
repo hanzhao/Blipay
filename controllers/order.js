@@ -297,7 +297,7 @@ router.post('/order/order_list', Promise.coroutine(function* (req, res) {
     }
     const orders = yield Order.findAll({
       where: filter,
-      order: req.body.base + ' ' + req.body.order,
+      order: queryOrder,
       offset: req.body.head,
       limit: req.body.length,
       include:[
