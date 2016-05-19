@@ -3,10 +3,8 @@
 */
 import React from 'react';
 import { Link } from 'react-router';
-import { Input, Button, Row,Col, Table} from 'antd';
+import { Input, Button, Row,Col, Table,Popconfirm,message} from 'antd';
 import styles from './styles';
-
-import { Popconfirm, message } from 'antd';
 
 function confirm() {
   message.success('点击了确定');
@@ -16,18 +14,14 @@ function cancel() {
   message.error('点击了取消');
 }
 
-ReactDOM.render(
-  <Popconfirm title="确定要删除这个任务吗？" onConfirm={confirm} onCancel={cancel}>
-    <a href="#">删除</a>
-  </Popconfirm>
-, mountNode);
-
+/*function returnfunction(){
+  return <Link to="/admin/account/verification/detail"></Link>
+}*/
 
 const columns1 = [{
   title: '用户名',
   dataIndex: 'name',
   key: 'name',
-  //sorter: (a, b) => a < b ? -1: 1,
 }, {
   title: '用户ID',
   dataIndex: 'id',
@@ -57,12 +51,6 @@ const columns2 = [{
   title:'身份证反面',
   dataIndex:'identification_back',
   key:'identification_back'
-/*
-  ,  render(text, record) {
-      return (
-        <Button onClick={() => alert(record.id)}>{ text }</Button>
-      )
-      */
 }
 ];
 
@@ -99,28 +87,33 @@ class AdminVerifyDetail extends React.Component {
                className={styles.table}
                columns={columns1}
                dataSource={data1}
-               //{...tableProps}
                pagination={false} //需要有{}
         />
         <Table
                className={styles.table}
                columns={columns2}
                dataSource={data2}
-               //{...tableProps}
                pagination={false}
         />
         <Table
                className={styles.table2}
                columns={columns3}
                dataSource={data3}
-               //{...tableProps}
                pagination={false}
         />
         <div>
-          <Row className={styles.juzhong} /*styles={{text-align="center"}}*/>
-            <Col span={8}><Button onClick={() => alert("已通过该用户的实名验证")}>通过</Button></Col>
-            <Col span={8}><Button onClick={() => alert("已拒绝该用户的实名验证")}>拒绝</Button></Col>
-            <Col span={8}><Button>返回</Button></Col>
+          <Row className={styles.juzhong} /*styles={{text-align:"center"}}*/>
+            <Col span={8}>
+              <Popconfirm title="确定通过该用户的实名验证吗？" onConfirm={confirm} onCancel={cancel}>
+                <Button><a href="#">通过</a></Button>
+                </Popconfirm>
+            </Col>
+            <Col span={8}>
+              <Popconfirm title="确定要拒绝该用户的实名验证吗？" onConfirm={confirm} onCancel={cancel}>
+                <Button><a href="#">拒绝</a></Button>
+                </Popconfirm>
+            </Col>
+            <Col span={8}><Button><Link to="/admin/account/verification">返回</Link></Button></Col>
           </Row>
         </div>
       </div>
@@ -129,3 +122,7 @@ class AdminVerifyDetail extends React.Component {
 }
 
 export default AdminVerifyDetail;
+
+//待商榷：点击通过之后可否再点拒绝
+//说明：点击一次通过或拒绝之后，该条用户验证从用户验证列表中消失
+//待完成：调节页面高度，插入身份证正反面图片
