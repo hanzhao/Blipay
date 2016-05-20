@@ -24,6 +24,7 @@ import AdminWelcomePage from './components/AdminWelcomePage';
 import AdminInfoPage from './components/AdminInfoPage';
 import AdminManager from './components/AdminManager';
 import AdminChange from './components/AdminChange';
+import AdminJudgement from './components/AdminJudgement';
 
 const history = syncHistoryWithStore(browserHistory, store);
 
@@ -36,6 +37,7 @@ const router = (
           <Route path="/admin/account/welcome" component={AdminWelcomePage} />
           <Route path="/admin/account/manager" component={AdminManager} />
           <Route path="/admin/account/change" component={AdminChange} />
+	        <Route path="/admin/account/judgement" component={AdminJudgement} />
         </Route>
 
       </Route>
