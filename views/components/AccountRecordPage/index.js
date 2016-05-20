@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { Form, DatePicker, Button } from 'antd';
 import AccountRecordTable from '../AccountRecordTable';
-import { query } from '../../redux/modules/account/query';
+import { query } from '../../redux/modules/account/transaction';
 import { getUserId } from '../../redux/modules/account/auth';
 import store from '../../redux/store';
 import styles from './styles';
@@ -23,8 +23,9 @@ const tableProps = {
 
 @connect(
   (state) => ({
-    queryResult: state.account.query.queryResult,
-    errorMsg: state.account.query.errorMsg
+    querying: state.account.transaction.querying,
+    queryResult: state.account.transaction.queryResult,
+    errorMsg: state.account.transaction.errorMsg
   }), 
   {
     query
@@ -33,13 +34,15 @@ const tableProps = {
 @reduxForm({
   form: 'user-query',
   fields: ['chosenDate']
-  }, undefined, {
+}, undefined, {
   onSubmit: (data) => {
     let d1 = new Date(data.chosenDate[0]);
     let d2 = new Date(data.chosenDate[1]);
     store.dispatch(query(getUserId(store.getState()), 
+      /* eslint-disable */
       `${d1.getFullYear()}-${d1.getMonth()+1}-${d1.getDate()}`, 
       `${d2.getFullYear()}-${d2.getMonth()+1}-${d2.getDate()}`
+      /* eslint-enable */
     ));
   }
 })
@@ -47,16 +50,21 @@ class AccountRecordPage extends React.Component {
   render() {
     const {  
       fields: {chosenDate}, 
-      handleSubmit} = this.props;
+      handleSubmit
+    } = this.props;
     return (
       <Form horizontal onSubmit={handleSubmit}>
         <div className={styles.container}>
           <RangePicker class={styles.picker} {...chosenDate}/>
-          <Button type="ghost" className={styles.button} htmlType="submit">搜索</Button>
+          <Button type="ghost" className={styles.button} htmlType="submit">
+            搜索
+          </Button>
           <div className={styles.wrapper}>
-            <AccountRecordTable className={styles.table}
-                                data={this.props.queryResult ? this.props.queryResult : null}
-                                tableProps={tableProps}/>
+            <AccountRecordTable 
+              className={styles.table}
+              data={this.props.queryResult ? this.props.queryResult : null}
+              tableProps={{...tableProps, 
+                          loading: this.props.querying ===  true}}/>
           </div>
         </div>
       </Form>

@@ -3,7 +3,7 @@ import register from './register';
 import auth from './auth';
 import paypass from './paypass';
 import loginpass from './loginpass';
-import query from './query';
+import transaction from './transaction';
 import topup from './topup';
 import withdraw from './withdraw';
 import info from './info';
@@ -13,7 +13,7 @@ export default combineReducers({
   register, 
   paypass,
   loginpass,
-  query,
+  transaction,
   topup,
   withdraw,
   info

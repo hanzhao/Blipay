@@ -1,18 +1,18 @@
 const QUERY = 'Blipay/account/QUERY';
 const QUERY_SUCC = 'Blipay/account/QUERY_SUCC';
 const QUERY_FAIL = 'Blipay/account/QUERY_FAIL';
+const UPDATE_TRANSACTION = 'Blipay/account/UPDATE_TRANSACTION';
+const UPDATE_TRANSACTION_SUCC = 'Blipay/account/UPDATE_TRANSACTION_SUCC';
+const UPDATE_TRANSACTION_FAIL = 'Blipay/account/UPDATE_TRANSACTION_FAIL';
+const RESET_TRANSACTION = 'Blipay/account/RESET_TRANSACTION';
 
 const initialState = {
   queryResult: null,
-  errorMsg: null
+  errorMsg: null,
+  querying: false,
+  updatingTransaction: false,
+  transactions: []
 };
-
-const fakeData = Array(50).fill({
-  date: '2015.01.01 19:08:32',
-  description: '账户充值',
-  amount: 100.00,
-  status: '交易成功'
-});
 
 const getStatus = (code) => {
   switch (code) {
@@ -42,14 +42,18 @@ const getDate = (str) => {
 
 export default (state = initialState, action) => {
   let msg;
-  let tran;
   switch(action.type) {
   case QUERY:
-    return state;
+    return {
+      ...state,
+      querying: true
+    };
   case QUERY_SUCC:
     return {
+      ...state,
+      querying: false,
       queryResult: action.result.transaction.map(
-        (e, i) => {
+        (e) => {
           return {
             date: getDate(e.createdAt),
             status: getStatus(e.status),
@@ -75,8 +79,41 @@ export default (state = initialState, action) => {
       break;
     }
     return {
+      ...state,
       queryResult: null,
-      errorMsg: msg
+      errorMsg: msg,
+      querying: false
+    };
+  case UPDATE_TRANSACTION:
+    return {
+      ...state,
+      updatingTransaction: true
+    };
+  case UPDATE_TRANSACTION_SUCC:
+    return {
+      ...state,
+      updatingTransaction: false,
+      transactions: action.result.transactions.map(
+        (e) => {
+          return {
+            date: getDate(e.createdAt),
+            status: getStatus(e.status),
+            description: getDescription(e.type),
+            amount: e.amount
+          };
+        }
+      )
+    };
+  case UPDATE_TRANSACTION_FAIL:
+    return {
+      ...state,
+      updatingTransaction: false
+    };
+  case RESET_TRANSACTION:
+    return {
+      ...state,
+      queryResult: null,
+      transactions: []
     };
   default:
     return state;
@@ -91,12 +128,32 @@ export const query = (userId, queryStartDate, queryEndDate) => {
       QUERY_FAIL
     ],
     promise: (client) => {
-      console.log('in promise');
       return client.get('/account/get_transaction', {
         userId,
         queryStartDate,
         queryEndDate
       });
     }
+  };
+};
+
+export const updateTransaction = (userId) => {
+  return {
+    types: [
+      UPDATE_TRANSACTION,
+      UPDATE_TRANSACTION_SUCC,
+      UPDATE_TRANSACTION_FAIL
+    ],
+    promise: (client) => {
+      return client.get('/account/get_recent_transaction', {
+        userId
+      });
+    }
+  };
+};
+
+export const resetTransaction = () => {
+  return {
+    type: RESET_TRANSACTION
   };
 };

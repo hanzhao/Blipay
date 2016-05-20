@@ -1,9 +1,11 @@
 import store from '../../store';
-import { 
-  updateUserId,
+import { updateUserId } from './auth';
+import {
   updateUserName,
-  updateLastLogin
-} from './auth';
+  updateLastLogin,
+  resetInfo
+} from './info';
+import { resetTransaction } from './transaction';
 import { push } from 'react-router-redux'; 
 
 const REGISTER = 'Blipay/account/REGISTER';
@@ -23,17 +25,15 @@ export default (state = initialState, action) => {
     };
   case REGISTER_SUCC:
     setTimeout(() => {
+      store.dispatch(resetInfo());
+      store.dispatch(resetTransaction());
       store.dispatch(updateUserId(action.result.userId));
-    }, 100);
-    setTimeout(() => {
       store.dispatch(updateUserName(action.result.userName));
-    }, 150);
-    setTimeout(() => {
-      store.dispatch(updateLastLogin( (new Date()).toLocaleString().replace(',', ' ') ));
-    }, 200);
-    setTimeout(() => {
+      store.dispatch(updateLastLogin(
+        (new Date()).toLocaleString().replace(',', ' ')
+      ));
       store.dispatch(push('/account'));
-    }, 250);
+    }, 200);
     return {
       registering: false
     };

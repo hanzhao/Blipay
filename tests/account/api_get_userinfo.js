@@ -7,11 +7,11 @@ proxy.use(router);
 describe('GET /account/get_userinfo', () => {
 
   const user = {
-    userId: 10001,
+    userId: 10001
   };
 
   const userNew = {
-    userId: 10003,
+    userId: 10003
   };
 
   const userRes = {

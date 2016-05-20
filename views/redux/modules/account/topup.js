@@ -1,3 +1,8 @@
+import { updateBalance } from './info';
+import { updateTransaction } from './transaction';
+import { getUserId } from './auth';
+import store from '../../store';
+
 const ENTER_TOPUP = 'Blipay/account/ENTER_TOPUP';
 const EXIT_TOPUP = 'Blipay/account/EXIT_TOPUP';
 const TOPUP = 'Blipay/account/TOPUP';
@@ -10,47 +15,50 @@ const initialState = {
   errorMsg: null
 };
 
-export default (state=initialState, action) => {
+export default (state = initialState, action) => {
   let msg;
   switch (action.type) {
-    case ENTER_TOPUP:
-      return {
-        toppingUp: true
-      };
-    case EXIT_TOPUP:
-      return {
-        toppingUp: false
-      };
-    case TOPUP:
-      return {
-        toppingUp: true,
-        requesting: true
-      }
-    case TOPUP_SUCC:
-      return {
-        toppingUp: false,
-        requesting: false,
-        balance: action.result.balance
-      };
-    case TOPUP_FAIL:
-      switch (action.error.code) {
-      case -1:
-        msg = '用户ID不存在。';
-        break;
-      case -2:
-        msg = '服务器内部错误。';
-        break;
-      default:
-        msg = '出现未知错误。';
-        break;
-      }
-      return {
-        toppingUp: true,
-        requesting: false,
-        errorMsg: msg
-      };
+  case ENTER_TOPUP:
+    return {
+      toppingUp: true
+    };
+  case EXIT_TOPUP:
+    return {
+      toppingUp: false
+    };
+  case TOPUP:
+    return {
+      toppingUp: true,
+      requesting: true
+    };
+  case TOPUP_SUCC:
+    setTimeout(() => {
+      store.dispatch(updateTransaction(getUserId(store.getState())));
+      store.dispatch(updateBalance(action.result.balance));
+    }, 10);
+    return {
+      toppingUp: false,
+      requesting: false
+    };
+  case TOPUP_FAIL:
+    switch (action.error.code) {
+    case -1:
+      msg = '用户ID不存在。';
+      break;
+    case -2:
+      msg = '服务器内部错误。';
+      break;
     default:
-      return state;
+      msg = '出现未知错误。';
+      break;
+    }
+    return {
+      toppingUp: true,
+      requesting: false,
+      errorMsg: msg
+    };
+  default:
+    return state;
   }
 };
 
@@ -80,12 +88,4 @@ export const topup = (userId, amount) => {
       });
     }
   };
-};
-
-export const getTopupBalance = (globalState) => {
-  if (globalState.account &&
-      globalState.account.topup)
-    return globalState.account.topup.balance;
-  else
-    return undefined;
 };

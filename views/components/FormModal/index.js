@@ -13,7 +13,9 @@
  *              }, ... ]。
  * 其中input项为传递给输入框的props，field将作为参数传递给getFieldProps，
  * item项将作为props传递给Form.Item。其中input和item为可选项。
+ * errorMsg: 【可选】用于提示用户的错误信息
  * btnCallback: 【可选】按钮被按下的回调函数，将会把表单中输入的值传入
+ * loading:【可选】当前按钮是否在加载中的状态
  * btnText: 【必需】按钮的提示文字
  */
 import React from 'react';
@@ -21,6 +23,16 @@ import { Button, Modal, Form, Input } from 'antd';
 import styles from './styles';
 
 const FormItem = Form.Item;
+
+/* 去除默认的xxx is required错误提示信息 */
+const filter = (str) => {
+  if (typeof str !== 'string')
+    return '　';
+  if (str.includes('required'))
+    return '　';
+  else
+    return str;
+};
 
 @Form.create({})
 class FormModal extends React.Component {
@@ -30,7 +42,6 @@ class FormModal extends React.Component {
     visible: React.PropTypes.bool.isRequired,
     title: React.PropTypes.string,
     propsArray: React.PropTypes.array.isRequired,
-    btnProps: React.PropTypes.object,
     btnText: React.PropTypes.string.isRequired
   }
 
@@ -47,8 +58,8 @@ class FormModal extends React.Component {
   };
 
   render() {
-    const { getFieldProps
-            /*, getFieldError, isFieldValidating */ } = this.props.form;
+    const { getFieldProps, isFieldValidating, getFieldError } = this.props.form;
+
     const num = this.props.num;
     /* 使用空对象填充propsArray */
     const propsArray = Array(num).fill(0).map((e, i) => ({
@@ -56,11 +67,31 @@ class FormModal extends React.Component {
       item: this.props.propsArray[i].item || {},
       field: this.props.propsArray[i].field
     }));
-    const btnProps = this.props.btnProps || {};
-    const onBtnClick = () => {
-      if (this.props.btnCallback)
-        this.props.btnCallback(this.props.form.getFieldsValue());
+
+    const getErrorMsg = () => {
+      if (this.props.errorMsg)
+        return this.props.errorMsg;
+      for (let i = 0; i < propsArray.length; i++) {
+        if (!isFieldValidating(propsArray[i].field[0])) {
+          if (getFieldError(propsArray[i].field[0]))
+            return getFieldError(propsArray[i].field[0])[0];
+        }
+      }
+      return '　';
     };
+
+    const onBtnClick = () => {
+      this.props.form.validateFields((errors, values) => {
+        if (errors) {
+          return;
+        }
+        if (this.props.btnCallback) {
+          this.props.form.resetFields();
+          this.props.btnCallback(values);
+        }
+      });
+    };
+    
     return (
       <Modal visible={this.props.visible}
              width="400px"
@@ -82,8 +113,10 @@ class FormModal extends React.Component {
             ))
           }
         </Form>
+        <div className={styles.error}>{filter(getErrorMsg())}</div>
         <Button className={styles.confirm}
                 type="primary"
+                loading={this.props.loading === true}
                 disabled={propsArray.reduce((prev, cur) => (
                   prev || (this.getValidateStatus(...cur.field) === 'error')
                 ), false)}

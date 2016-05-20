@@ -11,7 +11,7 @@ module.exports = {
         loader: 'babel',
         query: {
           presets: ['es2015', 'stage-0', 'react', 'react-hmre'],
-          plugins: ['transform-decorators-legacy', 'antd']
+          plugins: ['transform-decorators-legacy', 'antd', 'transform-runtime']
         }
       }, {
         test: /\.scss$/,

@@ -4,22 +4,11 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { push } from 'react-router-redux'; 
 import { reduxForm } from 'redux-form';
 import { Form, Input, Icon, Button } from 'antd';
-import { login, isLoggedIn, getErrorMsg } from '../../redux/modules/account/auth';
+import { login } from '../../redux/modules/account/auth';
 import store from '../../redux/store';
 import styles from './styles';
-
-const waitLogin = () => {
-  if (isLoggedIn(store.getState())) {
-    store.dispatch(push('/account'));
-  } else if (getErrorMsg(store.getState())) {
-    return;
-  } else {
-    setTimeout(waitLogin, 500);
-  }
-};
 
 @connect(
   (state) => ({
@@ -36,7 +25,6 @@ const waitLogin = () => {
 }, undefined, {
   onSubmit: (data) => {
     store.dispatch(login(data.username, data.password));
-    waitLogin();
   }
 })
 class LoginForm extends React.Component {
@@ -69,6 +57,7 @@ class LoginForm extends React.Component {
         {
           <Button type="primary" size="large"
                   className={styles.btn}
+                  style={this.props.loggingIn ? {'paddingLeft': '100px'} : {}}
                   htmlType="submit" loading={this.props.loggingIn}>
             登录
           </Button>

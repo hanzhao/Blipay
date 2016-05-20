@@ -10,7 +10,7 @@ const initialState = {
   errorMsg: null
 };
 
-export default (state=initialState, action) => {
+export default (state = initialState, action) => {
   let msg;
   switch (action.type) {
   case ENTER_CHENGE_PAYPASS:
@@ -34,20 +34,20 @@ export default (state=initialState, action) => {
   case CHANGE_PAYPASS_FAIL:
     switch (action.error.code) {
     case -1:
-      msg = "用户ID不存在。";
+      msg = '用户ID不存在。';
       break;
     case -2:
-      msg = "服务器内部错误。";
+      msg = '服务器内部错误。';
       break;
     default:
-      msg = "出现未知错误。";
+      msg = '出现未知错误。';
       break;
     }
     return {
       changingPaypass: true,
       requesting: false,
       errorMsg: msg
-    }
+    };
   default:
     return state;
   }
@@ -57,13 +57,13 @@ export const enterChangePaypass = () => {
   return {
     type: ENTER_CHENGE_PAYPASS
   };
-}
+};
 
 export const exitChangePaypass = () => {
   return {
     type: EXIT_CHANGE_PAYPASS
   };
-}
+};
 
 export const changePaypass = (userId, newPaypass) => {
   return {

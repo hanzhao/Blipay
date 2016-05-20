@@ -2,13 +2,20 @@
  * “基本信息“页面每一项中供用户修改的部分。
  */
 import React from 'react';
-import ReactDOM from 'react-dom';
 
 import { Button, Input, Icon, Form } from 'antd';
 
 import styles from './styles';
 
 const FormItem = Form.Item;
+
+/* 去除默认的xxx is required错误提示信息 */
+const filter = (str) => {
+  if (str.includes('required'))
+    return '　';
+  else
+    return str;
+};
 
 @Form.create({})
 class TogglableInput extends React.Component {
@@ -33,7 +40,7 @@ class TogglableInput extends React.Component {
 
   handleSubmit = () => {
     this.props.callback(this.props.form.getFieldsValue());
-    this.setState({ editing: false })
+    this.setState({ editing: false });
   };
 
   getValidateStatus = (field) => {
@@ -49,16 +56,21 @@ class TogglableInput extends React.Component {
   };
 
   render() {
-    const { getFieldProps } = this.props.form;
+    const { getFieldProps, isFieldValidating, getFieldError } = this.props.form;
     const field = this.props.field;
+    const fieldId = this.props.field[0];
     return (
       <span>
         { this.state.editing &&
           <span className={styles.row}>
             <Form inline className={styles.form}>
-              <FormItem className={styles.formItem}
-                        hasFeedback 
-                        validateStatus={this.getValidateStatus(...field)}>
+              <FormItem 
+                className={styles.formItem}
+                hasFeedback 
+                validateStatus={this.getValidateStatus(...field)}
+                help={this.props.errorMsg ? this.props.errorMsg :
+                      isFieldValidating(fieldId) ? '　' : 
+                      filter((getFieldError(fieldId) || []).join(', '))}>
                 <Input ref="input" className={styles.input}
                        defaultValue={this.props.defaultValue}
                        autoFocus {...getFieldProps(...field)}/>
@@ -66,6 +78,7 @@ class TogglableInput extends React.Component {
             </Form>
             <Button className={styles.button} 
                     type="primary" 
+                    loading={this.props.loading === true ? true : false}
                     onClick={this.handleSubmit}
                     disabled={this.getValidateStatus(...field) === 'error'}>
               保存

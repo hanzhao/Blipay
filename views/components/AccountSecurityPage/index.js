@@ -2,7 +2,7 @@
  * “个人账户”页面中“安全设置”选项对应的右侧方框。
  */
 import React from 'react';
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 import FormModal from '../FormModal';
 import SecurityRow from '../SecurityRow';
 import styles from './styles';
@@ -20,22 +20,87 @@ import {
 import { getUserId } from '../../redux/modules/account/auth';
 import store from '../../redux/store';
 
+const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+let loginPass;
+let payPass;
+let newLoginpass;
+let newPaypass;
+
+const validateNewPaypass = (rule, value, callback) => {
+  if (!value) {
+    callback();
+  } else {
+    if (!passwordRegex.test(value)) {
+      callback(new Error('密码必须包含字母和数字组合，长度至少 8 位。'));
+    } else if (value === loginPass) {
+      callback(new Error('支付密码不得与登录密码相同。'));
+    } else {
+      newPaypass = value;
+      callback();
+    }
+  } 
+};
+
+const validateRePaypass = (rule, value, callback) => {
+  if (!value) {
+    callback();
+  } else {
+    if (value !== newPaypass) {
+      callback(new Error('两次输入的密码不匹配。'));
+    } else {
+      callback();
+    }
+  } 
+};
+
+const validateNewLoginpass = (rule, value, callback) => {
+  if (!value) {
+    callback();
+  } else {
+    if (!passwordRegex.test(value)) {
+      callback(new Error('密码必须包含字母和数字组合，长度至少 8 位。'));
+    } else if (value === payPass) {
+      callback(new Error('登录密码不得与支付密码相同。'));
+    } else {
+      newLoginpass = value;
+      callback();
+    }
+  } 
+};
+
+const validateReLoginpass = (rule, value, callback) => {
+  if (!value) {
+    callback();
+  } else {
+    if (value !== newLoginpass) {
+      callback(new Error('两次输入的密码不匹配。'));
+    } else {
+      callback();
+    }
+  } 
+};
+
 const validatePaypass = async (rule, value, callback) => {
   try {
     const res = await ajax.get(
       '/account/check_paypass', 
       { 
         userId: getUserId(store.getState()),
-        payPass: value,
+        payPass: value
       }
     );
     if (res.code === 0) {
+      payPass = value;
       callback();
     } else {
-      callback(new Error());
+      callback(new Error('验证支付密码出现错误。'));
     }
   } catch(err) {
-    callback(new Error());
+    if (err.code === -3)
+      callback(new Error('支付密码不正确。'));
+    else
+      callback(new Error('验证支付密码出现错误。'));
   }
 };
 
@@ -45,16 +110,20 @@ const validateLoginpass = async (rule, value, callback) => {
       '/account/check_loginpass', 
       { 
         userId: getUserId(store.getState()),
-        loginPass: value,
+        loginPass: value
       }
     );
     if (res.code === 0) {
+      loginPass = value;
       callback();
     } else {
-      callback(new Error());
+      callback(new Error('验证登录密码出现错误。'));
     }
   } catch(err) {
-    callback(new Error());
+    if (err.code === -3)
+      callback(new Error('登录密码不正确。'));
+    else
+      callback(new Error('验证登录密码出现错误。'));
   }
 };
 
@@ -79,7 +148,7 @@ const loginpassPropsArray = [
     },
     field: [
       'loginpass', {
-        rules: [{ required: true }]
+        rules: [{ required: true }, { validator: validateNewLoginpass }]
       }
     ]
   }, {
@@ -90,7 +159,7 @@ const loginpassPropsArray = [
     },
     field: [
       'reloginpass', {
-        rules: [{ required: true }]
+        rules: [{ required: true }, { validator: validateReLoginpass }]
       }
     ]
   }
@@ -118,7 +187,7 @@ const paypassPropsArray = [
     },
     field: [
       'paypass', {
-        rules: [{ required: true }]
+        rules: [{ required: true }, { validator: validateNewPaypass }]
       }
     ]
   },
@@ -130,7 +199,7 @@ const paypassPropsArray = [
     },
     field: [
       'repaypass', {
-        rules: [{ required: true }]
+        rules: [{ required: true }, { validator: validateRePaypass }]
       }
     ]
   }
@@ -167,6 +236,10 @@ const emailPropsArray = [
   (state) => ({
     changingPaypass: state.account.paypass.changingPaypass,
     changingLoginpass: state.account.loginpass.changingLoginpass,
+    paypassError: state.account.paypass.errorMsg,
+    loginpassError: state.account.loginpass.errorMsg,
+    requestingPaypass: state.account.paypass.requesting,
+    requestingLoginpass: state.account.loginpass.requesting
   }),
   {
     enterChangePaypass,
@@ -239,14 +312,18 @@ class AccountSecurityPage extends React.Component {
                    num={3}
                    btnText="确认修改"
                    propsArray={loginpassPropsArray}
+                   loading={this.props.requestingLoginpass}
                    btnCallback={this.handleLoginpass}
+                   errorMsg={this.props.loginpassError}
                    toggleModal={this.props.exitChangeLoginpass} />
         <FormModal title="修改支付密码"
                    visible={this.props.changingPaypass}
                    num={3}
                    btnText="确认修改"
                    propsArray={paypassPropsArray}
+                   loading={this.props.requestingPaypass}
                    btnCallback={this.handlePaypass}
+                   errorMsg={this.props.paypassError}
                    toggleModal={this.props.exitChangePaypass} />
         <FormModal title="实名验证"
                    visible={this.state.verifyingEmail}

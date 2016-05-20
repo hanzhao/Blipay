@@ -2,7 +2,7 @@
 import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
-
+import { message } from 'antd';
 import { Provider } from 'react-redux';
 import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
@@ -26,8 +26,10 @@ const history = syncHistoryWithStore(browserHistory, store);
 
 const checkLogin = (nextState, replace, callback) => {
   if (!isLoggedIn(store.getState()) && 
-      (nextState.location.pathname !== '/'))
+      (nextState.location.pathname !== '/')) {
     replace('/');
+    message.info('请先登录');
+  }
   callback();
 };
 

@@ -22,7 +22,7 @@ describe('GET /account/get_transaction', () => {
     code: 0,
     data: {
       code: 0,
-      transaction:'???'
+      transaction:[]
     }
   };
 

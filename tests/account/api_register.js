@@ -23,11 +23,9 @@ describe('POST /account/register', () => {
     request(proxy)
       .post('/account/register')
       .send(infoUserNew)
-      .expect({ 
-        code: 0, 
-        data: { 
-          code: 0
-        }
+      .expect((res) => {
+        if (res.body.data.code !== 0) 
+          throw new Error('POST /account/register does not return 0.');
       })
       .expect(200, done);
   });
@@ -50,7 +48,7 @@ describe('POST /account/register', () => {
       where: {
         userName: 'user2'
       }
-    })
+    });
   });
 
   after(() => {
@@ -58,6 +56,6 @@ describe('POST /account/register', () => {
       where: {
         userName: 'user2'
       }
-    })
+    });
   });
 });

@@ -4,7 +4,7 @@ const router = require('../../controllers/account');
 const User = require('../../models').User;
 const config = require('../../config/account');
 const crypto = require('crypto');
-
+const Promise = require('bluebird');
 
 proxy.use(router);
 
@@ -24,16 +24,10 @@ describe('POST /account/change_email', () => {
     request(proxy)
       .post('/account/change_email')
       .send(user)
-      .expect({ 
-        code: 0, 
-        data: { 
-          code: 0
-        }
-      })
       .expect(200, done);
   });
 
-  it('returns code -1 if userName does not exist', (done) => {
+  it('returns code -1 if userId does not exist', (done) => {
     request(proxy)
       .post('/account/change_email')
       .send(userNew)
@@ -46,16 +40,8 @@ describe('POST /account/change_email', () => {
       .expect(200, done);
   });
 
-  before(() => {/*
-    User.destroy({
-      where: {
-        $or: {
-          id: 10001,
-          userName: 'user1'
-        }
-      }
-    })
-    .then(() => {*/
+  before(Promise.coroutine(function *() {
+    try{
       const loginSalt = crypto.randomBytes(64).toString('base64');
       const paySalt = crypto.randomBytes(64).toString('base64');
       const newUser = {
@@ -71,17 +57,22 @@ describe('POST /account/change_email', () => {
                               config.paySaltPos),
         balance: 1
       };
-      User.create(newUser);
-    /*});*/
-    User.destroy({
-      where: {
-        $or: {
-          id: 10002,
-          id: 10003
+      yield User.create(newUser);
+      yield User.destroy({
+        where: {
+          $or: {
+            /* eslint-disable */
+            id: 10002,
+            id: 10003
+            /* eslint-enable */
+          }
         }
-      }
-    })
-  });
+      });
+    } catch (err) {
+      console.error(err.message);
+    }
+  }));
+
 });
 
 const cookPassword = (key, salt, saltPos) => {

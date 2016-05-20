@@ -5,7 +5,7 @@ const Router = require('express').Router;
 const crypto = require('crypto');
 const router = Router();
 const Promise = require('bluebird');
-const Sequelize = require('sequelize');
+const Util = require('util');
 
 const cookPassword = (key, salt, saltPos) => {
   var hash = crypto.createHash('sha512');
@@ -13,6 +13,12 @@ const cookPassword = (key, salt, saltPos) => {
     .update(salt)
     .update(key.slice(saltPos))
     .digest('base64');
+};
+
+const reportError = (path, err) => {
+  console.error(
+    `\nERROR occurs in ${path}:\n\n${Util.inspect(err)}\n`
+  );
 };
 
 router.post('/account/register', (req, res) => {
@@ -52,30 +58,31 @@ router.post('/account/register', (req, res) => {
       });
   })
   .catch((err) => {
-    console.error('Error occurs in /account/register with following message.\n' +
-                 err.message);
+    reportError('account/register', err);
     return res.fail({
       code: -2
     });
   });
 });
 
-router.get('/account/get_recent_transaction', Promise.coroutine(function *(req, res) {
-  try {
-    const transactions = yield Transaction.findAll({ 
-                                   where: {userId: req.query.userId},
-                                   order: ['createdAt'],
-                                   limit: 10
-                                 });
-    return res.success({
-      code: 0,
-      transactions: transactions
-    });
-  } catch (e) {
-    console.error(e.message);
-    return res.fail({code: -2});
-  }
-}));
+router.get(
+  '/account/get_recent_transaction', 
+  Promise.coroutine(function *(req, res) {
+    try {
+      const transactions = yield Transaction.findAll({ 
+        where: {userId: req.query.userId},
+        order: [['createdAt', 'DESC']],
+        limit: 10
+      });
+      return res.success({
+        code: 0,
+        transactions: transactions
+      });
+    } catch (e) {
+      console.error(e.message);
+      return res.fail({code: -2});
+    }
+  }));
 
 router.post('/account/login', Promise.coroutine(function *(req, res) {
   console.log('in /account/login');
@@ -92,10 +99,11 @@ router.post('/account/login', Promise.coroutine(function *(req, res) {
         ) === user.loginPass) {
       yield User.update({lastLogin: Date().toString()}, {where: {id: user.id}});
       const transactions = yield Transaction.findAll({ 
-                                   where: {userId: user.id},
-                                   order: ['createdAt'],
-                                   limit: 10
-                                 });
+        where: {userId: user.id},
+        order: ['createdAt'],
+        limit: 10
+      });
+      //req.session.userId = user.id;
       return res.success({
         code: 0,
         userId: user.id,
@@ -111,52 +119,11 @@ router.post('/account/login', Promise.coroutine(function *(req, res) {
     } else {
       return res.fail({code: -3});
     }
-  } catch (e) {
-    console.error(e.message)
+  } catch (err) {
+    reportError('/account/login', err);
     return res.fail({code: -2});
   }
 }));
-/*
-router.post('/account/login', (req, res) => {
-  console.log('in /account/login');
-  console.log(req.body);
-  User.findOne({
-    where: {
-      userName: req.body.userName
-    }
-  })
-  .then((user) => {
-    if (!user) {
-      return res.fail({
-        code: -1
-      });
-    }
-    if (cookPassword(
-          req.body.loginPass, 
-          user.loginSalt, 
-          config.loginSaltPos)  === user.loginPass) {
-      return res.success({
-        code: 0,
-        userId: user.id,
-        userName: user.userName,
-        balance: user.balance,
-        lastLogin: user.updatedAt
-      });
-    } else {
-      res.fail({
-        code: -3
-      });
-    }
-  })
-  .catch((err) => {
-    console.error('Error occurs in /account/login with following message.\n' +
-                 err.message);
-    return res.fail({
-      code: -2
-    });
-  });
-});
-*/
 
 router.get('/account/check_paypass', (req, res) => {
   console.log('in check_paypass');
@@ -228,6 +195,19 @@ router.get('/account/check_loginpass', (req, res) => {
   });
 });
 
+router.get('/account/check_id', Promise.coroutine(function *(req, res) {
+  try {
+    const user = User.findOne({where: {idNumber: req.query.idNumber}});
+    if (!user) {
+      return res.fail({code: -1});
+    }
+    return res.success({code: 0});
+  } catch (err) {
+    reportError('/account/check_id', err);
+    return res.fail({code: -2});
+  }
+}));
+
 router.get('/account/check_username', (req, res) => {
   console.log('in check_username');
   console.log(req.query);
@@ -257,12 +237,15 @@ router.get('/account/check_username', (req, res) => {
 
 router.post('/account/logout', (req, res) => {
   console.log('in logout');
-  if(req.session.userId) {
+  return res.success({});
+  /*
+  if(req.session && req.session.userId) {
     delete req.session.userId;
     return res.success({});
   } else {
     return res.fail({});
   }
+  */
 });
 
 router.post('/account/change_userName', (req, res) => {
@@ -288,13 +271,13 @@ router.post('/account/change_userName', (req, res) => {
     })
     .then(() => {
       return res.success({
-        code: 0
+        code: 0,
+        userName: req.body.userName
       });
     });
   })
   .catch((err) => {
-    console.error('Error occurs in /account/change_userName with following message.\n' +
-                 err.message);
+    reportError('account/change_userName', err);
     return res.fail({
       code: -2
     });
@@ -324,13 +307,13 @@ router.post('/account/change_realName', (req, res) => {
     })
     .then(() => {
       return res.success({
-        code: 0
+        code: 0,
+        realName: req.body.realName
       });
     });
   })
   .catch((err) => {
-    console.error('Error occurs in /account/change_realName with following message.\n' +
-                 err.message);
+    reportError('/account/change_realName', err);
     return res.fail({
       code: -2
     });
@@ -360,13 +343,13 @@ router.post('/account/change_idNumber', (req, res) => {
     })
     .then(() => {
       return res.success({
-        code: 0
+        code: 0,
+        idNumber: req.body.idNumber
       });
     });
   })
   .catch((err) => {
-    console.error('Error occurs in /account/change_idNumber with following message.\n' +
-                 err.message);
+    reportError('/account/change_idNumber', err);
     return res.fail({
       code: -2
     });
@@ -396,13 +379,13 @@ router.post('/account/change_email', (req, res) => {
     })
     .then(() => {
       return res.success({
-        code: 0
+        code: 0,
+        email: req.body.email
       });
     });
   })
   .catch((err) => {
-    console.error('Error occurs in /account/change_email with following message.\n' +
-                 err.message);
+    reportError('/account/change_email', err);
     return res.fail({
       code: -2
     });
@@ -432,13 +415,13 @@ router.post('/account/change_phone', (req, res) => {
     })
     .then(() => {
       return res.success({
-        code: 0
+        code: 0,
+        phone: req.body.phone
       });
     });
   })
   .catch((err) => {
-    console.error('Error occurs in /account/change_phone with following message.\n' +
-                 err.message);
+    reportError('/account/change_phone', err);
     return res.fail({
       code: -2
     });
@@ -467,12 +450,11 @@ router.get('/account/get_userinfo', (req, res) => {
         idNumber: user.idNumber, 
         email: user.email, 
         phone: user.phone
-      })
+      });
     }
   })
   .catch((err) => {
-    console.error('Error occurs in /accountn/get_userinfo with following message.\n' +
-                 err.message);
+    reportError('/account/get_userinfo', err);
     return res.fail({
       code: -2
     });
@@ -509,8 +491,7 @@ router.post('/account/change_paypass', (req, res) => {
     });
   })
   .catch((err) => {
-    console.error('Error occurs in /account/change_paypass with following message.\n' +
-                 err.message);
+    reportError('/account/change_paypass', err);
     return res.fail({
       code: -2
     });
@@ -547,8 +528,7 @@ router.post('/account/change_loginpass', (req, res) => {
     });
   })
   .catch((err) => {
-    console.error('Error occurs in /account/change_loginpass with following message.\n' +
-                 err.message);
+    reportError('/account/change_loginpass', err);
     return res.fail({
       code: -2
     });
@@ -572,140 +552,73 @@ router.get('/account/get_balance', (req, res) => {
       return res.success({
         code: 0,
         balance: user.balance
-      })
+      });
     }
   })
   .catch((err) => {
-    console.error('Error occurs in /account/get_balance with following message.\n' +
-                 err.message);
+    reportError('/account/get_balance', err);
     return res.fail({
       code: -2
     });
   });
 });
 
-router.post('/account/charge', (req, res) => {
-  console.log('in /account/charge');
-  console.log(req.body);
-  User.findOne({
-    where: {
-      id: req.body.userId
-    }
-  })
-  .then((user) => {
+router.post('/account/charge', Promise.coroutine(function *(req, res) {
+  try {
+    const user = yield User.findOne({where: {id: req.body.userId}});
     if (!user) {
-      return res.fail({
-        code: -1
-      });
+      return res.fail({code: -1});
     }
-    if (true){
-      const newBalance = user.balance + req.body.amount;
-      User.update({
-        balance: newBalance
-      }, {
-        where: {
-          id: req.body.userId
-        }
-      })
-      .then(() => {
-        const newTransaction = {
-          userId: user.id,
-          amount: req.body.amount,
-          type: 1,
-          status: 1
-        }
-        Transaction.create(newTransaction)
-        .then(() => {
-          return res.success({
-            code: 0,
-            balance: newBalance
-          });
-        })
-      })
-    }
-    /*
-    else {
-      const newTransaction = {
-        userId: user.id,
-        amount: req.body.amount,
-        type: 1,
-        status: 0
-      }
-      Transaction.create(newTransaction)
-      .then(() => {
-        return res.fail({
-          code: -3
-        });
-      })
-    }*/
-  })
-  .catch((err) => {
-    console.error('Error occurs in /account/charge with following message.\n' +
-                 err.message);
-    return res.fail({
-      code: -2
+    const newBalance = user.balance + req.body.amount;
+    yield User.update({balance: newBalance}, {where: {id: req.body.userId}});
+    yield Transaction.create({
+      userId: user.id,
+      amount: req.body.amount,
+      type: 1,
+      status: 1
     });
-  });
-});
+    return res.success({
+      code: 0,
+      balance: newBalance
+    });
+  } catch (err) {
+    reportError('/account/charge', err);
+    return res.fail({code: -2});
+  }
+}));
 
-router.post('/account/withdraw', (req, res) => {
-  console.log('in /account/withdraw');
-  console.log(req.body);
-  User.findOne({
-    where: {
-      id: req.body.userId
-    }
-  })
-  .then((user) => {
+router.post('/account/withdraw', Promise.coroutine(function *(req, res) {
+  try {
+    const user = yield User.findOne({where: {id: req.body.userId}});
     if (!user) {
-      return res.fail({
-        code: -1
-      });
+      return res.fail({code: -1});
     }
-    if (user.balance < req.body.amount){
-      const newTransaction = {
+    if (user.balance < req.body.amount) {
+      yield Transaction.create({
         userId: user.id,
         amount: req.body.amount,
         type: 2,
         status: 0
-      }
-      Transaction.create(newTransaction);
-      return res.fail({
-        code: -3
       });
+      return res.fail({code: -3});
     }
     const newBalance = user.balance - req.body.amount;
-    User.update({
+    yield User.update({balance: newBalance}, {where: {id: req.body.userId}});
+    yield Transaction.create({
+      userId: user.id,
+      amount: req.body.amount,
+      type: 2,
+      status: 1
+    });
+    return res.success({
+      code: 0,
       balance: newBalance
-    }, {
-      where: {
-        id: req.body.userId
-      }
-    })
-    .then(() => {
-      const newTransaction = {
-        userId: user.id,
-        amount: req.body.amount,
-        type: 2,
-        status: 1
-      }
-      Transaction.create(newTransaction)
-      .then(() => {
-        return res.success({
-          code: 0,
-          balance: newBalance
-        });
-      });
     });
-  })
-  .catch((err) => {
-    console.error('Error occurs in /account/withdraw with following message.\n' +
-                 err.message);
-    return res.fail({
-      code: -2
-    });
-  });
-});
+  } catch (err) {
+    reportError('/account/withdraw', err);
+    return res.fail({code: -2});
+  }
+}));
 
 router.get('/account/get_transaction', (req, res) => {
   console.log('in /account/get_transaction');
@@ -738,8 +651,7 @@ router.get('/account/get_transaction', (req, res) => {
     }
   })
   .catch((err) => {
-    console.error('Error occurs in /account/get_transaction with following message.\n' +
-                 err.message);
+    reportError('/account/get_transaction', err);
     return res.fail({
       code: -2
     });

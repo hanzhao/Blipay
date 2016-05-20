@@ -50,7 +50,7 @@ const requestPay = (userId, amount) => {
         amount: amount,
         type: 3,
         status: 1
-      }
+      };
       Transaction.create(newTransaction)
       .then(() => {
         User.update({
@@ -66,7 +66,7 @@ const requestPay = (userId, amount) => {
             return reject(new Error('error updating database.'));
           }
         });
-      })
+      });
     }).catch((err) => {
       return reject(err);
     });
@@ -91,7 +91,7 @@ const requestReceive = (userId, amount) => {
         amount: amount,
         type: 4,
         status: 1
-      }
+      };
       Transaction.create(newTransaction)
       .then(() => {
         User.update({
@@ -107,7 +107,7 @@ const requestReceive = (userId, amount) => {
             return reject(new Error('error updating database.'));
           }
         });
-      })
+      });
     }).catch((err) => {
       return reject(err);
     });
@@ -128,8 +128,8 @@ const checkPaypass = (userId, payPass) => {
             payPass, 
             user.paySalt, 
             config.paySaltPos)  === user.payPass) {
-          return resolve(0);
-      };
+        return resolve(0);
+      }
       reject(new Error('payPass wrong.'));
     }).catch((err) => {
       return reject(err);
@@ -151,8 +151,8 @@ const login = (userName, loginPass) => {
             loginPass, 
             user.loginSalt, 
             config.loginSaltPos)  === user.loginPass) {
-          return resolve(user.id);
-      };
+        return resolve(user.id);
+      }
       reject(new Error('loginPass wrong.'));
     }).catch((err) => {
       return reject(err);

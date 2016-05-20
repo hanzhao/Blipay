@@ -1,10 +1,14 @@
 const request = require('supertest');
 const proxy = require('../helper');
 const router = require('../../controllers/account');
+const Promise = require('bluebird');
+const crypto = require('crypto');
+const config = require('../../config/account');
+const User = require('../../models').User;
 
 proxy.use(router);
 
-describe('POST /accout/login', () => {
+describe('POST /account/login', () => {
 
   const correctInfo = {
     userName: 'user1',
@@ -21,14 +25,6 @@ describe('POST /accout/login', () => {
     loginPass: 'loginpass1'
   };
 
-  const succRes = {
-    code: 0,
-    data: {
-      code: 0,
-      userId: 10001
-    }
-  };
-  
   const noUserRes = {
     code: -1,
     error: {
@@ -47,14 +43,6 @@ describe('POST /accout/login', () => {
     request(proxy)
       .post('/account/login')
       .send(correctInfo)
-      .expect((res) => {
-        if(res.data.code !== 0) {
-          throw new Error('It does not return code 0.');
-        }
-        if(!res.data.userId) {
-          throw new Error('Result does not contain userId.');
-        }
-      })
       .expect(200)
       .end(done);
   });
@@ -75,4 +63,45 @@ describe('POST /accout/login', () => {
       .expect(200, done);
   });
 
+  before(Promise.coroutine(function *() {
+    try{
+      const loginSalt = crypto.randomBytes(64).toString('base64');
+      const paySalt = crypto.randomBytes(64).toString('base64');
+      const newUser = {
+        id: 10001,
+        userName: 'user1',
+        loginSalt: loginSalt,
+        loginPass: cookPassword('loginpass1', 
+                                loginSalt, 
+                                config.loginSaltPos),
+        paySalt: paySalt,
+        payPass: cookPassword('paypass1', 
+                              paySalt, 
+                              config.paySaltPos),
+        balance: 1
+      };
+      yield User.create(newUser);
+      yield User.destroy({
+        where: {
+          $or: {
+            /* eslint-disable */
+            id: 10002,
+            id: 10003
+            /* eslint-enable */
+          }
+        }
+      });
+    } catch (err) {
+      console.error(err.message);
+    }
+  }));
+
 });
+
+const cookPassword = (key, salt, saltPos) => {
+  var hash = crypto.createHash('sha512');
+  return hash.update(key.slice(0, saltPos))
+    .update(salt)
+    .update(key.slice(saltPos))
+    .digest('base64');
+};

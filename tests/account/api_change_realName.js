@@ -20,12 +20,6 @@ describe('POST /account/change_realName', () => {
     request(proxy)
       .post('/account/change_realName')
       .send(user)
-      .expect({ 
-        code: 0, 
-        data: { 
-          code: 0
-        }
-      })
       .expect(200, done);
   });
 

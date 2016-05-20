@@ -10,36 +10,57 @@ import styles from './styles';
 import ajax from '../../common/ajax';
 import store from '../../redux/store';
 import { 
-  getUserId, 
-  updateBalance,
-  updateTransaction
+  getUserId,
+  logout
 } from '../../redux/modules/account/auth';
+import { getBalance } from '../../redux/modules/account/info';
 import {
   enterTopup, 
   exitTopup, 
-  topup,
-  getTopupBalance
+  topup
 } from '../../redux/modules/account/topup';
 import {
   enterWithdraw,
   exitWithdraw,
-  withdraw,
-  getWithdrawBalance
+  withdraw
 } from '../../redux/modules/account/withdraw';
 
-const validateAmount = (rule, value, callback) => {
+const validateTopupAmount = (rule, value, callback) => {
   if (!value) {
     callback();
   } else {
     try {
       JSON.parse(value);
     } catch(err) {
-      callback(new Error());
+      callback(new Error('请输入有效数字。'));
     }
-    if (!isNaN(value) && JSON.parse(value) > 0) {
+    if (value.length > 12) {
+      callback(new Error('输入金额过大。'));
+    } else if (!isNaN(value) && JSON.parse(value) > 0) {
       callback();
     } else {
-      callback(new Error());
+      callback(new Error('输入金额不合法。'));
+    }
+  }
+};
+
+const validateWithdrawAmount = (rule, value, callback) => {
+  if (!value) {
+    callback();
+  } else {
+    try {
+      JSON.parse(value);
+    } catch(err) {
+      callback(new Error('请输入有效数字。'));
+    }
+    if (value.length > 12) {
+      callback(new Error('输入金额过大。'));
+    } else if (JSON.parse(value) > getBalance(store.getState())) {
+      callback(new Error('提现金额超过余额。'));
+    } else if (!isNaN(value) && JSON.parse(value) > 0) {
+      callback();
+    } else {
+      callback(new Error('输入金额不合法。'));
     }
   }
 };
@@ -50,16 +71,19 @@ const validatePaypass = async (rule, value, callback) => {
       '/account/check_paypass', 
       { 
         userId: getUserId(store.getState()),
-        payPass: value,
+        payPass: value
       }
     );
     if (res.code === 0) {
       callback();
     } else {
-      callback(new Error());
+      callback(new Error('验证支付密码出现错误。'));
     }
   } catch(err) {
-    callback(new Error());
+    if (err.code === -3)
+      callback(new Error('支付密码不正确。'));
+    else
+      callback(new Error('验证支付密码出现错误。'));
   }
 };
 
@@ -70,7 +94,7 @@ const validateCard = (rule, value, callback) => {
     if (/^\d{16,19}/.test(value)) {
       callback();
     } else {
-      callback(new Error());
+      callback(new Error('银行卡号格式不正确。'));
     }
   }
 };
@@ -96,7 +120,7 @@ const withdrawalPropsArray = [
     },
     field: [
       'amount', {
-        rules: [{ required: true }, { validator: validateAmount }]
+        rules: [{ required: true }, { validator: validateWithdrawAmount }]
       }
     ]
   },
@@ -136,7 +160,7 @@ const topupPropsArray = [
     },
     field: [
       'amount', {
-        rules: [{ required: true }, { validator: validateAmount }]
+        rules: [{ required: true }, { validator: validateTopupAmount }]
       }
     ]
   },
@@ -161,73 +185,48 @@ const tableProps = {
 
 const getBalanceHead = (balance) => {
   if (isNaN(balance))
-    return "0";
+    return '0';
   else
     return (balance.toFixed(2) + '').split('.')[0];
-}
+};
 
 const getBalanceTail = (balance) => {
   if (isNaN(balance))
-    return "00";
+    return '00';
   else
-    return (balance.toFixed(2) + '').split('.')[1]
-}
+    return (balance.toFixed(2) + '').split('.')[1];
+};
 
 @connect(
   (state) => ({
-    userName: state.account.auth.userName,
-    balance: state.account.auth.balance,
-    lastLogin: state.account.auth.lastLogin,
+    userName: state.account.info.userName,
+    balance: state.account.info.balance,
+    lastLogin: state.account.info.lastLogin,
     toppingUp: state.account.topup.toppingUp,
+    requestingTopUp: state.account.topup.requesting,
     withdrawing: state.account.withdraw.withdrawing,
+    requestingWithdrawl: state.account.withdraw.requesting,
     topupError: state.account.topup.errorMsg,
     withdrawError: state.account.withdraw.errorMsg,
-    transactions: state.account.auth.transactions
+    transactions: state.account.transaction.transactions
   }),
   {
+    logout,
     enterTopup,
     exitTopup,
     topup,
     enterWithdraw,
     exitWithdraw,
-    withdraw,
-    updateBalance,
-    updateTransaction
+    withdraw
   }
 )
 class AccountWelcomePage extends React.Component {
-  topupUpdate = () => {
-    if (!this.props.toppingUp && !this.props.topupError){
-      this.props.updateBalance(
-        getTopupBalance(store.getState())
-      );
-      this.props.updateTransaction(
-        getUserId(store.getState())
-      );
-    } else {
-      setTimeout(this.topupUpdate, 200);
-    }
-  };
-
-  withdrawUpdate = () => {
-    if (!this.props.withdrawing && !this.props.withdrawError) {
-      this.props.updateBalance(
-        getWithdrawBalance(store.getState())
-      );
-      this.props.updateTransaction(
-        getUserId(store.getState())
-      );
-    } else {
-      setTimeout(this.withdrawUpdate, 200);
-    }
-  }
 
   handleTopup = (values) => {
     this.props.topup(
       getUserId(store.getState()),
       Number(values.amount)
     );
-    this.topupUpdate();
   };
 
   handleWithdraw = (values) => {
@@ -235,7 +234,6 @@ class AccountWelcomePage extends React.Component {
       getUserId(store.getState()),
       Number(values.amount)
     );
-    this.withdrawUpdate();
   };
 
   render() {
@@ -247,14 +245,19 @@ class AccountWelcomePage extends React.Component {
             <div className={styles.lastLogin}>
               上次登录时间：{this.props.lastLogin}
             </div>
+            <a className={styles.logout} onClick={this.props.logout}>注销</a>
           </div>
           <div className={styles.verticalBar}/>
           <div className={styles.balance}>
             <div className={styles.balanceTitle}>账户余额</div>
             <div className={styles.balanceLower}>
               <div className={styles.balanceValue}>
-                <span className={styles.balanceHead}>￥{getBalanceHead(this.props.balance)}.</span>
-                <span className={styles.balanceTail}>{getBalanceTail(this.props.balance)}</span>
+                <span className={styles.balanceHead}>
+                  ￥{getBalanceHead(this.props.balance)}.
+                </span>
+                <span className={styles.balanceTail}>
+                  {getBalanceTail(this.props.balance)}
+                </span>
               </div>
               <div className={styles.balanceOperation}>
                 <Button className={styles.topup}
@@ -273,9 +276,10 @@ class AccountWelcomePage extends React.Component {
         <div className={styles.lowerHalf}>
           <div className={styles.title}>最近交易</div>
           <div className={styles.tableWrapper}>
-            <AccountRecordTable data={this.props.transactions.slice(0, 
-                                      Math.max(0, Math.floor((window.innerHeight - 450) / 50)))}
-                                tableProps={tableProps}/>
+            <AccountRecordTable 
+              data={this.props.transactions.slice(0, 
+                    Math.max(0, Math.floor((window.innerHeight - 450) / 50)))}
+              tableProps={tableProps}/>
           </div>
         </div>
         <FormModal title="账户充值"
@@ -283,14 +287,18 @@ class AccountWelcomePage extends React.Component {
                    num={3}
                    btnText="确认充值"
                    propsArray={topupPropsArray}
+                   loading={this.props.requestingTopUp}
                    btnCallback={this.handleTopup}
+                   errorMsg={this.props.topupError}
                    toggleModal={this.props.exitTopup} />
         <FormModal title="账户提现"
                    visible={this.props.withdrawing}
                    num={3}
                    btnText="确认提现"
                    propsArray={withdrawalPropsArray}
+                   loading={this.props.requestingWithdrawl}
                    btnCallback={this.handleWithdraw}
+                   errorMsg={this.props.withdrawError}
                    toggleModal={this.props.exitWithdraw} />
       </div>
     );

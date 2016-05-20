@@ -10,46 +10,46 @@ const initialSate = {
   errorMsg: null
 };
 
-export default (state=initialSate, action) => {
+export default (state = initialSate, action) => {
   let msg;
   switch (action.type) {
-    case ENTER_CHANGE_LOGINPASS:
-      return {
-        changingLoginpass: true
-      };
-    case EXIT_CHANGE_LOGINPASS:
-      return {
-        changingLoginpass: false
-      };
-    case CHANGE_LOGINPASS:
-      return {
-        changingLoginpass: true,
-        requesting: true
-      };
-    case CHANGE_LOGINPASS_SUCC:
-      return {
-        changingLoginpass: false,
-        requesting: false
-      };
-    case CHANGE_LOGINPASS_FAIL:
-      switch (action.error.code) {
-      case -1:
-        msg = '用户ID不存在。';
-        break;
-      case -2:
-        msg = '服务器内部错误。';
-        break;
-      default:
-        msg = '出现未知错误。';
-        break;
-      }
-      return {
-        changingLoginpass: true,
-        requesting: false,
-        errorMsg: msg
-      };
+  case ENTER_CHANGE_LOGINPASS:
+    return {
+      changingLoginpass: true
+    };
+  case EXIT_CHANGE_LOGINPASS:
+    return {
+      changingLoginpass: false
+    };
+  case CHANGE_LOGINPASS:
+    return {
+      changingLoginpass: true,
+      requesting: true
+    };
+  case CHANGE_LOGINPASS_SUCC:
+    return {
+      changingLoginpass: false,
+      requesting: false
+    };
+  case CHANGE_LOGINPASS_FAIL:
+    switch (action.error.code) {
+    case -1:
+      msg = '用户ID不存在。';
+      break;
+    case -2:
+      msg = '服务器内部错误。';
+      break;
     default:
-      return state;
+      msg = '出现未知错误。';
+      break;
+    }
+    return {
+      changingLoginpass: true,
+      requesting: false,
+      errorMsg: msg
+    };
+  default:
+    return state;
   }
 };
 
