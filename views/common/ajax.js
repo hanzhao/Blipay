@@ -12,7 +12,7 @@ const ajax = {
       throw err;
     }
     if (res.code !== 0) {
-      throw res.errors;
+      throw res.error;
     }
     return res.data;
   },
@@ -27,7 +27,7 @@ const ajax = {
       throw err;
     }
     if (res.code !== 0) {
-      throw res.errors;
+      throw res.error;
     }
     return res.data;
   }

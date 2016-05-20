@@ -6,16 +6,30 @@ const Sequelize = require('sequelize');
 module.exports = (db) => {
   return db.define('user', {
     /* 用户名 */
-    username: {
-      type: Sequelize.STRING, unique: true
+    userName: {
+      type: Sequelize.STRING, 
+      unique: true,
+      allowNull: false
+    },
+    /* 登录密码盐 */
+    loginSalt: {
+      type: Sequelize.STRING,
+      allowNull: false
     },
     /* 登录密码 */
-    loginpass: {
-      type: Sequelize.STRING
+    loginPass: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
+    /* 支付密码盐 */
+    paySalt: {
+      type: Sequelize.STRING,
+      allowNull: false
     },
     /* 支付密码 */
-    paypass: {
-      type: Sequelize.STRING
+    payPass: {
+      type: Sequelize.STRING,
+      allowNull: false
     },
     /* 真实姓名 */
     realName: {
@@ -23,7 +37,8 @@ module.exports = (db) => {
     },
     /* 身份证号 */
     idNumber: {
-      type: Sequelize.STRING, unique: true
+      type: Sequelize.STRING, 
+      unique: true
     },
     /* 邮箱地址 */
     email: {
@@ -33,9 +48,19 @@ module.exports = (db) => {
     phone: {
       type: Sequelize.STRING
     },
+    /* 上次登录时间 */
+    lastLogin: {
+      type: Sequelize.DATE
+    },
     /* 账户余额 */
     balance: {
-      type: Sequelize.DECIMAL(12, 2)
+      type: Sequelize.DECIMAL(12, 2),
+      defaultValue: 0
+    },
+    /* 实名验证状态 */
+    status: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0
     }
   });
 };

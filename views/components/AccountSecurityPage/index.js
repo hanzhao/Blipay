@@ -2,12 +2,130 @@
  * “个人账户”页面中“安全设置”选项对应的右侧方框。
  */
 import React from 'react';
-/*
-import { Button } from 'antd';
-*/
+import { connect } from 'react-redux';
 import FormModal from '../FormModal';
 import SecurityRow from '../SecurityRow';
 import styles from './styles';
+import ajax from '../../common/ajax';
+import { 
+  enterChangePaypass, 
+  exitChangePaypass, 
+  changePaypass
+} from '../../redux/modules/account/paypass';
+import { 
+  enterChangeLoginpass,
+  exitChangeLoginpass,
+  changeLoginpass
+} from '../../redux/modules/account/loginpass';
+import { getUserId } from '../../redux/modules/account/auth';
+import store from '../../redux/store';
+
+const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+let loginPass;
+let payPass;
+let newLoginpass;
+let newPaypass;
+
+const validateNewPaypass = (rule, value, callback) => {
+  if (!value) {
+    callback();
+  } else {
+    if (!passwordRegex.test(value)) {
+      callback(new Error('密码必须包含字母和数字组合，长度至少 8 位。'));
+    } else if (value === loginPass) {
+      callback(new Error('支付密码不得与登录密码相同。'));
+    } else {
+      newPaypass = value;
+      callback();
+    }
+  } 
+};
+
+const validateRePaypass = (rule, value, callback) => {
+  if (!value) {
+    callback();
+  } else {
+    if (value !== newPaypass) {
+      callback(new Error('两次输入的密码不匹配。'));
+    } else {
+      callback();
+    }
+  } 
+};
+
+const validateNewLoginpass = (rule, value, callback) => {
+  if (!value) {
+    callback();
+  } else {
+    if (!passwordRegex.test(value)) {
+      callback(new Error('密码必须包含字母和数字组合，长度至少 8 位。'));
+    } else if (value === payPass) {
+      callback(new Error('登录密码不得与支付密码相同。'));
+    } else {
+      newLoginpass = value;
+      callback();
+    }
+  } 
+};
+
+const validateReLoginpass = (rule, value, callback) => {
+  if (!value) {
+    callback();
+  } else {
+    if (value !== newLoginpass) {
+      callback(new Error('两次输入的密码不匹配。'));
+    } else {
+      callback();
+    }
+  } 
+};
+
+const validatePaypass = async (rule, value, callback) => {
+  try {
+    const res = await ajax.get(
+      '/account/check_paypass', 
+      { 
+        userId: getUserId(store.getState()),
+        payPass: value
+      }
+    );
+    if (res.code === 0) {
+      payPass = value;
+      callback();
+    } else {
+      callback(new Error('验证支付密码出现错误。'));
+    }
+  } catch(err) {
+    if (err.code === -3)
+      callback(new Error('支付密码不正确。'));
+    else
+      callback(new Error('验证支付密码出现错误。'));
+  }
+};
+
+const validateLoginpass = async (rule, value, callback) => {
+  try {
+    const res = await ajax.get(
+      '/account/check_loginpass', 
+      { 
+        userId: getUserId(store.getState()),
+        loginPass: value
+      }
+    );
+    if (res.code === 0) {
+      loginPass = value;
+      callback();
+    } else {
+      callback(new Error('验证登录密码出现错误。'));
+    }
+  } catch(err) {
+    if (err.code === -3)
+      callback(new Error('登录密码不正确。'));
+    else
+      callback(new Error('验证登录密码出现错误。'));
+  }
+};
 
 const loginpassPropsArray = [
   {
@@ -18,7 +136,8 @@ const loginpassPropsArray = [
     },
     field: [
       'paypass', {
-        rules: [{ required: true }]
+        validateTrigger: 'onBlur',
+        rules: [{ required: true }, { validator: validatePaypass }]
       }
     ]
   }, {
@@ -29,7 +148,7 @@ const loginpassPropsArray = [
     },
     field: [
       'loginpass', {
-        rules: [{ required: true }]
+        rules: [{ required: true }, { validator: validateNewLoginpass }]
       }
     ]
   }, {
@@ -40,7 +159,7 @@ const loginpassPropsArray = [
     },
     field: [
       'reloginpass', {
-        rules: [{ required: true }]
+        rules: [{ required: true }, { validator: validateReLoginpass }]
       }
     ]
   }
@@ -55,7 +174,8 @@ const paypassPropsArray = [
     },
     field: [
       'loginpass', {
-        rules: [{ required: true }]
+        validateTrigger: 'onBlur',
+        rules: [{ required: true }, { validator: validateLoginpass }]
       }
     ]
   },
@@ -67,7 +187,7 @@ const paypassPropsArray = [
     },
     field: [
       'paypass', {
-        rules: [{ required: true }]
+        rules: [{ required: true }, { validator: validateNewPaypass }]
       }
     ]
   },
@@ -79,7 +199,7 @@ const paypassPropsArray = [
     },
     field: [
       'repaypass', {
-        rules: [{ required: true }]
+        rules: [{ required: true }, { validator: validateRePaypass }]
       }
     ]
   }
@@ -112,24 +232,27 @@ const emailPropsArray = [
   }
 ];
 
-
+@connect(
+  (state) => ({
+    changingPaypass: state.account.paypass.changingPaypass,
+    changingLoginpass: state.account.loginpass.changingLoginpass,
+    paypassError: state.account.paypass.errorMsg,
+    loginpassError: state.account.loginpass.errorMsg,
+    requestingPaypass: state.account.paypass.requesting,
+    requestingLoginpass: state.account.loginpass.requesting
+  }),
+  {
+    enterChangePaypass,
+    exitChangePaypass,
+    changePaypass,
+    enterChangeLoginpass,
+    exitChangeLoginpass,
+    changeLoginpass
+  }
+)
 class AccountSecurityPage extends React.Component {
   state = {
-    changingLoginpass: false,
-    changingPaypass: false,
     verifyingEmail: false
-  };
-
-  toggleLoginpass = () => {
-    this.setState({
-      changingLoginpass: !this.state.changingLoginpass
-    });
-  };
-
-  togglePaypass = () => {
-    this.setState({
-      changingPaypass: !this.state.changingPaypass
-    });
   };
 
   toggleVerifyEmail = () => {
@@ -138,21 +261,41 @@ class AccountSecurityPage extends React.Component {
     });
   };
 
+  handleLoginpass = (values) => {
+    this.props.changeLoginpass(
+      getUserId(store.getState()),
+      values.loginpass
+    );
+    console.log(values);
+  };
+
+  handlePaypass = (values) => {
+    this.props.changePaypass(
+      getUserId(store.getState()), 
+      values.paypass
+    );
+    console.log(values);
+  };
+
+  handleEmail = (values) => {
+    // TODO
+    console.log(values);
+  };
   render() {
     const contents = [
       {
         title: '账户密码',
         brief: '账户密码用于登录您的账户',
         btnText: '修改',
-        onClick: this.toggleLoginpass
+        onClick: this.props.enterChangeLoginpass
       }, {
         title: '支付密码',
         brief: '支付密码用于保障交易安全',
         btnText: '修改',
-        onClick: this.togglePaypass
+        onClick: this.props.enterChangePaypass
       }, {
-        title: '邮箱验证',
-        brief: '您尚未进行邮箱验证',
+        title: '实名验证',
+        brief: '您尚未进行实名验证',
         btnText: '验证',
         onClick: this.toggleVerifyEmail
       }
@@ -165,25 +308,29 @@ class AccountSecurityPage extends React.Component {
           ))
         }
         <FormModal title="修改登录密码"
-                   visible={this.state.changingLoginpass}
+                   visible={this.props.changingLoginpass}
                    num={3}
                    btnText="确认修改"
                    propsArray={loginpassPropsArray}
-                   btnProps={{ onClick: this.handleLoginpass }}
-                   toggleModal={this.toggleLoginpass} />
+                   loading={this.props.requestingLoginpass}
+                   btnCallback={this.handleLoginpass}
+                   errorMsg={this.props.loginpassError}
+                   toggleModal={this.props.exitChangeLoginpass} />
         <FormModal title="修改支付密码"
-                   visible={this.state.changingPaypass}
+                   visible={this.props.changingPaypass}
                    num={3}
                    btnText="确认修改"
                    propsArray={paypassPropsArray}
-                   btnProps={{ onClick: this.handlePaypass }}
-                   toggleModal={this.togglePaypass} />
-        <FormModal title="验证邮箱"
+                   loading={this.props.requestingPaypass}
+                   btnCallback={this.handlePaypass}
+                   errorMsg={this.props.paypassError}
+                   toggleModal={this.props.exitChangePaypass} />
+        <FormModal title="实名验证"
                    visible={this.state.verifyingEmail}
                    num={2}
                    btnText="确认验证"
                    propsArray={emailPropsArray}
-                   btnProps={{ onClick: this.handleEmail }}
+                   btnCallback={this.handleEmail}
                    toggleModal={this.toggleVerifyEmail} />
       </div>
     );
