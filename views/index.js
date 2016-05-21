@@ -10,6 +10,7 @@ import { syncHistoryWithStore } from 'react-router-redux';
 import store from './redux/store';
 
 import App from './components/App';
+import AuditApp from './components/AuditApp/';
 import MainPage from './components/MainPage';
 import ShoppingPage from './components/ShoppingPage';
 import AccountPage from './components/AccountPage';
@@ -19,26 +20,52 @@ import AccountWelcomePage from './components/AccountWelcomePage';
 import AccountInfoPage from './components/AccountInfoPage';
 import AdminIndexPage from './components/AdminIndexPage';
 import NotFoundPage from './components/NotFoundPage';
+import AuditorLoginPage from './components/AuditorLoginPage';
+import AuditPage from './components/AuditPage';
+import AuditLatestRecordPage from './components/AuditLatestRecordPage'
+import AuditCheckPage from './components/AuditCheckPage';
+import AuditSearchPage from './components/AuditSearchPage';
+import AuditLogPage from './components/AuditLogPage';
+
+import { isLoggedIn } from './redux/modules/account/auth';
 
 const history = syncHistoryWithStore(browserHistory, store);
 
+const checkLogin = (nextState, replace, callback) => {
+  if (!isLoggedIn(store.getState()) && 
+      (nextState.location.pathname !== '/'))
+    replace('/');
+  callback();
+};
 const router = (
   <Provider store={store}>
     <Router history={history}>
       <Route path="/admin">
         <IndexRoute component={AdminIndexPage} />
       </Route>
+      <Route path="/auditor" component = {AuditApp}>
+        <IndexRoute component={AuditorLoginPage} />
+      
+      <Route path="/audit" component={AuditPage}>
+        <IndexRoute component={AuditLatestRecordPage} />
+        <Route path="/audit/check" component={AuditCheckPage} />
+          <Route path="/audit/search" component={AuditSearchPage} />
+          <Route path="/audit/log" component={AuditLogPage} />
+      </Route>
+      </Route>
       <Route path="/" component={App}>
         <IndexRoute component={MainPage} />
-        <Route path="/shopping" component={ShoppingPage} />
-        <Route path="/account" component={AccountPage}>
-          <IndexRoute component={AccountWelcomePage} />
-          <Route path="/account/info" component={AccountInfoPage} />
-          <Route path="/account/records" component={AccountRecordPage} />
-          <Route path="/account/security" component={AccountSecurityPage} />
+        <Route onEnter={checkLogin}>
+          <Route path="/shopping" component={ShoppingPage} />
+          <Route path="/account" component={AccountPage} >
+            <IndexRoute component={AccountWelcomePage} />
+            <Route path="/account/info" component={AccountInfoPage} />
+            <Route path="/account/records" component={AccountRecordPage} />
+            <Route path="/account/security" component={AccountSecurityPage} />
+          </Route>
         </Route>
-        <Route path="*" component={NotFoundPage} />
       </Route>
+      <Route path="*" component={NotFoundPage} />
     </Router>
   </Provider>
 );

@@ -11,6 +11,9 @@ function ajaxMiddleware(client) {
       if (typeof action === 'function') {
         return action(dispatch, getState);
       }
+      if (action === undefined) {
+        return next(action);
+      }
       const { promise, types, ...rest } = action;
       if (!promise) {
         return next(action);
@@ -30,12 +33,12 @@ function ajaxMiddleware(client) {
   };
 }
 
-const _routerMiddleware = routerMiddleware(browserHistory);
 const _ajaxMiddleware = ajaxMiddleware(ajax);
+const _routerMiddleware = routerMiddleware(browserHistory);
 
 const store = createStore(
   reducer, compose(
-    applyMiddleware(_routerMiddleware, _ajaxMiddleware),
+    applyMiddleware(_ajaxMiddleware, _routerMiddleware),
     process.env.NODE_ENV === 'development' && window.devToolsExtension ?
     window.devToolsExtension() : f => f
   )
