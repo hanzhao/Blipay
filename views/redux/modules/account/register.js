@@ -6,7 +6,7 @@ import {
   resetInfo
 } from './info';
 import { resetTransaction } from './transaction';
-import { push } from 'react-router-redux'; 
+import { push } from 'react-router-redux';
 
 const REGISTER = 'Blipay/account/REGISTER';
 const REGISTER_SUCC = 'Blipay/account/REGISTER_SUCC';

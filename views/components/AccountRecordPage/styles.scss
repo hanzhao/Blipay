@@ -1,10 +1,8 @@
 .container {
-  position: relative;
-  margin: 30px;
-  margin-top:40px;
+  padding: 1rem 5%;
 
   .picker {
-    width: 200px;
+    width: 30%;
     border-top: solid 1px #c3c3c3;
     border-left: solid 1px #c3c3c3;
     border-right: solid 1px #c3c3c3;
@@ -16,10 +14,10 @@
   }
 
   .button {
-    margin-left: 20px;
+    margin-left: 5%;
   }
 
   .wrapper {
-    margin-top: 30px;
+    margin-top: 1rem;
   }
 }

@@ -10,7 +10,7 @@ import info from './info';
 
 export default combineReducers({
   auth,
-  register, 
+  register,
   paypass,
   loginpass,
   transaction,

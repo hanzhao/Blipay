@@ -18,6 +18,7 @@ function ajaxMiddleware(client) {
       if (!promise) {
         return next(action);
       }
+      console.log('in middleware');
       const [REQUEST, SUCCESS, FAILURE] = types;
       next({...rest, type: REQUEST});
       const actionPromise = promise(client);
