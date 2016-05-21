@@ -11,7 +11,6 @@ import store from './redux/store';
 
 import App from './components/App';
 import MainPage from './components/MainPage';
-import ShoppingPage from './components/ShoppingPage';
 import AccountPage from './components/AccountPage';
 import AccountRecordPage from './components/AccountRecordPage';
 import AccountSecurityPage from './components/AccountSecurityPage';
@@ -26,6 +25,13 @@ import AdminManager from './components/AdminManager';
 import AdminChange from './components/AdminChange';
 import AdminVerify from './components/AdminVerify';
 import AdminVerifyDetail from './components/AdminVerifyDetail';
+import ShoppingPage from './components/ShoppingPage';
+import ShoppingWelcomePage from './components/ShoppingWelcomePage';
+import ShoppingCartPage from './components/ShoppingCartPage';
+import ShoppingOrderPage from './components/ShoppingOrderPage';
+import ShoppingInfoPage from './components/ShoppingInfoPage';
+import ShoppingItemAdd from './components/ShoppingItemAdd';
+import ShoppingItemManage from './components/ShoppingItemManage';
 
 const history = syncHistoryWithStore(browserHistory, store);
 
@@ -42,14 +48,21 @@ const router = (
           <Route path="/admin/account/verification/detail" component={AdminVerifyDetail} />
         </Route>
       </Route>
-      <Route path="/" component={App}>
+      <Route path="/" component={App} >
         <IndexRoute component={MainPage} />
-        <Route path="/shopping" component={ShoppingPage} />
-        <Route path="/account" component={AccountPage}>
+        <Route path="/account" component={AccountPage} >
           <IndexRoute component={AccountWelcomePage} />
           <Route path="/account/info" component={AccountInfoPage} />
           <Route path="/account/records" component={AccountRecordPage} />
           <Route path="/account/security" component={AccountSecurityPage} />
+        </Route>
+        <Route path="/shopping" component={ShoppingPage}>
+          <IndexRoute component={ShoppingInfoPage} />
+          <Route path="/shopping/shoppinginfo" component={ShoppingInfoPage} />
+          <Route path="/shopping/shoppingcart" component={ShoppingCartPage} />
+          <Route path="/shopping/shoppingorder" component={ShoppingOrderPage} />
+          <Route path="/shopping/shoppingitemadd" component={ShoppingItemAdd} />
+          <Route path="/shopping/shoppingitemmanage" component={ShoppingItemManage} />
         </Route>
         <Route path="*" component={NotFoundPage} />
       </Route>

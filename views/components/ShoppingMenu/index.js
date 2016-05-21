@@ -1,5 +1,5 @@
 /*
- * 左边的导航条
+ * shopping menu
  */
 
 import React from 'react';
@@ -7,14 +7,15 @@ import { Link } from 'react-router';
 import { Menu, Icon } from 'antd';
 
 const menus = [
-  { to: '/account', text: '欢迎页面', icon: 'home'},
-  { to: '/account/info', text: '基本信息', icon: 'info-circle-o' },
-  { to: '/account/records', text: '交易记录', icon: 'file-text' },
-  { to: '/account/security', text: '安全设置', icon: 'unlock' }
+  { to: '/shopping/shoppinginfo', text: '浏览宝贝', icon: 'info-circle-o' },
+  { to: '/shopping/shoppingcart', text: '购物车', icon: 'shopping-cart' },
+  { to: '/shopping/shoppingorder', text: '订单管理', icon: 'exception' },
+  { to: '/shopping/shoppingitemadd', text: '商品添加', icon: 'plus-square' },
+  { to: '/shopping/shoppingitemmanage', text: '商品管理', icon: 'exception' },
 ];
 
 
-class AccountMenu extends React.Component {
+class ShoppingMenu extends React.Component {
   render() {
     return (
       <Menu onClick={this.handleClick}
@@ -33,4 +34,4 @@ class AccountMenu extends React.Component {
   }
 }
 
-export default AccountMenu;
+export default ShoppingMenu;
