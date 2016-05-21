@@ -7,8 +7,9 @@ const createForm = Form.create;
 const FormItem = Form.Item;
 import ajax from '../../common/ajax';
 let  currentID=0;
-class ShoppingItenManageTable extends React.Component {
-  render() {
+class ShoppingOrderPageTable extends React.Component {
+  render() 
+  {
     const handleSubmit = ()=> {
       this.props.form.validateFields(async (errors) => {
         let res=await ajax.post('/item/update', 
@@ -65,4 +66,4 @@ class ShoppingItenManageTable extends React.Component {
 }
 
 ShoppingItenManageTable = createForm()(ShoppingItenManageTable);
-export default ShoppingItenManageTable;
+export default ShoppingOrderPageTable;

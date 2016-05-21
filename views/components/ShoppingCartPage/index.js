@@ -1,32 +1,54 @@
 import React from 'react';
-import { Menu, Dropdown, Icon } from 'antd';
+import { Menu, Dropdown, Icon,Form} from 'antd';
 import { Button } from 'antd';
 import { Checkbox } from 'antd';
 import { InputNumber } from 'antd';
 import { Pagination } from 'antd';
 import styles from './styles';
 import { Table } from 'antd';
-
-function onChangeCheckBox(e) {
-  console.log(`checked = ${e.target.checked}`);
-}
-function onChangeInput(value) {
-  console.log('changed', value);
-}
-class ShoppingCartPage extends React.Component {
-  render() {
-
-  const columns = [{
+import { reduxForm } from 'redux-form';
+import ajax from '../../common/ajax';
+import { connect } from 'react-redux';
+const createForm = Form.create;
+const FormItem = Form.Item;
+function onChangeInput(e) {
+ // console.log(this.target.value);
+  //console.log(e);
+};
+var sum;
+function onChangeCheckBox(e,checkedValues) {
+  //console.log(checkedValues);
+    for(var i=0;i<contents.length;i++)
+    {
+      if(contents[i].id==e.id)
+      {
+        contents[i].checked=!contents[i].checked;
+        break;
+      }
+    }
+    sum=0;
+    for (var i=0;i<contents.length;i++)
+    {
+      if (contents[i].checked==true)
+      {
+        sum=sum+contents[i].totalCost;
+      }
+    }
+};
+let contents = [];
+let itemids=[];
+let retitems=[];
+let columns = [{
       title: '',
-      dataIndex: 'checkbox',
-      key: 'checkbox',
-      render: () => {
-        return <Checkbox defaultChecked={false} onChange={onChangeCheckBox} {...tableProps}/>;
+      dataIndex: 'checked',
+      key: 'checked',
+      render: (d,e) => {
+        return <Checkbox defaultChecked={d} onClick={onChangeCheckBox(e)}/>;
       }
     }, {
       title: '',
-      dataIndex: 'image',
-      key: 'image',
+      dataIndex: 'thumb',
+      key: 'thumb',
       render: (d) => {
         return <img src={d} className={styles.itemImage}/>
       }
@@ -42,14 +64,15 @@ class ShoppingCartPage extends React.Component {
       dataIndex: 'price',
       key: 'price', 
       render: (d) => {
-           return <span className={styles.itemPrice}>{Number(d).toFixed(2)}</span>;   
+           return <span className={styles.itemPrice}>{d}</span>;   
       }
     }, {
       title: '数量',
       dataIndex: 'amount',
       key: 'amount',
-      render: (d) => {
-        return <InputNumber min={1} max={1024} defaultValue={3} onChange={onChangeInput} />
+      render: (d,e,value) => {
+        //console.log(e);
+        return <InputNumber min={1} max={1024} defaultValue={d} onChange={onChangeInput(e)} />
       }
     }, {
       title: '金额',
@@ -58,51 +81,87 @@ class ShoppingCartPage extends React.Component {
       render: (d) => {
            return <span className={styles.itemTotalCost}>{Number(d).toFixed(2)}</span>;   
       }
-    }];
-
-    const contents = Array(10).fill({
-        checkbox: 1,
-        image: 'http://img10.360buyimg.com/n0/jfs/t1858/73/2105043385/290449/116bd5ed/56ed2ce3N92442c3b.jpg',
-        name: '女长袖雪纺衫',
-        price: 169,
-        amount: 2,
-        totalCost: 169*2
-    });
-
-    const tableProps = {
-      pagination: {
-        simple: true,
-        //pageSize: Math.floor((window.innerHeight - 350) / 50)
-        pageSize: Math.floor((window.innerHeight - 350) / 50)
+}];
+let pre=0;
+let BasicDemo = React.createClass(
+{
+    getInitialState: async ()=> {
+    //console.log(itemids);
+    sum=0;
+    contents=[];
+    for (var i=pre;i<itemids.length;i++)
+    {
+      var e=itemids[i].e;
+      //console.log(itemids);
+      let res = await ajax.post('/item/item_list',{id:e ,filter:{},sellerId: 1});
+      var has=0;
+      //console.log(res.items[0].name);
+      for (var j=contents.length-1;j>=0;j--)
+      {
+        if (contents[j].id == res.items[0].id)
+        {
+        //  console.log('testamount1',contents[j].amount);
+          contents[j].amount=1;
+        //  console.log('testamount2',contents[j].amount);
+          contents[j].totalCost=contents[j].price*contents[j].amount;
+          has=1;
+          break;
+        }
       }
-    };
-
-    var total_price = 0;
-    for (var i in contents) {
-      var content = contents[i];
-      total_price += content.price * content.amount;
+      if(has==0)
+      {
+        contents.push({
+            checked:false,
+            id:res.items[0].id,
+            amount:1,
+            name:res.items[0].name,
+            totalCost:res.items[0].price,
+            price:res.items[0].price,
+            thumb:res.items[0].thumb,
+        });
+      }
     }
-    console.log(total_price);
-    total_price = total_price.toFixed(2);
-    
-    return (
+    return {};
+  },
+  render() {
+    var { getFieldProps, getFieldError, isFieldValidating } = this.props.form;
+    return(
     <div className={styles.container}>
     <div className={styles.upperHalf}>
-
-      <Table columns={columns} dataSource={contents} {...tableProps}/>
-
+      <Table columns={columns} dataSource={contents}/>
       <div className={styles.horizontalBar}/>
     </div>
-
     <div className={styles.lowerHalf}>
-        <span className={styles.lowerLeft}><Button className={styles.operationButton} type="ghost">全选</Button> 
-        <Button className={styles.operationButton} type="ghost">删除</Button></span>
-        <span className={styles.lowerRight}><span className={styles.totalCaption}>总价</span><span className={styles.total}>${total_price}</span>
+        <span className={styles.lowerLeft}><Button className={styles.operationButton} type="ghost">全选 </Button> 
+        <Button className={styles.operationButton} type="ghost">删除 </Button></span>
+        <span className={styles.lowerRight}><span className={styles.totalCaption}>总价</span><span className={styles.total}>${sum}</span>
         <Button type="primary" className={styles.payButton}>结算</Button></span>
     </div>
    </div>
     );
   }
-}
+});
+BasicDemo = createForm()(BasicDemo);
+@connect(
+  (state) => ({
+    items: state.shopping.cartItems
+  })
+)
+class ShoppingCartPage extends React.Component {
+
+    constructor(props) {
+      super(props);
+      props.items.map((e, i) => 
+      (
+          itemids=[...itemids,{e}]
+      ));
+    };
+    render() 
+    {
+      return (
+        <BasicDemo />
+      );
+    }
+};
 
 export default ShoppingCartPage;

@@ -5,6 +5,7 @@ import { Form, Input, Row, Col, Button,  InputNumber,DatePicker } from 'antd';
 import { Upload, Icon, Modal } from 'antd';
 import ajax from '../../common/ajax';
 import styles from './styles';
+
 const FormItem = Form.Item;
 const createForm = Form.create;
 
@@ -38,19 +39,20 @@ let BasicDemo = React.createClass({
 
   handleSubmit(e) {
     e.preventDefault();
-    this.props.form.validateFields(async(errors, values) => {
+    this.props.form.validateFields(async (errors, values) => {
+      console.log(values);
       if (!!errors) {
-        console.log('Errors in form!!!');
+        console.log('Errors in form：'+ require('util').inspect(errors));
         return;
       }
       else{
         let res=await ajax.post('/item/new', 
           {
-            name:  name ,
-            price: 23.32,
-            remain: 1,
+            name:  values.name ,
+            price: values.price,
+            remain: values.store,
             thumb: 'https://os.alipayobjects.com/rmsportal/NDbkJhpzmLxtPhB.png',
-            description: ''
+            description: values.textarea,
           } );
           console.log('Submit!!!');
           console.log(values);
