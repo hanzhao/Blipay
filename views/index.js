@@ -2,7 +2,7 @@
 import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
-
+import { message } from 'antd';
 import { Provider } from 'react-redux';
 import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
@@ -33,7 +33,18 @@ import ShoppingInfoPage from './components/ShoppingInfoPage';
 import ShoppingItemAdd from './components/ShoppingItemAdd';
 import ShoppingItemManage from './components/ShoppingItemManage';
 
+import { isLoggedIn } from './redux/modules/account/auth';
+
 const history = syncHistoryWithStore(browserHistory, store);
+
+const checkLogin = (nextState, replace, callback) => {
+  if (!isLoggedIn(store.getState()) &&
+      (nextState.location.pathname !== '/')) {
+    replace('/');
+    message.info('请先登录');
+  }
+  callback();
+};
 
 const router = (
   <Provider store={store}>
@@ -50,19 +61,21 @@ const router = (
       </Route>
       <Route path="/" component={App} >
         <IndexRoute component={MainPage} />
-        <Route path="/account" component={AccountPage} >
-          <IndexRoute component={AccountWelcomePage} />
-          <Route path="/account/info" component={AccountInfoPage} />
-          <Route path="/account/records" component={AccountRecordPage} />
-          <Route path="/account/security" component={AccountSecurityPage} />
-        </Route>
-        <Route path="/shopping" component={ShoppingPage}>
-          <IndexRoute component={ShoppingInfoPage} />
-          <Route path="/shopping/shoppinginfo" component={ShoppingInfoPage} />
-          <Route path="/shopping/shoppingcart" component={ShoppingCartPage} />
-          <Route path="/shopping/shoppingorder" component={ShoppingOrderPage} />
-          <Route path="/shopping/shoppingitemadd" component={ShoppingItemAdd} />
-          <Route path="/shopping/shoppingitemmanage" component={ShoppingItemManage} />
+        <Route onEnter={checkLogin}>
+          <Route path="/account" component={AccountPage} >
+            <IndexRoute component={AccountWelcomePage} />
+            <Route path="/account/info" component={AccountInfoPage} />
+            <Route path="/account/records" component={AccountRecordPage} />
+            <Route path="/account/security" component={AccountSecurityPage} />
+          </Route>
+          <Route path="/shopping" component={ShoppingPage}>
+            <IndexRoute component={ShoppingInfoPage} />
+            <Route path="/shopping/shoppinginfo" component={ShoppingInfoPage} />
+            <Route path="/shopping/shoppingcart" component={ShoppingCartPage} />
+            <Route path="/shopping/shoppingorder" component={ShoppingOrderPage} />
+            <Route path="/shopping/shoppingitemadd" component={ShoppingItemAdd} />
+            <Route path="/shopping/shoppingitemmanage" component={ShoppingItemManage} />
+          </Route>
         </Route>
         <Route path="*" component={NotFoundPage} />
       </Route>

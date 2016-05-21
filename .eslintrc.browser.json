@@ -50,6 +50,10 @@
     "eol-last": [
       "error",
       "unix"
+    ],
+    "no-unused-vars": [
+      "error",
+      { "varsIgnorePattern": "should" }
     ]
   }
 }

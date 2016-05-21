@@ -14,8 +14,13 @@
         line-height: 2rem;
       }
       .lastLogin {
-        font-size: 1rem;
-        line-height: 2rem;
+        display: inline-block;
+        font-size: 15px;
+        margin-top: 15px;
+      }
+      .logout {
+        margin-left: 20px;
+        font-size: 15px;
       }
     }
     .balance {
@@ -29,7 +34,7 @@
       .balanceLower{
         .balanceValue {
           float: left;
-          width: 40%;
+
           .balanceHead {
             position: relative;
             bottom: 0;
@@ -44,7 +49,9 @@
           }
         }
         .balanceOperation {
-          line-height: 2rem;
+          float: left;
+          margin-left: 20px;
+          padding-top: 10px;
           .withdrawal {
             margin-left: 5%;
           }

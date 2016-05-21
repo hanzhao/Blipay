@@ -18,14 +18,14 @@ module.exports = (db) => {
      */
     /*
      * 操作发生的时间（该字段由Sequelize自动生成）
+     * 
      * createdAt: {
      *   type: Sequelize.DATE
      * },
      */
     /* 操作涉及的金额 */
     amount: {
-      type: Sequelize.STRING, 
-      unique: true
+      type: Sequelize.DECIMAL(12, 2)
     },
     /* 交易类型，1为充值，2为提现 */
     type: {
@@ -34,6 +34,9 @@ module.exports = (db) => {
     /* 交易状态 */
     status: {
       type: Sequelize.INTEGER
+    },
+    info: {
+      type: Sequelize.STRING
     }
   });
 };
