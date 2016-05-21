@@ -13,24 +13,49 @@ const Item = require('./item')(db);
 const Transaction = require('./transaction')(db);
 const Order = require('./order')(db);
 const OrderItem = require('./orderitem')(db);
+const Review = require('./review')(db);
+
 // 表关联
 Item.belongsTo(User, {
   as: 'seller'
 });
+
 Transaction.belongsTo(User);
 
-Order.belongsTo(User, { as: 'seller' });
-Order.belongsTo(User, { as: 'customer' });
-Order.belongsToMany(Item, { through: OrderItem });
+Order.belongsTo(User, {as: 'seller'});
+Order.belongsTo(User, {as: 'buyer'});
+Order.belongsToMany(Item, {through: OrderItem});
 
-// Sync table to database
-(Promise.coroutine(function* () {
-  for (let t of [User, Item, Transaction, Order, OrderItem]) {
-    yield t.sync({ force: true })
+Item.hasMany(Review);
+
+const report = (msg) => {
+  console.log(`Error accessing database with following error message.\n${msg}`);
+};
+
+User.sync().then(() => {
+  // id为1的用户将作测试用
+  User.findOne({ where: { id: 1 } })
+    .then((user) => {
+      if (user) {
+        User.update({ userName: 'xxx', balance: 0 }, { where: { id: 1 } })
+          .catch((err) => { report(err.message); });
+      } else {
+        User.create({ userName: 'xxx', balance: 0 })
+          .catch((err) => { report(err.message); });
+      }
+    }).catch((err) => { report(err.message); });
+});
+
+
+[Item, Transaction, Order, OrderItem, Review].forEach((t) => {
+  t.sync().then(() => {
     console.log(`Table ${t.name} synced`);
   }
 }))()
 
+
+
+
 module.exports = {
-  User, Item, Transaction, Order, OrderItem
+  User, Item, Transaction, Order, OrderItem, Review
 };
