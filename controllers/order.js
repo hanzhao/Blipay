@@ -6,6 +6,7 @@ const Item = require('../models').Item;
 const Order = require('../models').Order;
 const OrderItem = require('../models').OrderItem;
 const RefundText = require('../models').RefundText;
+const Review = require('../models').Review;
 
 const Router = require('express').Router;
 const router = Router();
@@ -192,6 +193,15 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
         if (req.session.userId != order.buyerId) {
           throw new Error('Auth Failed.');
         }
+        items = yield order.getItems();
+        for (var index = 0; index < items.length; index++) {
+          items[index].addReview(
+            Review.create({
+              score: req.body.reviews[index].score,
+              text: req.body.reviews[index].text
+            })
+          );
+        };
         const confirmTrans = yield requestReceive(order.sellerId, order.cost);
         yield order.update({
           sellerTransId: confirmTrans,
@@ -295,14 +305,27 @@ router.post('/order/order_list', Promise.coroutine(function* (req, res) {
       order: queryOrder,
       offset: req.body.head,
       limit: req.body.length,
-      include:[
+      include: [
         {
           model: Item
         }
       ]
     });
-    
-    return res.success({ orders: orders});
+
+    return res.success({ orders: orders });
+  }
+  catch (e) {
+    return res.fail('in /order/order_list   ' + require('util').inspect(e));
+  }
+}));
+
+router.post('/item/review', Promise.coroutine(function* (req, res) {
+  console.log('/item/review');
+  console.log(req.body);
+  try {
+    const item = yield Item.findOne({ where: { id: req.body.itemId } });
+    const reviews = yield item.getReviews();
+    return res.success({ reviews: reviews });
   }
   catch (e) {
     return res.fail('in /order/order_list   ' + require('util').inspect(e));

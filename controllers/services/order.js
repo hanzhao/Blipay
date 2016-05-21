@@ -59,6 +59,7 @@ const createOrder = Promise.coroutine(
         if (!item) {
           throw new Error('Item Not Found:' + element.itemId);
         }
+        yield item.decrement('remain',{by: element.count});
         yield newOrder.addItem(item, {
           count: element.count,
           cost: item.price * element.count
