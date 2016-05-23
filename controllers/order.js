@@ -86,9 +86,9 @@ router.post('/item/update', Promise.coroutine(function* (req, res) {
       throw new Error('Item Not Found.');
     }
     // TODO: check item owner and authentication 
-    // if (item.sellerId != req.session.userId) {
-    //   throw new Error('Auth Fail.');
-    // }
+    if (item.sellerId != req.session.userId) {
+      throw new Error('Auth Fail.');
+    }
     yield item.update(req.body);
     return res.success('Item updated.');
   }
@@ -106,9 +106,9 @@ router.post('/item/delete', Promise.coroutine(function* (req, res) {
       throw new Error('Item Not Found.');
     }
     // TODO: check item owner and authentication
-    // if (item.sellerId != req.session.userId) {
-    //   throw new Error('Auth Fail.');
-    // }
+    if (item.sellerId != req.session.userId) {
+      throw new Error('Auth Fail.');
+    }
     yield item.destroy();
     return res.success('Item destroyed');
   }
@@ -121,9 +121,9 @@ router.post('/order/new', Promise.coroutine(function* (req, res) {
   console.log('in /order/new');
   console.log(req.body);
   try {
-    createOrder(req.body.sellerId, req.body.buyerId, req.body.count, req.body.cost, req.body.items);
+    // createOrder(req.body.sellerId, req.body.buyerId, req.body.count, req.body.cost, req.body.items);
     // TODO: add session auth
-    // createOrder(req.body.sellerId, req.session.userId, req.body.count, req.body.cost, req.body.items);
+    yield createOrder(req.body.sellerId, req.session.userId, req.body.count, req.body.cost, req.body.items);
     return res.success('Order created');
   }
   catch (e) {
@@ -163,9 +163,9 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
         if (order.status != 0) {
           throw new Error('illegal operation');
         }
-        // if (req.session.userId != order.buyerId) {
-        //   throw new Error('Auth Failed.');
-        // }
+        if (req.session.userId != order.buyerId) {
+          throw new Error('Auth Failed.');
+        }
         const payTrans = yield requestPay(order.buyerId, order.cost);
         // const payTrans = 1;
         yield order.update({
@@ -329,6 +329,50 @@ router.post('/item/review', Promise.coroutine(function* (req, res) {
   }
   catch (e) {
     return res.fail('in /order/order_list   ' + require('util').inspect(e));
+  }
+}));
+
+router.post('/cart/get', Promise.coroutine(function* (req, res) {
+  console.log('/cart/get');
+  console.log(req.body);
+  try {
+    const user = yield User.findOne({
+      where: { id: req.session.userId },
+      include: [{ model: item }]
+    });
+    return res.success({ items: user.items });
+  } catch (e) {
+    return res.fail('in /cart/get   ' + require('util').inspect(e));
+  }
+}));
+
+router.post('/cart/add', Promise.coroutine(function* (req, res) {
+  console.log('/cart/add');
+  console.log(req.body);
+  try {
+    const user = yield User.findOne({ where: { id: req.session.userId } });
+    const item = yield Item.findOne({ where: { id: req.body.itemId } });
+    yield user.addItem(item, { count: req.body.itemCount });
+    return res.success('item added to cart');
+  } catch (e) {
+    return res.fail('in /cart/add   ' + require('util').inspect(e));
+  }
+}));
+
+router.post('/cart/update', Promise.coroutine(function* (req, res) {
+  console.log('/cart/update');
+  console.log(req.body);
+  try {
+    const user = yield User.findOne({ where: { id: req.session.userId } });
+    yield user.setItems(null);
+    for (var index = 0; index < req.body.items.length; index++) {
+      var element = req.body.items[index];
+      const item = yield Item.findOne({ where: { id: element.id } });
+      user.addItem(item, { count: element.count });
+    }
+    return res.success('cart updated');
+  } catch (e) {
+    return res.fail('in /cart/update   ' + require('util').inspect(e));
   }
 }));
 
