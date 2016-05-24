@@ -8,7 +8,7 @@ const columns = [{
   title: '交易流水号',
   dataIndex: 'id',
   key: 'id',
-  sorter: (a, b) => a < b ? -1 : 1
+  sorter: (a, b) => a.id < b.id ? -1 : 1
 }, {
   title: '交易时间',
   dataIndex: 'createdAt',
@@ -18,7 +18,7 @@ const columns = [{
       { moment(text).format('LLL') }
     </span>
   ),
-  sorter: (a, b) => new Date(a) < new Date(b) ? -1 : 1
+  sorter: (a, b) => a.createdAt < b.createdAt ? -1 : 1
 }, {
   title: '详细信息',
   dataIndex: 'info',
@@ -27,14 +27,15 @@ const columns = [{
   title: '交易金额',
   dataIndex: 'amount',
   key: 'amount',
-  sorter: (a, b) => a < b ? -1 : 1
+  sorter: (a, b) => a.amount < b.amount ? -1 : 1
 }, {
   title: '交易状态',
   dataIndex: 'status',
   key: 'status',
   render: (text) => (
     <span>{ text ? '交易完成' : '等待处理' }</span>
-  )
+  ),
+  sorter: (a, b) => a.status < b.status ? -1 : 1
 }];
 
 const wrapAmount = (data) => {

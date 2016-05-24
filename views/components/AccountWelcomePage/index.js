@@ -189,7 +189,7 @@ const getBalanceTail = (balance) => {
   }],
   (state) => ({
     user: state.account.user,
-    transactions: _.reverse(state.account.transactions),
+    transactions: _.reverse(_.slice(state.account.transactions)),
     showTopupModal: state.account.showTopupModal,
     showWithdrawModal: state.account.showWithdrawModal
   }),

@@ -43,7 +43,7 @@ let tempage=1;
 let BasicDemo = React.createClass(
 {
     getInitialState: async ()=> {
-    const res = await ajax.post('/item/item_list',{filter:{},sellerId: 1});
+    const res = await ajax.post('/api/item/item_list',{filter:{},sellerId: 1});
     console.log(require('util').inspect(res));
     Object.assign(contents,res.items);
     return {};
@@ -51,9 +51,9 @@ let BasicDemo = React.createClass(
   handleSearch(e)
   {
       e.preventDefault();
-      this.props.form.validateFields(async (errors) => 
+      this.props.form.validateFields(async (errors) =>
       {
-        let res=await ajax.post('/item/item_list', 
+        let res=await ajax.post('/api/item/item_list',
         {
             "id": 0,    // Only in single item query (stay null if not)
             "base": "price",    // time | remain | price
@@ -70,7 +70,7 @@ let BasicDemo = React.createClass(
      <div className={styles.upperHalf}>
         <nobr>
           <Cascader className={styles.cascader} placeholder="请选择排序类型" options={optionsPrice} onChange={onChange} />
-          <Cascader className={styles.cascader} placeholder="请选择商品类别" options={optionsCategory} onChange={onChange} />        
+          <Cascader className={styles.cascader} placeholder="请选择商品类别" options={optionsCategory} onChange={onChange} />
           <Button type="ghost" className={styles.button} onClick={this.handleSearch}>搜索</Button>
         </nobr>
       </div>
@@ -82,7 +82,7 @@ let BasicDemo = React.createClass(
               <ShoppingInfoTable className={styles.row} key={i} content={e} />
               </Col>
             ))
-          }   
+          }
         </Row>
         <Pagination simple defaultCurrent={tempage} total={pagesum} />
       </div>

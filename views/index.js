@@ -63,11 +63,11 @@ const router = (
         </Route>
         <Route path="/shopping" component={ShoppingPage}>
           <IndexRoute component={ShoppingInfoPage} />
-          <Route path="/shopping/shoppinginfo" component={ShoppingInfoPage} />
-          <Route path="/shopping/shoppingcart" component={ShoppingCartPage} />
-          <Route path="/shopping/shoppingorder" component={ShoppingOrderPage} />
-          <Route path="/shopping/shoppingitemadd" component={ShoppingItemAdd} />
-          <Route path="/shopping/shoppingitemmanage" component={ShoppingItemManage} />
+          <Route path="/shopping/info" component={ShoppingInfoPage} />
+          <Route path="/shopping/cart" component={ShoppingCartPage} />
+          <Route path="/shopping/order" component={ShoppingOrderPage} />
+          <Route path="/shopping/itemadd" component={ShoppingItemAdd} />
+          <Route path="/shopping/itemmanage" component={ShoppingItemManage} />
         </Route>
       </Route>
       <Route path="*" component={NotFoundPage} />

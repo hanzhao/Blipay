@@ -3,7 +3,6 @@
  */
 
 import React from 'react';
-import { asyncConnect } from 'redux-connect';
 import Container from '../Container';
 import AccountMenu from '../AccountMenu';
 

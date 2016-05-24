@@ -14,7 +14,7 @@ class ShoppingInfoTable extends React.Component {
   render() {
     const handleSubmit = async ()=> {
       console.log(this.props.content);
-        const res = await ajax.post('/order/new',
+        const res = await ajax.post('/api/order/new',
           {
             sellerId:1,
             buyerId:1,

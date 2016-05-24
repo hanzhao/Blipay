@@ -8,11 +8,11 @@ const FormItem = Form.Item;
 import ajax from '../../common/ajax';
 let  currentID=0;
 class ShoppingOrderPageTable extends React.Component {
-  render() 
+  render()
   {
     const handleSubmit = ()=> {
       this.props.form.validateFields(async (errors) => {
-        let res=await ajax.post('/item/update', 
+        let res=await ajax.post('/api/item/update',
           {
             id: this.props.content.id,
             name:  this.props.content.name ,
@@ -25,7 +25,7 @@ class ShoppingOrderPageTable extends React.Component {
     };
     const handleDelete = ()=> {
       this.props.form.validateFields(async (errors) => {
-        let res=await ajax.post('/item/delete', 
+        let res=await ajax.post('/api/item/delete',
           {
             id: this.props.content.id
           } );
@@ -55,9 +55,9 @@ class ShoppingOrderPageTable extends React.Component {
               <div> 商品价格 </div>
               <InputNumber size="large" min={0}  step={0.01} defaultValue={this.props.content.price} onChange={onChangePrice}/>
               <div> 商品余量 </div>
-              <InputNumber size="large" min={0}  step={1} defaultValue={this.props.content.remain} onChange={onChangeRemain}/> 
-              <div> 商品描述 </div> 
-              <Input type="textarea" defaultValue={this.props.content.description} onChange={onChangeDescription}/>    
+              <InputNumber size="large" min={0}  step={1} defaultValue={this.props.content.remain} onChange={onChangeRemain}/>
+              <div> 商品描述 </div>
+              <Input type="textarea" defaultValue={this.props.content.description} onChange={onChangeDescription}/>
               <Button type="primary" onClick= {handleSubmit}>确定修改</Button>
               <Button type="primary" onClick= {handleDelete}>删除商品</Button>
           </Card>

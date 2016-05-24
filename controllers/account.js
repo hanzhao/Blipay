@@ -1,3 +1,5 @@
+'use strict'
+const _ = require('lodash');
 const db = require('../models').db;
 const User = require('../models').User;
 const Transaction = require('../models').Transaction;
@@ -178,10 +180,10 @@ router.post('/account/update_info', Promise.coroutine(function* (req, res) {
   const attrs = ['realName', 'idNumber', 'email', 'phone']
   const user = yield User.findById(req.session.userId, {
     // 必须要选出主键，后面才可以保存
-    attributes: ['id', ...attrs]
+    attributes: attrs.concat(['id'])
   })
   for (let key in req.body) {
-    if (attrs.includes(key)) {
+    if (_.includes(attrs, key)) {
       user[key] = req.body[key]
     }
   }

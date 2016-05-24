@@ -46,7 +46,7 @@ let BasicDemo = React.createClass({
         return;
       }
       else{
-        let res=await ajax.post('/item/new', 
+        let res=await ajax.post('/api/item/new', 
           {
             name:  values.name ,
             price: values.price,
@@ -93,7 +93,7 @@ let BasicDemo = React.createClass({
       wrapperCol: { span: 12 },
     };
     return (
-      
+
       <Form horizontal form={this.props.form}>
         <FormItem
           {...formItemLayout}

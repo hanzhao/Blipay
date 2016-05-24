@@ -88,7 +88,7 @@ require('./models');
 app.use(require('./controllers'))
 
 // 错误处理
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   res.status(500).send(err.stack);
   console.error(err);
 });

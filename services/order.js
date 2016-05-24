@@ -1,6 +1,8 @@
 'use strict';
 const Promise = require('bluebird');
-const { Item, User, Order } = require('../models');
+const Item = require('../models').Item;
+const User = require('../models').User;
+const Order = require('../models').Order;
 
 const createItem = Promise.coroutine(function* (sellerId, item) {
   console.log('service: createItem:');

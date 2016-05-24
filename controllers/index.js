@@ -1,5 +1,5 @@
 'use strict'
-const { Router } = require('express');
+const Router = require('express').Router;
 const accountRouter = require('./account');
 const orderRouter = require('./order');
 const rootRouter = require('./root');
