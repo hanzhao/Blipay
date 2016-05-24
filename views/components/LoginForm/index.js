@@ -10,6 +10,11 @@ import { login } from '../../redux/modules/account';
 import store from '../../redux/store';
 import styles from './styles';
 
+const translate = {
+  USER_NOT_EXIST: '当前用户名未注册。',
+  INVALID_USERNAME_OR_PASSWORD: '用户名或密码错误。'
+};
+
 @connect(
   (state) => ({
     message: state.account.message
@@ -26,7 +31,7 @@ class LoginForm extends React.Component {
     const { fields: {
       userName,
       loginPass
-    }, handleSubmit } = this.props;
+    }, handleSubmit, message } = this.props;
     return (
       <Form horizontal onSubmit={handleSubmit}>
         <Form.Item>
@@ -46,7 +51,7 @@ class LoginForm extends React.Component {
                  {...loginPass} />
         </Form.Item>
         <div className={styles.hint}>
-          { this.props.message ? this.props.message : ' ' }
+          { message ? translate[message] || '出现未知错误。' : ' ' }
         </div>
         <Button type="primary" size="large"
                 className={styles.btn}

@@ -204,6 +204,9 @@ const getBalanceTail = (balance) => {
 class AccountWelcomePage extends React.Component {
   render() {
     const { user, transactions } = this.props
+    if (!user) {
+      return <span />;
+    }
     return (
       <div className={styles.container}>
         <div className={styles.upperHalf}>
