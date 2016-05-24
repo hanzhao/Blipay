@@ -40,20 +40,25 @@ const UPDATE_INFO_SUCCESS = 'Blipay/account/UPDATE_INFO_SUCCESS';
 const UPDATE_INFO_FAIL = 'Blipay/account/UPDATE_INFO_FAIL';
 // 申请实名认证
 const APPLY_VERIFICATION = 'Blipay/account/APPLY_VERIFICATION';
-const APPLY_VERIFICATION_SUCC = 'Blipay/account/APPLY_VERIFICATION_SUCC';
-const APPLY_VERIFICATION_FAIL = '/Blipay/account/APPLY_VERIFICATION_FAIL';
+const APPLY_VERIFICATION_SUCCESS = 'Blipay/account/APPLY_VERIFICATION_SUCCESS';
+const APPLY_VERIFICATION_FAIL = 'Blipay/account/APPLY_VERIFICATION_FAIL';
 // 修改登录密码
 const CHANGE_LOGINPASS = 'Blipay/account/CHANGE_LOGINPASS';
-const CHANGE_LOGINPASS_SUCC = 'Blipay/account/CHANGE_LOGINPASS_SUCC';
+const CHANGE_LOGINPASS_SUCCESS = 'Blipay/account/CHANGE_LOGINPASS_SUCCESS';
 const CHANGE_LOGINPASS_FAIL = 'Blipay/account/CHANGE_LOGINPASS_FAIL';
 // 修改支付密码
 const CHANGE_PAYPASS = 'Blipay/account/CHANGE_PAYPASS';
-const CHANGE_PAYPASS_SUCC = 'Blipay/account/CHANGE_PAYPASS_SUCC';
+const CHANGE_PAYPASS_SUCCESS = 'Blipay/account/CHANGE_PAYPASS_SUCCESS';
 const CHANGE_PAYPASS_FAIL = 'Blipay/account/CHANGE_PAYPASS_FAIL';
 // 找回密码
 const FIND_PASSWORD = 'Blipay/account/FIND_PASSWORD';
-const FIND_PASSWORD_SUCC = 'Blipay/account/FIND_PASSWORD_SUCC';
+const FIND_PASSWORD_SUCCESS = 'Blipay/account/FIND_PASSWORD_SUCCESS';
 const FIND_PASSWORD_FAIL = 'Blipay/account/FIND_PASSWORD_FAIL';
+
+const messages = {
+  USER_NOT_EXIST: '当前用户名未注册。',
+  INVALID_USERNAME_OR_PASSWORD: '用户名或密码错误。'
+}
 
 // 用户管理模块初始状态
 const initialState = {
@@ -126,22 +131,22 @@ export const updateInfo = (data) => ({
 })
 
 export const applyVerification = () => ({
-  types: [APPLY_VERIFICATION, APPLY_VERIFICATION_SUCC, APPLY_VERIFICATION_FAIL],
+  types: [APPLY_VERIFICATION, APPLY_VERIFICATION_SUCCESS, APPLY_VERIFICATION_FAIL],
   promise: (client) => client.post('/api/account/apply_verification')
 });
 
 export const changeLoginpass = (data) => ({
-  types: [CHANGE_LOGINPASS, CHANGE_LOGINPASS_SUCC, CHANGE_LOGINPASS_FAIL],
+  types: [CHANGE_LOGINPASS, CHANGE_LOGINPASS_SUCCESS, CHANGE_LOGINPASS_FAIL],
   promise: (client) => client.post('/api/account/change_loginpass', data)
 });
 
 export const changePaypass = (data) => ({
-  types: [CHANGE_PAYPASS, CHANGE_PAYPASS_SUCC, CHANGE_PAYPASS_FAIL],
+  types: [CHANGE_PAYPASS, CHANGE_PAYPASS_SUCCESS, CHANGE_PAYPASS_FAIL],
   promise: (client) => client.post('/api/account/change_paypass', data)
 });
 
 export const findPassword = (data) => ({
-  types: [FIND_PASSWORD, FIND_PASSWORD_SUCC, FIND_PASSWORD_FAIL],
+  types: [FIND_PASSWORD, FIND_PASSWORD_SUCCESS, FIND_PASSWORD_FAIL],
   promise: (client) => client.post('/api/account/find_password', data)
 });
 
@@ -235,28 +240,28 @@ export default function reducer(state = initialState, action = {}) {
         user: { ...state.user, ...action.result.user },
         message: null
       }
-    case APPLY_VERIFICATION_SUCC:
+    case APPLY_VERIFICATION_SUCCESS:
       return {
         ...state,
         showVerification: false,
         user: { ...state.user, status: 1 },
         message: null
       };
-    case CHANGE_LOGINPASS_SUCC:
+    case CHANGE_LOGINPASS_SUCCESS:
       return {
         ...state,
         showModifyLoginpassModal: false,
         message: null
       };
-    case CHANGE_PAYPASS_SUCC:
+    case CHANGE_PAYPASS_SUCCESS:
       return {
-        ...state, 
+        ...state,
         showModifyPaypassModal: false,
         message: null
       };
     case FIND_PASSWORD:
       return state;
-    case FIND_PASSWORD_SUCC:
+    case FIND_PASSWORD_SUCCESS:
       return {
         ...state,
         findRes: '已将新密码发送至您的邮箱。'
@@ -275,7 +280,7 @@ export default function reducer(state = initialState, action = {}) {
     case LOGOUT_FAIL:
       return {
         ...state,
-        message: action.error.type || action.error
+        message: (action.error.type && messages[action.error.type]) || '未知错误'
       }
     default:
       return state

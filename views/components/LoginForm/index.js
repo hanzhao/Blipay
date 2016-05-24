@@ -10,11 +10,6 @@ import { login } from '../../redux/modules/account';
 import store from '../../redux/store';
 import styles from './styles';
 
-const translate = {
-  USER_NOT_EXIST: '当前用户名未注册。',
-  INVALID_USERNAME_OR_PASSWORD: '用户名或密码错误。'
-};
-
 @connect(
   (state) => ({
     message: state.account.message
@@ -51,7 +46,7 @@ class LoginForm extends React.Component {
                  {...loginPass} />
         </Form.Item>
         <div className={styles.hint}>
-          { message ? translate[message] || '出现未知错误。' : ' ' }
+          { message }
         </div>
         <Button type="primary" size="large"
                 className={styles.btn}

@@ -113,14 +113,14 @@ const error = {
 const loginpassPropsArray = [
   {
     input: {
-      placeholder: '请输入支付密码',
+      placeholder: '请输入登录密码',
       type: 'password',
       autoComplete: 'off'
     },
     field: [
-      'paypass', {
+      'loginpass', {
         validateTrigger: 'onBlur',
-        rules: [{ required: true }, { validator: validatePaypass }]
+        rules: [{ required: true }, { validator: validateLoginpass }]
       }
     ]
   }, {
@@ -151,18 +151,17 @@ const loginpassPropsArray = [
 const paypassPropsArray = [
   {
     input: {
-      placeholder: '请输入登录密码',
+      placeholder: '请输入支付密码',
       type: 'password',
       autoComplete: 'off'
     },
     field: [
-      'loginpass', {
+      'paypass', {
         validateTrigger: 'onBlur',
-        rules: [{ required: true }, { validator: validateLoginpass }]
+        rules: [{ required: true }, { validator: validatePaypass }]
       }
     ]
-  },
-  {
+  }, {
     input: {
       placeholder: '请输入新支付密码',
       type: 'password',

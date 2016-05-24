@@ -63,10 +63,8 @@ const reportError = (path, err) => {
   );
 };
 
-router.post(
-  '/account/verification',
-  upload.single('photo'),
-  Promise.coroutine(function *(req, res) {
+router.post('/account/verification',
+            upload.single('photo'), Promise.coroutine(function *(req, res) {
     console.log('in /account/verification');
   })
 );
@@ -226,15 +224,10 @@ router.post('/account/change_paypass', Promise.coroutine(function *(req, res) {
     return res.status(403).fail()
   }
   const user = yield User.findById(req.session.userId, {
-    attributes: ['salt']
+    attributes: ['id', 'salt', 'payPass']
   });
-  console.log(req.body);
-  console.log(req.body.payPass);
-  yield User.update({
-    payPass: cookPassword(req.body.payPass, user.salt)
-  }, {
-    where: {id: req.session.userId}
-  });
+  user.payPass = cookPassword(req.body.payPass, user.salt)
+  yield user.save();
   return res.success();
 }));
 
@@ -244,13 +237,10 @@ router.post('/account/change_loginpass', Promise.coroutine(function *(req, res) 
     return res.status(403).fail()
   }
   const user = yield User.findById(req.session.userId, {
-    attributes: ['salt']
+    attributes: ['id', 'salt', 'loginPass']
   });
-  yield User.update({
-    loginPass: cookPassword(req.body.loginPass, user.salt)
-  }, {
-    where: {id: req.session.userId}
-  });
+  user.loginPass = cookPassword(req.body.loginPass, user.salt)
+  yield user.save();
   return res.success();
 }));
 
@@ -315,27 +305,20 @@ router.post('/account/withdraw', Promise.coroutine(function* (req, res) {
   return res.success({ user, transaction });
 }));
 
-router.post(
-  '/account/find_password',
-  Promise.coroutine(function *(req, res) {
+router.post('/account/find_password', Promise.coroutine(function* (req, res) {
     let user = yield User.findOne({
-      where: {userName: req.body.userName},
-      attributes: ['email', 'id', 'salt']
+      where: { userName: req.body.userName },
+      attributes: ['email', 'id', 'salt', 'loginPass']
     });
     if (!user) {
-      return res.fail({type: 'USER_NOT_EXIST'});
+      return res.fail({ type: 'USER_NOT_EXIST' });
     }
-    console.log(req.body);
-    console.log(user.email);
     if (user.email !== req.body.email) {
-      return res.fail({type: 'INVALID_EMAIL'});
+      return res.fail({ type: 'INVALID_EMAIL' });
     }
     let loginPass = crypto.randomBytes(12).toString('base64');
-    yield User.update({
-      loginPass: cookPassword(loginPass, user.salt)
-    }, {
-      where: {id: user.id}
-    });
+    user.loginPass = cookPassword(loginPass, user.salt)
+    yield user.save()
     yield transporter.sendMail({
       from: config.from,
       to: user.email,

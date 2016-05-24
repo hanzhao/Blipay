@@ -8,15 +8,10 @@ import { Form, Input, Icon, Button } from 'antd';
 import { findPassword } from '../../redux/modules/account';
 import styles from './styles';
 
-const translate = (text) => {
-  return text;
-};
-
 @connect(
   (state) => ({
     findRes: state.account.findRes
-  }),
-  {
+  }), {
     findPassword
   }
 )
@@ -43,7 +38,7 @@ class FindPasswordForm extends React.Component {
           <Input size="large"
                  placeholder="邮箱地址"
                  addonBefore={<Icon type="mail" />}
-                 autoComplete="off" 
+                 autoComplete="off"
                  {...getFieldProps('email')}/>
         </Form.Item>
         <div className={styles.hint}>{this.props.findRes}</div>
