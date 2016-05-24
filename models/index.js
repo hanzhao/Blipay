@@ -21,41 +21,23 @@ Item.belongsTo(User, {
 });
 
 Transaction.belongsTo(User);
+User.hasMany(Transaction);
 
-Order.belongsTo(User, {as: 'seller'});
-Order.belongsTo(User, {as: 'buyer'});
-Order.belongsToMany(Item, {through: OrderItem});
+Order.belongsTo(User, { as: 'seller' });
+Order.belongsTo(User, { as: 'buyer' });
+Order.belongsToMany(Item, { through: OrderItem });
 
 Item.hasMany(Review);
 
-const report = (msg) => {
-  console.log(`Error accessing database with following error message.\n${msg}`);
-};
-
-User.sync().then(() => {
-  // id为1的用户将作测试用
-  User.findOne({ where: { id: 1 } })
-    .then((user) => {
-      if (user) {
-        User.update({ userName: 'xxx', balance: 0 }, { where: { id: 1 } })
-          .catch((err) => { report(err.message); });
-      } else {
-        User.create({ userName: 'xxx', balance: 0 })
-          .catch((err) => { report(err.message); });
-      }
-    }).catch((err) => { report(err.message); });
-});
-
-
-[Item, Transaction, Order, OrderItem, Review].forEach((t) => {
-  t.sync().then(() => {
+const initDatabase = Promise.coroutine(function* () {
+  for (let t of [User, Item, Transaction, Order, OrderItem, Review]) {
+    yield t.sync();
     console.log(`Table ${t.name} synced`);
   }
-}))()
-
-
-
+})
+initDatabase()
 
 module.exports = {
-  User, Item, Transaction, Order, OrderItem, Review
+  User, Item, Transaction, Order, OrderItem, Review,
+  db
 };

@@ -2,28 +2,23 @@
  * “个人账户”页面中“欢迎页面”选项对应的右侧方框。
  */
 import React from 'react';
-import { connect } from 'react-redux';
+import _ from 'lodash';
+import { asyncConnect } from 'redux-connect';
 import { Button } from 'antd';
 import AccountRecordTable from '../AccountRecordTable';
 import FormModal from '../FormModal';
 import styles from './styles';
 import ajax from '../../common/ajax';
 import store from '../../redux/store';
-import { 
-  getUserId,
-  logout
-} from '../../redux/modules/account/auth';
-import { getBalance } from '../../redux/modules/account/info';
+import moment from 'moment'
 import {
-  enterTopup, 
-  exitTopup, 
-  topup
-} from '../../redux/modules/account/topup';
-import {
-  enterWithdraw,
-  exitWithdraw,
+  logout,
+  toggleTopup,
+  toggleWithdraw,
+  loadTransactions,
+  topup,
   withdraw
-} from '../../redux/modules/account/withdraw';
+} from '../../redux/modules/account';
 
 const validateTopupAmount = (rule, value, callback) => {
   if (!value) {
@@ -55,7 +50,7 @@ const validateWithdrawAmount = (rule, value, callback) => {
     }
     if (value.length > 12) {
       callback(new Error('输入金额过大。'));
-    } else if (JSON.parse(value) > getBalance(store.getState())) {
+    } else if (JSON.parse(value) > store.getState().account.user.balance) {
       callback(new Error('提现金额超过余额。'));
     } else if (!isNaN(value) && JSON.parse(value) > 0) {
       callback();
@@ -67,23 +62,12 @@ const validateWithdrawAmount = (rule, value, callback) => {
 
 const validatePaypass = async (rule, value, callback) => {
   try {
-    const res = await ajax.get(
-      '/account/check_paypass', 
-      { 
-        userId: getUserId(store.getState()),
-        payPass: value
-      }
-    );
-    if (res.code === 0) {
-      callback();
-    } else {
-      callback(new Error('验证支付密码出现错误。'));
-    }
-  } catch(err) {
-    if (err.code === -3)
-      callback(new Error('支付密码不正确。'));
-    else
-      callback(new Error('验证支付密码出现错误。'));
+    const res = await ajax.post('/api/account/check_paypass', {
+      payPass: value
+    });
+    callback();
+  } catch (err) {
+    callback(new Error(err.type));
   }
 };
 
@@ -197,53 +181,39 @@ const getBalanceTail = (balance) => {
     return (balance.toFixed(2) + '').split('.')[1];
 };
 
-@connect(
+@asyncConnect(
+  [{
+    promise: ({ store: { dispatch, getState } }) => {
+      return dispatch(loadTransactions())
+    }
+  }],
   (state) => ({
-    userName: state.account.info.userName,
-    balance: state.account.info.balance,
-    lastLogin: state.account.info.lastLogin,
-    toppingUp: state.account.topup.toppingUp,
-    requestingTopUp: state.account.topup.requesting,
-    withdrawing: state.account.withdraw.withdrawing,
-    requestingWithdrawl: state.account.withdraw.requesting,
-    topupError: state.account.topup.errorMsg,
-    withdrawError: state.account.withdraw.errorMsg,
-    transactions: state.account.transaction.transactions
+    user: state.account.user,
+    transactions: _.reverse(state.account.transactions),
+    showTopupModal: state.account.showTopupModal,
+    showWithdrawModal: state.account.showWithdrawModal
   }),
-  {
-    logout,
-    enterTopup,
-    exitTopup,
-    topup,
-    enterWithdraw,
-    exitWithdraw,
-    withdraw
-  }
+  (dispatch) => ({
+    toggleTopup: () => dispatch(toggleTopup()),
+    toggleWithdraw: () => dispatch(toggleWithdraw()),
+    logout: () => dispatch(logout()),
+    handleTopup: (data) => dispatch(topup(data)),
+    handleWithdraw: (data) => dispatch(withdraw(data)),
+  })
 )
 class AccountWelcomePage extends React.Component {
-
-  handleTopup = (values) => {
-    this.props.topup(
-      getUserId(store.getState()),
-      Number(values.amount)
-    );
-  };
-
-  handleWithdraw = (values) => {
-    this.props.withdraw(
-      getUserId(store.getState()),
-      Number(values.amount)
-    );
-  };
-
   render() {
+    const { user, transactions } = this.props
     return (
       <div className={styles.container}>
         <div className={styles.upperHalf}>
           <div className={styles.info}>
-            <div className={styles.greeting}>下午好，{this.props.userName}！</div>
+            <div className={styles.greeting}>下午好，{user.realName || user.userName}！</div>
             <div className={styles.lastLogin}>
-              上次登录时间：{this.props.lastLogin}
+              上次登录时间：{
+                user.lastLogin ?
+                moment(user.lastLogin).format('LL') : '很久很久以前'
+              }
             </div>
             <a className={styles.logout} onClick={this.props.logout}>注销</a>
           </div>
@@ -253,19 +223,19 @@ class AccountWelcomePage extends React.Component {
             <div className={styles.balanceLower}>
               <div className={styles.balanceValue}>
                 <span className={styles.balanceHead}>
-                  ￥{getBalanceHead(this.props.balance)}.
+                  ￥{ getBalanceHead(user.balance) }.
                 </span>
                 <span className={styles.balanceTail}>
-                  {getBalanceTail(this.props.balance)}
+                  { getBalanceTail(user.balance) }
                 </span>
               </div>
               <div className={styles.balanceOperation}>
                 <Button className={styles.topup}
-                        onClick={this.props.enterTopup}>
+                        onClick={this.props.toggleTopup}>
                   充值
                 </Button>
                 <Button className={styles.withdrawal}
-                        onClick={this.props.enterWithdraw}>
+                        onClick={this.props.toggleWithdraw}>
                   提现
                 </Button>
               </div>
@@ -276,30 +246,25 @@ class AccountWelcomePage extends React.Component {
         <div className={styles.lowerHalf}>
           <div className={styles.title}>最近交易</div>
           <div className={styles.tableWrapper}>
-            <AccountRecordTable 
-              data={this.props.transactions.slice(0, 
-                    Math.max(0, Math.floor((window.innerHeight - 450) / 50)))}
+            <AccountRecordTable
+              data={transactions.slice(0, 10)}
               tableProps={tableProps}/>
           </div>
         </div>
         <FormModal title="账户充值"
-                   visible={this.props.toppingUp}
+                   visible={this.props.showTopupModal}
                    num={3}
                    btnText="确认充值"
                    propsArray={topupPropsArray}
-                   loading={this.props.requestingTopUp}
-                   btnCallback={this.handleTopup}
-                   errorMsg={this.props.topupError}
-                   toggleModal={this.props.exitTopup} />
+                   btnCallback={this.props.handleTopup}
+                   toggleModal={this.props.toggleTopup} />
         <FormModal title="账户提现"
-                   visible={this.props.withdrawing}
+                   visible={this.props.showWithdrawModal}
                    num={3}
                    btnText="确认提现"
                    propsArray={withdrawalPropsArray}
-                   loading={this.props.requestingWithdrawl}
-                   btnCallback={this.handleWithdraw}
-                   errorMsg={this.props.withdrawError}
-                   toggleModal={this.props.exitWithdraw} />
+                   btnCallback={this.props.handleWithdraw}
+                   toggleModal={this.props.toggleWithdraw} />
       </div>
     );
   }

@@ -11,9 +11,8 @@
   margin-right: 40px;
 
   .mainTitle {
-    font-size: 1.6rem;
-    line-height: 2rem;
-    margin: 0 5%;
+    font-size: 25px;
+    margin: 40px;
   }
 
   .wrapper {
@@ -25,12 +24,13 @@
     border-top: solid #eee 1px;
 
     .row {
-      font-size: 1rem;
+      font-size: 15px;
 
       .editTitle {
         display: inline-block;
-        margin: 1rem 5%;
-        width: 25%;
+        margin: 25px;
+        margin-right: 40px;
+        width: 150px;
         text-align: right;
 
       }

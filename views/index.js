@@ -5,7 +5,11 @@ import ReactDOM from 'react-dom';
 import { message } from 'antd';
 import { Provider } from 'react-redux';
 import { Router, Route, IndexRoute, browserHistory } from 'react-router';
+import { ReduxAsyncConnect } from 'redux-connect'
 import { syncHistoryWithStore } from 'react-router-redux';
+
+import moment from 'moment';
+moment.locale('zh-CN');
 
 import store from './redux/store';
 
@@ -33,22 +37,12 @@ import ShoppingInfoPage from './components/ShoppingInfoPage';
 import ShoppingItemAdd from './components/ShoppingItemAdd';
 import ShoppingItemManage from './components/ShoppingItemManage';
 
-import { isLoggedIn } from './redux/modules/account/auth';
-
 const history = syncHistoryWithStore(browserHistory, store);
-
-const checkLogin = (nextState, replace, callback) => {
-  if (!isLoggedIn(store.getState()) &&
-      (nextState.location.pathname !== '/')) {
-    replace('/');
-    message.info('请先登录');
-  }
-  callback();
-};
 
 const router = (
   <Provider store={store}>
-    <Router history={history}>
+    <Router history={history}
+            render={(props) => <ReduxAsyncConnect {...props} />}>
       <Route path="/admin" component={AdminApp}>
         <IndexRoute component={AdminIndexPage} />
         <Route path="/admin/account" component={AdminInfoPage}>
@@ -61,24 +55,22 @@ const router = (
       </Route>
       <Route path="/" component={App} >
         <IndexRoute component={MainPage} />
-        <Route onEnter={checkLogin}>
-          <Route path="/account" component={AccountPage} >
-            <IndexRoute component={AccountWelcomePage} />
-            <Route path="/account/info" component={AccountInfoPage} />
-            <Route path="/account/records" component={AccountRecordPage} />
-            <Route path="/account/security" component={AccountSecurityPage} />
-          </Route>
-          <Route path="/shopping" component={ShoppingPage}>
-            <IndexRoute component={ShoppingInfoPage} />
-            <Route path="/shopping/shoppinginfo" component={ShoppingInfoPage} />
-            <Route path="/shopping/shoppingcart" component={ShoppingCartPage} />
-            <Route path="/shopping/shoppingorder" component={ShoppingOrderPage} />
-            <Route path="/shopping/shoppingitemadd" component={ShoppingItemAdd} />
-            <Route path="/shopping/shoppingitemmanage" component={ShoppingItemManage} />
-          </Route>
+        <Route path="/account" component={AccountPage} >
+          <IndexRoute component={AccountWelcomePage} />
+          <Route path="/account/info" component={AccountInfoPage} />
+          <Route path="/account/records" component={AccountRecordPage} />
+          <Route path="/account/security" component={AccountSecurityPage} />
         </Route>
-        <Route path="*" component={NotFoundPage} />
+        <Route path="/shopping" component={ShoppingPage}>
+          <IndexRoute component={ShoppingInfoPage} />
+          <Route path="/shopping/shoppinginfo" component={ShoppingInfoPage} />
+          <Route path="/shopping/shoppingcart" component={ShoppingCartPage} />
+          <Route path="/shopping/shoppingorder" component={ShoppingOrderPage} />
+          <Route path="/shopping/shoppingitemadd" component={ShoppingItemAdd} />
+          <Route path="/shopping/shoppingitemmanage" component={ShoppingItemManage} />
+        </Route>
       </Route>
+      <Route path="*" component={NotFoundPage} />
     </Router>
   </Provider>
 );

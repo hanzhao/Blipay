@@ -1,17 +1,17 @@
+const db = require('../models').db;
 const User = require('../models').User;
 const Transaction = require('../models').Transaction;
-const config = require('../config/account');
 const Router = require('express').Router;
 const crypto = require('crypto');
 const router = Router();
-const Promise = require('bluebird');
 const Util = require('util');
 
-const cookPassword = (key, salt, saltPos) => {
+const cookPassword = (key, salt) => {
   var hash = crypto.createHash('sha512');
-  return hash.update(key.slice(0, saltPos))
+  const mid = key.length >> 1
+  return hash.update(key.slice(0, mid))
     .update(salt)
-    .update(key.slice(saltPos))
+    .update(key.slice(mid))
     .digest('base64');
 };
 
@@ -21,144 +21,97 @@ const reportError = (path, err) => {
   );
 };
 
-router.post('/account/register', (req, res) => {
-  console.log('in /account/register');
-  console.log(req.body);
-  User.findOne({
-    where: {
-      userName: req.body.userName
-    }
+router.post('/account/register', Promise.coroutine(function* (req, res) {
+  console.log('in /account/register', req.body);
+  let user = yield User.findOne({
+    where: { userName: req.body.userName },
+    attributes: ['id']
   })
-  .then((user) => {
-    if (user) {
-      return res.fail({
-        code: -1
-      });
-    }
-    const loginSalt = crypto.randomBytes(64).toString('base64');
-    const paySalt = crypto.randomBytes(64).toString('base64');
-    const newUser = {
-      userName: req.body.userName,
-      loginSalt: loginSalt,
-      loginPass: cookPassword(req.body.loginPass, 
-                              loginSalt, 
-                              config.loginSaltPos),
-      paySalt: paySalt,
-      payPass: cookPassword(req.body.payPass, 
-                            paySalt, 
-                            config.paySaltPos)
-    };
-    User.create(newUser)
-      .then((user) => {
-        return res.success({
-          code: 0,
-          userId: user.id,
-          userName: user.userName
-        });
-      });
-  })
-  .catch((err) => {
-    reportError('account/register', err);
-    return res.fail({
-      code: -2
-    });
-  });
-});
-
-router.get(
-  '/account/get_recent_transaction', 
-  Promise.coroutine(function *(req, res) {
-    try {
-      const transactions = yield Transaction.findAll({ 
-        where: {userId: req.query.userId},
-        order: [['createdAt', 'DESC']],
-        limit: 10
-      });
-      return res.success({
-        code: 0,
-        transactions: transactions
-      });
-    } catch (e) {
-      console.error(e.message);
-      return res.fail({code: -2});
-    }
-  }));
-
-router.post('/account/login', Promise.coroutine(function *(req, res) {
-  console.log('in /account/login');
-  console.log(req.body);
-  try {
-    const user = yield User.findOne({where: {userName: req.body.userName}});
-    if (!user) {
-      return res.fail({code: -1});
-    }
-    if (cookPassword(
-          req.body.loginPass, 
-          user.loginSalt, 
-          config.loginSaltPos
-        ) === user.loginPass) {
-      yield User.update({lastLogin: Date().toString()}, {where: {id: user.id}});
-      const transactions = yield Transaction.findAll({ 
-        where: {userId: user.id},
-        order: ['createdAt'],
-        limit: 10
-      });
-      //req.session.userId = user.id;
-      return res.success({
-        code: 0,
-        userId: user.id,
-        userName: user.userName,
-        balance: user.balance,
-        lastLogin: (new Date(user.lastLogin)).toLocaleString(),
-        email: user.email,
-        phone: user.phone,
-        realName: user.realName,
-        idNumber: user.idNumber,
-        transactions: transactions
-      });
-    } else {
-      return res.fail({code: -3});
-    }
-  } catch (err) {
-    reportError('/account/login', err);
-    return res.fail({code: -2});
+  if (user) {
+    return res.fail({ type: 'USER_EXIST' });
   }
+  const salt = crypto.randomBytes(64).toString('base64');
+  const newUser = {
+    userName: req.body.userName,
+    salt: salt,
+    loginPass: cookPassword(req.body.loginPass, salt),
+    payPass: cookPassword(req.body.payPass, salt)
+  };
+  user = yield User.create(newUser)
+  req.session.userId = user.id
+  return res.success({});
 }));
 
-router.get('/account/check_paypass', (req, res) => {
-  console.log('in check_paypass');
-  console.log(req.query);
-  User.findOne({
-    where: {
-      id: req.query.userId
-    }
-  }).then((user) => {
-    if (!user) {
-      console.log('check_paypass: userName not exists');
-      return res.fail({
-        code: -1
-      });
-    }
-    if (cookPassword(
-          req.query.payPass, 
-          user.paySalt, 
-          config.paySaltPos)  === user.payPass) {
-      return res.success({
-        code: 0
-      });
-    } else {
-      console.log('check_paypass: payPass wrong');
-      return res.fail({
-        code: -3
-      });
-    }
-  }).catch((err) => {
-    console.error('check_paypass: fail\n' + err.message);
-    return res.fail({
-      code: -2
-    });
+router.post('/account/login', Promise.coroutine(function* (req, res) {
+  console.log('in /account/login', req.body);
+  let user = yield User.findOne({
+    where: { userName: req.body.userName },
+    attributes: ['id', 'loginPass', 'salt', 'lastLogin']
   });
+  if (!user) {
+    return res.fail({ type: 'USER_NOT_EXIST' });
+  }
+  const password = cookPassword(req.body.loginPass,
+                                user.salt)
+  // 密码错误
+  if (password !== user.loginPass)
+    return res.fail({ type: 'INVALID_USERNAME_OR_PASSWORD' });
+  // 更新最后登录时间
+  user.lastLogin = new Date().toString()
+  yield user.save()
+  // 删除密码字段
+  delete user.salt
+  delete user.loginPass
+  // 登录信息
+  req.session.userId = user.id
+  return res.success({ user });
+}));
+
+router.get('/account/logout', (req, res) => {
+  console.log('in logout');
+  req.session.userId = null;
+  return res.success({});
 });
+
+router.get('/account/info', Promise.coroutine(function* (req, res) {
+  console.log('in /account/info');
+  if (!req.session.userId) {
+    return res.success({ })
+  }
+  const user = yield User.findById(req.session.userId, {
+    attributes: ['userName', 'realName', 'balance', 'lastLogin',
+                 'email', 'phone', 'idNumber']
+  })
+  return res.success({ user })
+}));
+
+router.get('/account/transactions', Promise.coroutine(function* (req, res) {
+  console.log('in /account/transactions');
+  if (!req.session.userId) {
+    return res.status(403).fail()
+  }
+  const user = yield User.findById(req.session.userId)
+  const transactions = yield user.getTransactions({
+    order: ['id']
+  });
+  return res.success({ transactions })
+}));
+
+router.post('/account/check_paypass', Promise.coroutine(function* (req, res) {
+  console.log('in check_paypass', req.body);
+  if (!req.session.userId) {
+    return res.status(403).fail()
+  }
+  const user = yield User.findById(req.session.userId, {
+    attributes: ['salt', 'payPass']
+  })
+  const payPass = cookPassword(req.body.payPass, user.salt)
+  if (payPass === user.payPass) {
+    return res.success();
+  } else {
+    return res.fail({ type: 'WRONG_PAYPASS' });
+  }
+}));
 
 router.get('/account/check_loginpass', (req, res) => {
   console.log('in check_loginpass');
@@ -175,8 +128,8 @@ router.get('/account/check_loginpass', (req, res) => {
       });
     }
     if (cookPassword(
-          req.query.loginPass, 
-          user.loginSalt, 
+          req.query.loginPass,
+          user.loginSalt,
           config.loginSaltPos)  === user.loginPass) {
       return res.success({
         code: 0
@@ -196,270 +149,45 @@ router.get('/account/check_loginpass', (req, res) => {
 });
 
 router.get('/account/check_id', Promise.coroutine(function *(req, res) {
-  try {
-    const user = User.findOne({where: {idNumber: req.query.idNumber}});
-    if (!user) {
-      return res.fail({code: -1});
-    }
-    return res.success({code: 0});
-  } catch (err) {
-    reportError('/account/check_id', err);
-    return res.fail({code: -2});
+  const user = yield User.findOne({
+    where: { idNumber: req.query.idNumber }
+  });
+  if (user) {
+    return res.fail({ type: 'ID_EXIST' });
+  }
+  return res.success();
+}));
+
+router.get('/account/check_username', Promise.coroutine(function* (req, res) {
+  console.log('in check_username', req.query);
+  const user = yield User.findOne({
+    where: { userName: req.query.userName }
+  })
+  if (!user) {
+    return res.success();
+  } else {
+    return res.fail({ type: 'USER_EXIST' });
   }
 }));
 
-router.get('/account/check_username', (req, res) => {
-  console.log('in check_username');
-  console.log(req.query);
-  User.findOne({
-    where: {
-      userName: req.query.userName
-    }
-  }).then((user) => {
-    if (!user) {
-      console.log('check_username: not exists');
-      return res.success({
-        code: 0
-      });
-    } else {
-      console.log('check_username: user exists');
-      return res.fail({
-        code: -1
-      });
-    }
-  }).catch((err) => {
-    console.error('check_username: fail\n' + err.message);
-    return res.fail({
-      code: -2
-    });
-  });
-});
-
-router.post('/account/logout', (req, res) => {
-  console.log('in logout');
-  return res.success({});
-  /*
-  if(req.session && req.session.userId) {
-    delete req.session.userId;
-    return res.success({});
-  } else {
-    return res.fail({});
+router.post('/account/update_info', Promise.coroutine(function* (req, res) {
+  console.log('in /account/update_info', req.body);
+  if (!req.session.userId) {
+    return res.status(403).fail()
   }
-  */
-});
-
-router.post('/account/change_userName', (req, res) => {
-  console.log('in /account/change_userName');
-  console.log(req.body);
-  User.findOne({
-    where: {
-      id: req.body.userId
-    }
+  const attrs = ['realName', 'idNumber', 'email', 'phone']
+  const user = yield User.findById(req.session.userId, {
+    // 必须要选出主键，后面才可以保存
+    attributes: ['id', ...attrs]
   })
-  .then((user) => {
-    if (!user) {
-      return res.fail({
-        code: -1
-      });
+  for (let key in req.body) {
+    if (attrs.includes(key)) {
+      user[key] = req.body[key]
     }
-    User.update({
-      userName: req.body.userName
-    }, {
-      where: {
-        id: req.body.userId
-      }
-    })
-    .then(() => {
-      return res.success({
-        code: 0,
-        userName: req.body.userName
-      });
-    });
-  })
-  .catch((err) => {
-    reportError('account/change_userName', err);
-    return res.fail({
-      code: -2
-    });
-  });
-});
-
-router.post('/account/change_realName', (req, res) => {
-  console.log('in /account/change_realName');
-  console.log(req.body);
-  User.findOne({
-    where: {
-      id: req.body.userId
-    }
-  })
-  .then((user) => {
-    if (!user) {
-      return res.fail({
-        code: -1
-      });
-    }
-    User.update({
-      realName: req.body.realName
-    }, {
-      where: {
-        id: req.body.userId
-      }
-    })
-    .then(() => {
-      return res.success({
-        code: 0,
-        realName: req.body.realName
-      });
-    });
-  })
-  .catch((err) => {
-    reportError('/account/change_realName', err);
-    return res.fail({
-      code: -2
-    });
-  });
-});
-
-router.post('/account/change_idNumber', (req, res) => {
-  console.log('in /account/change_idNumber');
-  console.log(req.body);
-  User.findOne({
-    where: {
-      id: req.body.userId
-    }
-  })
-  .then((user) => {
-    if (!user) {
-      return res.fail({
-        code: -1
-      });
-    }
-    User.update({
-      idNumber: req.body.idNumber
-    }, {
-      where: {
-        id: req.body.userId
-      }
-    })
-    .then(() => {
-      return res.success({
-        code: 0,
-        idNumber: req.body.idNumber
-      });
-    });
-  })
-  .catch((err) => {
-    reportError('/account/change_idNumber', err);
-    return res.fail({
-      code: -2
-    });
-  });
-});
-
-router.post('/account/change_email', (req, res) => {
-  console.log('in /account/change_email');
-  console.log(req.body);
-  User.findOne({
-    where: {
-      id: req.body.userId
-    }
-  })
-  .then((user) => {
-    if (!user) {
-      return res.fail({
-        code: -1
-      });
-    }
-    User.update({
-      email: req.body.email
-    }, {
-      where: {
-        id: req.body.userId
-      }
-    })
-    .then(() => {
-      return res.success({
-        code: 0,
-        email: req.body.email
-      });
-    });
-  })
-  .catch((err) => {
-    reportError('/account/change_email', err);
-    return res.fail({
-      code: -2
-    });
-  });
-});
-
-router.post('/account/change_phone', (req, res) => {
-  console.log('in /account/change_phone');
-  console.log(req.body);
-  User.findOne({
-    where: {
-      id: req.body.userId
-    }
-  })
-  .then((user) => {
-    if (!user) {
-      return res.fail({
-        code: -1
-      });
-    }
-    User.update({
-      phone: req.body.phone
-    }, {
-      where: {
-        id: req.body.userId
-      }
-    })
-    .then(() => {
-      return res.success({
-        code: 0,
-        phone: req.body.phone
-      });
-    });
-  })
-  .catch((err) => {
-    reportError('/account/change_phone', err);
-    return res.fail({
-      code: -2
-    });
-  });
-});
-
-router.get('/account/get_userinfo', (req, res) => {
-  console.log('in /account/get_userinfo');
-  console.log(req.query);
-  User.findOne({
-    where: {
-      id: req.query.userId
-    }
-  })
-  .then((user) => {
-    if (!user) {
-      return res.fail({
-        code: -1
-      });
-    } else {
-      return res.success({
-        code: 0,
-        userId: user.id,
-        userName: user.userName,
-        realName: user.realName,
-        idNumber: user.idNumber, 
-        email: user.email, 
-        phone: user.phone
-      });
-    }
-  })
-  .catch((err) => {
-    reportError('/account/get_userinfo', err);
-    return res.fail({
-      code: -2
-    });
-  });
-});
+  }
+  yield user.save()
+  res.success({ user })
+}));
 
 router.post('/account/change_paypass', (req, res) => {
   console.log('in /account/change_paypass');
@@ -476,8 +204,8 @@ router.post('/account/change_paypass', (req, res) => {
       });
     }
     User.update({
-      payPass: cookPassword(req.body.payPass, 
-                            user.paySalt, 
+      payPass: cookPassword(req.body.payPass,
+                            user.paySalt,
                             config.paySaltPos)
     }, {
       where: {
@@ -513,8 +241,8 @@ router.post('/account/change_loginpass', (req, res) => {
       });
     }
     User.update({
-      loginPass: cookPassword(req.body.loginPass, 
-                              user.loginSalt, 
+      loginPass: cookPassword(req.body.loginPass,
+                              user.loginSalt,
                               config.loginSaltPos)
     }, {
       where: {
@@ -535,127 +263,65 @@ router.post('/account/change_loginpass', (req, res) => {
   });
 });
 
-router.get('/account/get_balance', (req, res) => {
-  console.log('in /account/get_balance');
-  console.log(req.query);
-  User.findOne({
-    where: {
-      id: req.query.userId
-    }
-  })
-  .then((user) => {
-    if (!user) {
-      return res.fail({
-        code: -1
-      });
-    } else {
-      return res.success({
-        code: 0,
-        balance: user.balance
-      });
-    }
-  })
-  .catch((err) => {
-    reportError('/account/get_balance', err);
-    return res.fail({
-      code: -2
-    });
-  });
-});
-
-router.post('/account/charge', Promise.coroutine(function *(req, res) {
-  try {
-    const user = yield User.findOne({where: {id: req.body.userId}});
-    if (!user) {
-      return res.fail({code: -1});
-    }
-    const newBalance = user.balance + req.body.amount;
-    yield User.update({balance: newBalance}, {where: {id: req.body.userId}});
-    yield Transaction.create({
-      userId: user.id,
-      amount: req.body.amount,
-      type: 1,
-      status: 1
-    });
-    return res.success({
-      code: 0,
-      balance: newBalance
-    });
-  } catch (err) {
-    reportError('/account/charge', err);
-    return res.fail({code: -2});
+// TODO: 支付密码验证
+router.post('/account/topup', Promise.coroutine(function* (req, res) {
+  if (!req.session.userId) {
+    return res.status(403).fail()
   }
+  const delta = parseFloat(req.body.amount)
+  if (isNaN(delta)) {
+    return res.status(400).fail()
+  }
+  yield User.update({
+    balance: db.literal(`balance + ${delta}`)
+  }, {
+    where: { id: req.session.userId }
+  });
+  const transaction = yield Transaction.create({
+    userId: req.session.userId,
+    amount: delta,
+    type: 1,
+    status: 1,
+    info: `充值 ${delta} 元`
+  });
+  const user = yield User.findById(req.session.userId, {
+    attributes: ['balance']
+  })
+  return res.success({ user, transaction });
 }));
 
-router.post('/account/withdraw', Promise.coroutine(function *(req, res) {
-  try {
-    const user = yield User.findOne({where: {id: req.body.userId}});
-    if (!user) {
-      return res.fail({code: -1});
-    }
-    if (user.balance < req.body.amount) {
-      yield Transaction.create({
-        userId: user.id,
-        amount: req.body.amount,
-        type: 2,
-        status: 0
-      });
-      return res.fail({code: -3});
-    }
-    const newBalance = user.balance - req.body.amount;
-    yield User.update({balance: newBalance}, {where: {id: req.body.userId}});
-    yield Transaction.create({
-      userId: user.id,
-      amount: req.body.amount,
-      type: 2,
-      status: 1
-    });
-    return res.success({
-      code: 0,
-      balance: newBalance
-    });
-  } catch (err) {
-    reportError('/account/withdraw', err);
-    return res.fail({code: -2});
+// TODO: 支付密码验证
+router.post('/account/withdraw', Promise.coroutine(function* (req, res) {
+  if (!req.session.userId) {
+    return res.status(403).fail()
   }
-}));
-
-router.get('/account/get_transaction', (req, res) => {
-  console.log('in /account/get_transaction');
-  console.log(req.query);
-  User.findOne({
-    where: {
-      id: req.query.userId
-    }
-  })
-  .then((user) => {
-    if (!user) {
-      return res.fail({
-        code: -1
-      });
-    } else {
-      Transaction.findAll({
-        where: {
-          userID: user.id,
-          createdAt: {
-            $between: [req.query.queryStartDate, req.query.queryEndDate]
-          }
-        }
-      })
-      .then((tran) => {
-        return res.success({
-          code: 0,
-          transaction: tran
-        });
-      });
-    }
-  })
-  .catch((err) => {
-    reportError('/account/get_transaction', err);
-    return res.fail({
-      code: -2
-    });
+  const delta = parseFloat(req.body.amount)
+  if (isNaN(delta)) {
+    return res.status(400).fail()
+  }
+  let user = yield User.findById(req.session.userId,{
+    attributes: ['balance']
   });
-});
+  if (user.balance < delta) {
+    return res.fail({ type: 'INSUFFICIENT_BALANCE' });
+  }
+  yield User.update({
+    balance: db.literal(`balance - ${delta}`)
+  }, {
+    where: { id: req.session.userId }
+  });
+  console.log(req.session.userId)
+  const transaction = yield Transaction.create({
+    userId: req.session.userId,
+    amount: -delta,
+    type: 2,
+    status: 1,
+    info: `提现 ${delta} 元`
+  });
+  user = yield User.findById(req.session.userId, {
+    attributes: ['balance']
+  })
+  return res.success({ user, transaction });
+}));
 
 module.exports = router;

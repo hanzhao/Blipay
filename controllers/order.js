@@ -10,17 +10,17 @@ const Review = require('../models').Review;
 
 const Router = require('express').Router;
 const router = Router();
-const createItem = require('./services/order').createItem;
-const createOrder = require('./services/order').createOrder;
-const requestPay = require('./services/account').requestPay;
-const requestReceive = require('./services/account').requestReceive;
+const createItem = require('../services/order').createItem;
+const createOrder = require('../services/order').createOrder;
+const requestPay = require('../services/account').requestPay;
+const requestReceive = require('../services/account').requestReceive;
 
 router.post('/item/new', Promise.coroutine(function* (req, res) {
   console.log('in /item/new');
   console.log(req.body);
   try {
     // TODO: Fetch user from session
-    // createItem(req.session.userId, req.body);    
+    // createItem(req.session.userId, req.body);
     const id = yield createItem(req.session.userId, req.body);
     return res.success("newItem id: " + id);
   }
@@ -85,7 +85,7 @@ router.post('/item/update', Promise.coroutine(function* (req, res) {
     if (!item) {
       throw new Error('Item Not Found.');
     }
-    // TODO: check item owner and authentication 
+    // TODO: check item owner and authentication
     // if (item.sellerId != req.session.userId) {
     //   throw new Error('Auth Fail.');
     // }

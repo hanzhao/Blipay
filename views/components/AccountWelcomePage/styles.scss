@@ -1,17 +1,20 @@
 .container {
   background-color: #ffffff;
-  padding: 2rem 5%;
+  padding-left: 30px;
+  padding-top: 30px;
+  padding-right: 30px;
 
   .upperHalf {
-    padding-bottom: 1rem;
     .info {
-      width: 50%;
-      border-right: solid #aaa 1px;
-      padding: 0 5%;
+      padding: 0 20px;
+      margin-bottom: 20px;
+      padding-bottom: 5px;
       float: left;
+      width: 45%;
+      margin-right: 5%;
+      border-right: solid #aaa 1px;
       .greeting {
-        font-size: 1.6rem;
-        line-height: 2rem;
+        font-size: 30px;
       }
       .lastLogin {
         display: inline-block;
@@ -24,14 +27,15 @@
       }
     }
     .balance {
+      float: left;
       width: 50%;
-      padding: 0 5%;
-      float: right;
+      padding: 0 20px;
       .balanceTitle {
-        font-size: 1rem;
-        line-height: 2rem;
+        margin-top: 5px;
+        font-size: 15px;
       }
       .balanceLower{
+        margin-top: 15px;
         .balanceValue {
           float: left;
 
@@ -39,13 +43,13 @@
             position: relative;
             bottom: 0;
             color: #c63655;
-            font-size: 1.6rem;
-            line-height: 2rem;
+            font-size: 30px
           }
           .balanceTail {
             position: relative;
+            bottom: 0;
             color: #c63655;
-            font-size: 1rem;
+            font-size: 20px;
           }
         }
         .balanceOperation {
@@ -53,22 +57,27 @@
           margin-left: 20px;
           padding-top: 10px;
           .withdrawal {
-            margin-left: 5%;
+            margin-left: 20px;
           }
         }
       }
     }
   }
   .horizontalBar {
+    clear: both;
+    position: relative;
+    margin-top: 20px;
     height: 1px;
     background-color: #aaaaaa;
-    clear: both;
   }
   .lowerHalf {
-    padding: 2rem 5%;
+    clear: both;
+    padding: 20px 20px;
     .title {
-      font-size: 1.2rem;
-      line-height: 3rem;
+      font-size: 20px;
+    }
+    .tableWrapper {
+      margin-top: 15px;
     }
   }
 }

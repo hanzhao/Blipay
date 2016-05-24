@@ -11,13 +11,10 @@ import mascot from './2233.png';
 import dust from './dust.png';
 
 class MainPage extends React.Component {
-//  componentDidMount = () => {
-//    window.addEventListener('resize', () => this.forceUpdate())
-//  };
   render() {
     return (
       <div className={styles.wrapper}
-           style={{ height: window.innerHeight - 85 }}>
+        style={{ height: window.innerHeight - 85 }}>
         {/* 占满整个屏幕 */}
         <Container className={styles.container}>
           <RegisterOrLoginForm />

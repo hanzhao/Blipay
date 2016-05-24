@@ -1,11 +1,6 @@
 'use strict';
-
-
-
 const Promise = require('bluebird');
-const Item = require('../../models').Item;
-const User = require('../../models').User;
-const Order = require('../../models').Order;
+const { Item, User, Order } = require('../models');
 
 const createItem = Promise.coroutine(function* (sellerId, item) {
   console.log('service: createItem:');
@@ -95,7 +90,7 @@ const handleRefund = Promise.coroutine(function* (orderId, res, buyerRes, seller
       status: 7
     });
     if(res){
-      // TODO: 
+      // TODO:
     }
     else{
       // TODO:

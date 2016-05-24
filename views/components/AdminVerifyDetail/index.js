@@ -16,13 +16,6 @@ function cancel() {
   message.error('点击了取消');
 }
 
-ReactDOM.render(
-  <Popconfirm title="确定要删除这个任务吗？" onConfirm={confirm} onCancel={cancel}>
-    <a href="#">删除</a>
-  </Popconfirm>
-, mountNode);
-
-
 const columns1 = [{
   title: '用户名',
   dataIndex: 'name',
@@ -96,25 +89,25 @@ class AdminVerifyDetail extends React.Component {
     return (
       <div className={styles.container}>
         <Table
-               className={styles.table}
-               columns={columns1}
-               dataSource={data1}
-               //{...tableProps}
-               pagination={false} //需要有{}
+          className={styles.table}
+          columns={columns1}
+          dataSource={data1}
+          //{...tableProps}
+          pagination={false} //需要有{}
         />
         <Table
-               className={styles.table}
-               columns={columns2}
-               dataSource={data2}
-               //{...tableProps}
-               pagination={false}
+          className={styles.table}
+          columns={columns2}
+          dataSource={data2}
+          //{...tableProps}
+          pagination={false}
         />
         <Table
-               className={styles.table2}
-               columns={columns3}
-               dataSource={data3}
-               //{...tableProps}
-               pagination={false}
+          className={styles.table2}
+          columns={columns3}
+          dataSource={data3}
+          //{...tableProps}
+          pagination={false}
         />
         <div>
           <Row className={styles.juzhong} /*styles={{text-align="center"}}*/>

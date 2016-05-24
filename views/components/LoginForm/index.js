@@ -6,32 +6,26 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { Form, Input, Icon, Button } from 'antd';
-import { login } from '../../redux/modules/account/auth';
+import { login } from '../../redux/modules/account';
 import store from '../../redux/store';
 import styles from './styles';
 
 @connect(
   (state) => ({
-    loggingIn: state.account.auth.loggingIn,
-    errorMsg: state.account.auth.errorMsg
-  }), 
-  {
-    login
-  }
+    message: state.account.message
+  })
 )
 @reduxForm({
   form: 'user-login',
-  fields: ['username', 'password']
+  fields: ['userName', 'loginPass']
 }, undefined, {
-  onSubmit: (data) => {
-    store.dispatch(login(data.username, data.password));
-  }
+  onSubmit: (data) => login(data)
 })
 class LoginForm extends React.Component {
   render() {
     const { fields: {
-      username,
-      password
+      userName,
+      loginPass
     }, handleSubmit } = this.props;
     return (
       <Form horizontal onSubmit={handleSubmit}>
@@ -42,26 +36,23 @@ class LoginForm extends React.Component {
                  autoFocus
                  autoComplete="off"
                  valida
-                 {...username} />
+                 {...userName} />
         </Form.Item>
         <Form.Item>
           <Input size="large"
                  type="password"
                  placeholder="登录密码"
                  addonBefore={<Icon type="lock" />}
-                 {...password} />
+                 {...loginPass} />
         </Form.Item>
         <div className={styles.hint}>
-          {this.props.errorMsg ? this.props.errorMsg : '　'}
+          { this.props.message ? this.props.message : ' ' }
         </div>
-        {
-          <Button type="primary" size="large"
-                  className={styles.btn}
-                  style={this.props.loggingIn ? {'paddingLeft': '100px'} : {}}
-                  htmlType="submit" loading={this.props.loggingIn}>
-            登录
-          </Button>
-        }
+        <Button type="primary" size="large"
+                className={styles.btn}
+                htmlType="submit">
+          登录
+        </Button>
         <div className={styles.bottomLeft}>
           <a onClick={this.props.handleSwitchPanel.bind(this, 0)}>
             <Icon type="left" /> 忘记密码？

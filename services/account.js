@@ -1,7 +1,7 @@
-const User = require('../../models').User;
-const Transaction = require('../../models').Transaction;
+const User = require('../models').User;
+const Transaction = require('../models').Transaction;
 const Promise = require('bluebird');
-const config = require('../../config/account');
+// const config = require('../../config/account');
 const crypto = require('crypto');
 
 const cookPassword = (key, salt, saltPos) => {
@@ -125,8 +125,8 @@ const checkPaypass = (userId, payPass) => {
         throw new Error('userId is invalid.');
       }
       if (cookPassword(
-            payPass, 
-            user.paySalt, 
+            payPass,
+            user.paySalt,
             config.paySaltPos)  === user.payPass) {
         return resolve(0);
       }
@@ -148,8 +148,8 @@ const login = (userName, loginPass) => {
         throw new Error('userName does not exist.');
       }
       if (cookPassword(
-            loginPass, 
-            user.loginSalt, 
+            loginPass,
+            user.loginSalt,
             config.loginSaltPos)  === user.loginPass) {
         return resolve(user.id);
       }

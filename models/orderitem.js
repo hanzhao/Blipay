@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 
 module.exports = (db) => {
-  return db.define('OrderItem', {
+  return db.define('order_item', {
     /* 订单中该商品数量 */
     count: {
       type: Sequelize.INTEGER
