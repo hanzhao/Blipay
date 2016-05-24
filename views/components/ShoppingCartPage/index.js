@@ -85,7 +85,7 @@ let columns = [{
 let pre=0;
 let BasicDemo = React.createClass(
 {
-    getInitialState: async ()=> {
+    componentDidMount: async function () {
     //console.log(itemids);
     sum=0;
     contents=[];
@@ -121,7 +121,7 @@ let BasicDemo = React.createClass(
         });
       }
     }
-    return {};
+    this.setState({});
   },
   render() {
     var { getFieldProps, getFieldError, isFieldValidating } = this.props.form;

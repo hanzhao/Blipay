@@ -13,6 +13,7 @@ const Item = require('./item')(db);
 const Transaction = require('./transaction')(db);
 const Order = require('./order')(db);
 const OrderItem = require('./orderitem')(db);
+const CartItem = require('./cartItem')(db);
 const Review = require('./review')(db);
 
 // 表关联
@@ -28,6 +29,7 @@ Order.belongsTo(User, { as: 'buyer' });
 Order.belongsToMany(Item, { through: OrderItem });
 
 Item.hasMany(Review);
+User.hasbelongsToManyMany(Items), {through: CartItem};
 
 const initDatabase = Promise.coroutine(function* () {
   for (let t of [User, Item, Transaction, Order, OrderItem, Review]) {
