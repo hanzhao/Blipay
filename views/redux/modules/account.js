@@ -18,7 +18,7 @@ const TOGGLE_WITHDRAW = 'Blipay/account/TOGGLE_WITHDRAW';
 // 账户密码/支付密码/实名验证
 const TOGGLE_MODIFY_LOGINPASS = 'Blipay/account/TOGGLE_MODIFY_LOGINPASS';
 const TOGGLE_MODIFY_PAYPASS = 'Blipay/account/TOGGLE_MODIFY_PAYPASS';
-const TOGGLE_VERIFY_EMAIL = 'Blipay/account/TOGGLE_VERIFY_EMAIL';
+const TOGGLE_VERIFICATION = 'Blipay/account/TOGGLE_VERIFICATION';
 // 获得个人信息
 const LOAD_ACCOUNT_INFO = 'Blipay/account/LOAD_ACCOUNT_INFO';
 const LOAD_ACCOUNT_INFO_SUCCESS = 'Blipay/account/LOAD_ACCOUNT_INFO_SUCCESS';
@@ -38,13 +38,30 @@ const WITHDRAW_FAIL = 'Blipay/account/WITHDRAW_FAIL';
 const UPDATE_INFO = 'Blipay/account/UPDATE_INFO';
 const UPDATE_INFO_SUCCESS = 'Blipay/account/UPDATE_INFO_SUCCESS';
 const UPDATE_INFO_FAIL = 'Blipay/account/UPDATE_INFO_FAIL';
+// 申请实名认证
+const APPLY_VERIFICATION = 'Blipay/account/APPLY_VERIFICATION';
+const APPLY_VERIFICATION_SUCC = 'Blipay/account/APPLY_VERIFICATION_SUCC';
+const APPLY_VERIFICATION_FAIL = '/Blipay/account/APPLY_VERIFICATION_FAIL';
+// 修改登录密码
+const CHANGE_LOGINPASS = 'Blipay/account/CHANGE_LOGINPASS';
+const CHANGE_LOGINPASS_SUCC = 'Blipay/account/CHANGE_LOGINPASS_SUCC';
+const CHANGE_LOGINPASS_FAIL = 'Blipay/account/CHANGE_LOGINPASS_FAIL';
+// 修改支付密码
+const CHANGE_PAYPASS = 'Blipay/account/CHANGE_PAYPASS';
+const CHANGE_PAYPASS_SUCC = 'Blipay/account/CHANGE_PAYPASS_SUCC';
+const CHANGE_PAYPASS_FAIL = 'Blipay/account/CHANGE_PAYPASS_FAIL';
+// 找回密码
+const FIND_PASSWORD = 'Blipay/account/FIND_PASSWORD';
+const FIND_PASSWORD_SUCC = 'Blipay/account/FIND_PASSWORD_SUCC';
+const FIND_PASSWORD_FAIL = 'Blipay/account/FIND_PASSWORD_FAIL';
 
 // 用户管理模块初始状态
 const initialState = {
   user: null,
   message: null,
   showTopupModal: false,
-  showWithdrawModal: false
+  showWithdrawModal: false,
+  showVerification: false
 }
 
 // Action Creators
@@ -79,9 +96,9 @@ export const toggleModifyPaypass = () => ({
   type: TOGGLE_MODIFY_PAYPASS
 })
 
-export const toggleVerifyEmail = () => ({
-  type: TOGGLE_VERIFY_EMAIL
-})
+export const toggleVerification = () => ({
+  type: TOGGLE_VERIFICATION
+});
 
 export const loadAccountInfo = () => ({
   types: [LOAD_ACCOUNT_INFO, LOAD_ACCOUNT_INFO_SUCCESS, LOAD_ACCOUNT_INFO_FAIL],
@@ -108,6 +125,26 @@ export const updateInfo = (data) => ({
   promise: (client) => client.post('/api/account/update_info', data)
 })
 
+export const applyVerification = () => ({
+  types: [APPLY_VERIFICATION, APPLY_VERIFICATION_SUCC, APPLY_VERIFICATION_FAIL],
+  promise: (client) => client.post('/api/account/apply_verification')
+});
+
+export const changeLoginpass = (data) => ({
+  types: [CHANGE_LOGINPASS, CHANGE_LOGINPASS_SUCC, CHANGE_LOGINPASS_FAIL],
+  promise: (client) => client.post('/api/account/change_loginpass', data)
+});
+
+export const changePaypass = (data) => ({
+  types: [CHANGE_PAYPASS, CHANGE_PAYPASS_SUCC, CHANGE_PAYPASS_FAIL],
+  promise: (client) => client.post('/api/account/change_paypass', data)
+});
+
+export const findPassword = (data) => ({
+  types: [FIND_PASSWORD, FIND_PASSWORD_SUCC, FIND_PASSWORD_FAIL],
+  promise: (client) => client.post('/api/account/find_password', data)
+});
+
 // Helper
 const wrapTransaction = (e) => ({
   ...e,
@@ -123,15 +160,19 @@ export default function reducer(state = initialState, action = {}) {
       setTimeout(() => {
         store.dispatch(push('/account'))
       }, 0)
-      return state
+      return {
+        ...state,
+        message: null
+      }
     case LOGOUT_SUCCESS:
       setTimeout(() => {
         store.dispatch(push('/'))
       }, 0)
       return {
         ...state,
-        user: null
-      }
+        user: null,
+        message: null
+      };
     case TOGGLE_TOPUP:
       return {
         ...state,
@@ -152,21 +193,23 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         showModifyPaypassModal: !state.showModifyPaypassModal
       }
-    case TOGGLE_VERIFY_EMAIL:
+    case TOGGLE_VERIFICATION:
       return {
         ...state,
-        showVerifyEmailModal: !state.showVerifyEmailModal
-      }
+        showVerification: !state.showVerification
+      };
     case LOAD_ACCOUNT_INFO_SUCCESS:
       return {
         ...state,
-        user: action.result.user
+        user: action.result.user,
+        message: null
       }
     case LOAD_TRANSACTIONS_SUCCESS:
       return {
         ...state,
         // 映射 transactions 里的 createdAt 和 updatedAt 变成 Date Object
-        transactions: action.result.transactions.map(e => wrapTransaction(e))
+        transactions: action.result.transactions.map(e => wrapTransaction(e)),
+        message: null
       }
     case TOPUP_SUCCESS:
       return {
@@ -174,7 +217,8 @@ export default function reducer(state = initialState, action = {}) {
         user: { ...state.user, ...action.result.user },
         transactions: [ ...state.transactions,
                         wrapTransaction(action.result.transaction) ],
-        showTopupModal: false
+        showTopupModal: false,
+        message: null
       }
     case WITHDRAW_SUCCESS:
       return {
@@ -182,14 +226,50 @@ export default function reducer(state = initialState, action = {}) {
         user: { ...state.user, ...action.result.user },
         transactions: [ ...state.transactions,
                         wrapTransaction(action.result.transaction) ],
-        showWithdrawModal: false
+        showWithdrawModal: false,
+        message: null
       }
     case UPDATE_INFO_SUCCESS:
       return {
         ...state,
-        user: { ...state.user, ...action.result.user }
+        user: { ...state.user, ...action.result.user },
+        message: null
+      }
+    case APPLY_VERIFICATION_SUCC:
+      return {
+        ...state,
+        showVerification: false,
+        user: { ...state.user, status: 1 },
+        message: null
+      };
+    case CHANGE_LOGINPASS_SUCC:
+      return {
+        ...state,
+        showModifyLoginpassModal: false,
+        message: null
+      };
+    case CHANGE_PAYPASS_SUCC:
+      return {
+        ...state, 
+        showModifyPaypassModal: false,
+        message: null
+      };
+    case FIND_PASSWORD:
+      return state;
+    case FIND_PASSWORD_SUCC:
+      return {
+        ...state,
+        findRes: '已将新密码发送至您的邮箱。'
+      };
+    case FIND_PASSWORD_FAIL:
+      return {
+        ...state,
+        findRes: '用户名或邮箱输入有误。'
       }
     // Errors
+    case CHANGE_PAYPASS_FAIL:
+    case CHANGE_LOGINPASS_FAIL:
+    case APPLY_VERIFICATION_FAIL:
     case REGISTER_FAIL:
     case LOGIN_FAIL:
     case LOGOUT_FAIL:

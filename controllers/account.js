@@ -1,12 +1,52 @@
-'use strict'
+'use strict';
 const _ = require('lodash');
 const db = require('../models').db;
 const User = require('../models').User;
 const Transaction = require('../models').Transaction;
+const config = require('../config/account');
 const Router = require('express').Router;
 const crypto = require('crypto');
 const router = Router();
 const Util = require('util');
+const multer = require('multer');
+const fs = Promise.promisifyAll(require('fs'));
+const uploadPath = require('../config').upload;
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport(config.mailConfig);
+
+const storage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, `${global.ROOT}/${uploadPath}`);
+  },
+  filename: (req, file, callback) => {
+    fs.mkdirAsync(`${uploadPath}`)
+      .catch((err) => {});
+    fs.readdirAsync(`${uploadPath}`)
+      .then((files) => {
+        files = files.filter(e => e.startsWith(`${req.session.userId}_`));
+        /*
+         * 只保存用户最后上传的两张照片。
+         */
+        if (files.length == 2) {
+          fs.unlinkAsync(`${uploadPath}/${files[0]}`)
+            .then(() => {
+              callback(null, `${req.session.userId}_${file.fieldname}_${Date.now()}`);
+            })
+            .catch((err) => {
+              throw err;
+            });
+        } else {
+          callback(null, `${req.session.userId}_${file.fieldname}_${Date.now()}`);
+        }
+      })
+      .catch((err) => {
+        console.error(
+          `Error occurs during accessing /Blipay/upload.\n${Util.inspect(err)}\n`
+        );
+      });
+  }
+});
+const upload = multer({ storage: storage });
 
 const cookPassword = (key, salt) => {
   var hash = crypto.createHash('sha512');
@@ -22,6 +62,14 @@ const reportError = (path, err) => {
     `\nERROR occurs in ${path}:\n\n${Util.inspect(err)}\n`
   );
 };
+
+router.post(
+  '/account/verification',
+  upload.single('photo'),
+  Promise.coroutine(function *(req, res) {
+    console.log('in /account/verification');
+  })
+);
 
 router.post('/account/register', Promise.coroutine(function* (req, res) {
   console.log('in /account/register', req.body);
@@ -70,7 +118,7 @@ router.post('/account/login', Promise.coroutine(function* (req, res) {
 }));
 
 router.get('/account/logout', (req, res) => {
-  console.log('in logout');
+  console.log('in /account/logout');
   req.session.userId = null;
   return res.success({});
 });
@@ -82,7 +130,7 @@ router.get('/account/info', Promise.coroutine(function* (req, res) {
   }
   const user = yield User.findById(req.session.userId, {
     attributes: ['userName', 'realName', 'balance', 'lastLogin',
-                 'email', 'phone', 'idNumber']
+                 'email', 'phone', 'idNumber', 'status']
   })
   return res.success({ user })
 }));
@@ -115,40 +163,21 @@ router.post('/account/check_paypass', Promise.coroutine(function* (req, res) {
   }
 }));
 
-router.get('/account/check_loginpass', (req, res) => {
+router.post('/account/check_loginpass', Promise.coroutine(function *(req, res) {
   console.log('in check_loginpass');
-  console.log(req.query);
-  User.findOne({
-    where: {
-      id: req.query.userId
-    }
-  }).then((user) => {
-    if (!user) {
-      console.log('check_loginpass: userId not exists');
-      return res.fail({
-        code: -1
-      });
-    }
-    if (cookPassword(
-          req.query.loginPass,
-          user.loginSalt,
-          config.loginSaltPos)  === user.loginPass) {
-      return res.success({
-        code: 0
-      });
-    } else {
-      console.log('check_paypass: loginPass wrong');
-      return res.fail({
-        code: -3
-      });
-    }
-  }).catch((err) => {
-    console.error('check_loginpass: fail\n' + err.message);
-    return res.fail({
-      code: -2
-    });
+  if (!req.session.userId) {
+    return res.status(403).fail();
+  }
+  const user = yield User.findById(req.session.userId, {
+    attributes: ['salt', 'loginPass']
   });
-});
+  const loginPass = cookPassword(req.body.loginPass, user.salt);
+  if (loginPass === user.loginPass) {
+    return res.success();
+  } else {
+    return res.fail({ type: 'WRONG_LOGINPASS'});
+  }
+}));
 
 router.get('/account/check_id', Promise.coroutine(function *(req, res) {
   const user = yield User.findOne({
@@ -191,79 +220,39 @@ router.post('/account/update_info', Promise.coroutine(function* (req, res) {
   res.success({ user })
 }));
 
-router.post('/account/change_paypass', (req, res) => {
+router.post('/account/change_paypass', Promise.coroutine(function *(req, res) {
   console.log('in /account/change_paypass');
-  console.log(req.body);
-  User.findOne({
-    where: {
-      id: req.body.userId
-    }
-  })
-  .then((user) => {
-    if (!user) {
-      return res.fail({
-        code: -1
-      });
-    }
-    User.update({
-      payPass: cookPassword(req.body.payPass,
-                            user.paySalt,
-                            config.paySaltPos)
-    }, {
-      where: {
-        id: req.body.userId
-      }
-    })
-    .then(() => {
-      return res.success({
-        code: 0
-      });
-    });
-  })
-  .catch((err) => {
-    reportError('/account/change_paypass', err);
-    return res.fail({
-      code: -2
-    });
+  if (!req.session.userId) {
+    return res.status(403).fail()
+  }
+  const user = yield User.findById(req.session.userId, {
+    attributes: ['salt']
   });
-});
+  console.log(req.body);
+  console.log(req.body.payPass);
+  yield User.update({
+    payPass: cookPassword(req.body.payPass, user.salt)
+  }, {
+    where: {id: req.session.userId}
+  });
+  return res.success();
+}));
 
-router.post('/account/change_loginpass', (req, res) => {
+router.post('/account/change_loginpass', Promise.coroutine(function *(req, res) {
   console.log('in /account/change_loginpass');
-  console.log(req.body);
-  User.findOne({
-    where: {
-      id: req.body.userId
-    }
-  })
-  .then((user) => {
-    if (!user) {
-      return res.fail({
-        code: -1
-      });
-    }
-    User.update({
-      loginPass: cookPassword(req.body.loginPass,
-                              user.loginSalt,
-                              config.loginSaltPos)
-    }, {
-      where: {
-        id: req.body.userId
-      }
-    })
-    .then(() => {
-      return res.success({
-        code: 0
-      });
-    });
-  })
-  .catch((err) => {
-    reportError('/account/change_loginpass', err);
-    return res.fail({
-      code: -2
-    });
+  if (!req.session.userId) {
+    return res.status(403).fail()
+  }
+  const user = yield User.findById(req.session.userId, {
+    attributes: ['salt']
   });
-});
+  yield User.update({
+    loginPass: cookPassword(req.body.loginPass, user.salt)
+  }, {
+    where: {id: req.session.userId}
+  });
+  return res.success();
+}));
 
 // TODO: 支付密码验证
 router.post('/account/topup', Promise.coroutine(function* (req, res) {
@@ -325,5 +314,36 @@ router.post('/account/withdraw', Promise.coroutine(function* (req, res) {
   })
   return res.success({ user, transaction });
 }));
+
+router.post(
+  '/account/find_password',
+  Promise.coroutine(function *(req, res) {
+    let user = yield User.findOne({
+      where: {userName: req.body.userName},
+      attributes: ['email', 'id', 'salt']
+    });
+    if (!user) {
+      return res.fail({type: 'USER_NOT_EXIST'});
+    }
+    console.log(req.body);
+    console.log(user.email);
+    if (user.email !== req.body.email) {
+      return res.fail({type: 'INVALID_EMAIL'});
+    }
+    let loginPass = crypto.randomBytes(12).toString('base64');
+    yield User.update({
+      loginPass: cookPassword(loginPass, user.salt)
+    }, {
+      where: {id: user.id}
+    });
+    yield transporter.sendMail({
+      from: config.from,
+      to: user.email,
+      subject: 'Blipay密码重置通知',
+      text: `您的新登录密码是${loginPass}，请在登录后尽快修改密码。`
+    });
+    return res.success({ user });
+  })
+);
 
 module.exports = router;

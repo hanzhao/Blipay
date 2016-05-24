@@ -52,7 +52,7 @@ module.exports = (db) => {
       type: Sequelize.DECIMAL(12, 2),
       defaultValue: 0
     },
-    /* 实名验证状态 */
+    /* 实名验证状态, 0为未验证，1为审核中，2为通过验证 */
     status: {
       type: Sequelize.INTEGER,
       defaultValue: 0

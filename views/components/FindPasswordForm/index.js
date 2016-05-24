@@ -3,61 +3,50 @@
  */
 
 import React from 'react';
+import { connect } from 'react-redux';
 import { Form, Input, Icon, Button } from 'antd';
-
+import { findPassword } from '../../redux/modules/account';
 import styles from './styles';
-
-const fields = {
-  account: 'account',
-  email: 'email',
-};
 
 const translate = (text) => {
   return text;
 };
 
+@connect(
+  (state) => ({
+    findRes: state.account.findRes
+  }),
+  {
+    findPassword
+  }
+)
 @Form.create({})
 class FindPasswordForm extends React.Component {
 
-  getValidateStatus = (field) => {
-    const { isFieldValidating, getFieldError, getFieldValue } = this.props.form;
-
-    if (isFieldValidating(field)) {
-      return 'validating';
-    } else if (getFieldError(field)) {
-      return 'error';
-    } else if (getFieldValue(field)) {
-      return 'success';
-    }
-  };
-
   handleSubmit = () => {
-
+    this.props.findPassword(this.props.form.getFieldsValue());
   };
-  
+
   render() {
-    const { getFieldProps, isFieldValidating, getFieldError } = this.props.form;
+    const { getFieldProps } = this.props.form;
     return (
       <Form horizontal>
-        <Form.Item hasFeedback
-                   validateStatus={this.getValidateStatus(fields.account)}
-                   help={isFieldValidating(fields.account) ? '　' : 
-                         translate(getFieldError(fields.account))}>
+        <Form.Item>
           <Input size="large"
                  placeholder="账户"
                  addonBefore={<Icon type="user" />}
                  autoFocus
-                 autoComplete="off" />
+                 autoComplete="off"
+                 {...getFieldProps('userName')}/>
         </Form.Item>
-        <Form.Item hasFeedback
-                   validateStatus={this.getValidateStatus(fields.email)}
-                   help={isFieldValidating(fields.email) ? '　' : 
-                         translate(getFieldError(fields.email))}>
+        <Form.Item>
           <Input size="large"
                  placeholder="邮箱地址"
                  addonBefore={<Icon type="mail" />}
-                 autoComplete="off" />
+                 autoComplete="off" 
+                 {...getFieldProps('email')}/>
         </Form.Item>
+        <div className={styles.hint}>{this.props.findRes}</div>
         <Button type="primary" size="large"
                 className={styles.btn}
                 onClick={this.handleSubmit} >

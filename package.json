@@ -36,6 +36,8 @@
     "glob": "^7.0.3",
     "is_js": "^0.8.0",
     "lodash": "^4.13.0",
+    "multer": "^1.1.0",
+    "nodemailer": "^2.3.0",
     "method-override": "^2.3.5",
     "morgan": "^1.7.0",
     "mysql": "^2.10.2",

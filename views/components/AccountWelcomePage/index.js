@@ -10,7 +10,7 @@ import FormModal from '../FormModal';
 import styles from './styles';
 import ajax from '../../common/ajax';
 import store from '../../redux/store';
-import moment from 'moment'
+import moment from 'moment';
 import {
   logout,
   toggleTopup,
@@ -62,12 +62,12 @@ const validateWithdrawAmount = (rule, value, callback) => {
 
 const validatePaypass = async (rule, value, callback) => {
   try {
-    const res = await ajax.post('/api/account/check_paypass', {
+    await ajax.post('/api/account/check_paypass', {
       payPass: value
     });
     callback();
   } catch (err) {
-    callback(new Error(err.type));
+    callback(new Error('支付密码错误。'));
   }
 };
 
@@ -181,10 +181,20 @@ const getBalanceTail = (balance) => {
     return (balance.toFixed(2) + '').split('.')[1];
 };
 
+const getGreeting = () => {
+  const hour = (new Date()).getHours();
+  if (hour >= 5 && hour <= 12)
+    return '上午好';
+  else if (hour > 12 && hour <= 18)
+    return '下午好';
+  else
+    return '晚上好';
+};
+
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState } }) => {
-      return dispatch(loadTransactions())
+      return dispatch(loadTransactions());
     }
   }],
   (state) => ({
@@ -211,7 +221,7 @@ class AccountWelcomePage extends React.Component {
       <div className={styles.container}>
         <div className={styles.upperHalf}>
           <div className={styles.info}>
-            <div className={styles.greeting}>下午好，{user.realName || user.userName}！</div>
+            <div className={styles.greeting}>{getGreeting()}，{user.realName || user.userName}！</div>
             <div className={styles.lastLogin}>
               上次登录时间：{
                 user.lastLogin ?
