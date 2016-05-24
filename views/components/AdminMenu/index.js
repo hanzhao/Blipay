@@ -10,7 +10,7 @@ const menus = [
   { to: '/admin/account/welcome', text: '基本信息', icon: 'info-circle-o'},
   { to: '/admin/account/change', text: '修改用户信息', icon: 'solution' },
   { to: '/admin/account/verification', text: '用户验证', icon: 'check-circle' },
-  { to: '/admin/account/argue', text: '仲裁', icon: 'team' }
+  { to: '/admin/account/judgement', text: '仲裁', icon: 'team' }
 ];
 
 class AdminMenu extends React.Component {

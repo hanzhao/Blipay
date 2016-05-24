@@ -27,6 +27,9 @@ import AdminWelcomePage from './components/AdminWelcomePage';
 import AdminInfoPage from './components/AdminInfoPage';
 import AdminManager from './components/AdminManager';
 import AdminChange from './components/AdminChange';
+
+import AdminJudgement from './components/AdminJudgement';
+
 import AdminVerify from './components/AdminVerify';
 import AdminVerifyDetail from './components/AdminVerifyDetail';
 import ShoppingPage from './components/ShoppingPage';
@@ -49,6 +52,7 @@ const router = (
           <Route path="/admin/account/welcome" component={AdminWelcomePage} />
           <Route path="/admin/account/manager" component={AdminManager} />
           <Route path="/admin/account/change" component={AdminChange} />
+	        <Route path="/admin/account/judgement" component={AdminJudgement} />
           <Route path="/admin/account/verification" component={AdminVerify} />
           <Route path="/admin/account/verification/detail" component={AdminVerifyDetail} />
         </Route>
