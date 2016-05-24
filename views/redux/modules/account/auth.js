@@ -10,6 +10,7 @@ import {
   updateEmail,
   updateIdNumber,
   updateLastLogin,
+  updateVerification,
   resetInfo
 } from './info';
 import { push } from 'react-router-redux'; 
@@ -51,6 +52,7 @@ export default (state = initialState, action) => {
         action.result.lastLogin.replace(',', ' ')
       ));
       store.dispatch(updateIdNumber(action.result.idNumber));
+      store.dispatch(updateVerification(action.result.status));
       store.dispatch(push('/account'));
     }, 10);
 

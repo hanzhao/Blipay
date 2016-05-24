@@ -1,3 +1,4 @@
+'use strict';
 const User = require('../models').User;
 const Transaction = require('../models').Transaction;
 const config = require('../config/account');
@@ -6,6 +7,43 @@ const crypto = require('crypto');
 const router = Router();
 const Promise = require('bluebird');
 const Util = require('util');
+const multer = require('multer');
+const fs = Promise.promisifyAll(require('fs'));
+const uploadPath = require('../config').upload
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport(config.mailConfig);
+
+const storage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, `${global.ROOT}/${uploadPath}`);
+  },
+  filename: (req, file, callback) => {
+    fs.readdirAsync(`${uploadPath}`)
+      .then((files) => {
+        files = files.filter(e => e.startsWith(`${req.session.userId}_`));
+        /*
+         * 只保存用户最后上传的两张照片。
+         */
+        if (files.length == 2) {
+          fs.unlinkAsync(`${uploadPath}/${files[0]}`)
+            .then(() => {
+              callback(null, `${req.session.userId}_${file.fieldname}_${Date.now()}`);
+            })
+            .catch((err) => {
+              throw err;
+            });
+        } else {
+          callback(null, `${req.session.userId}_${file.fieldname}_${Date.now()}`);
+        }
+      })
+      .catch((err) => {
+        console.error(
+          `Error occurs during accessing /Blipay/upload.\n${Util.inspect(err)}\n`
+        );
+      });
+  }
+});
+const upload = multer({ storage: storage });
 
 const cookPassword = (key, salt, saltPos) => {
   var hash = crypto.createHash('sha512');
@@ -20,6 +58,13 @@ const reportError = (path, err) => {
     `\nERROR occurs in ${path}:\n\n${Util.inspect(err)}\n`
   );
 };
+
+router.post(
+  '/account/verification',
+  upload.single('photo'),
+  Promise.coroutine(function *(req, res) {
+  })
+);
 
 router.post('/account/register', (req, res) => {
   console.log('in /account/register');
@@ -103,7 +148,7 @@ router.post('/account/login', Promise.coroutine(function *(req, res) {
         order: ['createdAt'],
         limit: 10
       });
-      //req.session.userId = user.id;
+      req.session.userId = user.id;
       return res.success({
         code: 0,
         userId: user.id,
@@ -114,7 +159,8 @@ router.post('/account/login', Promise.coroutine(function *(req, res) {
         phone: user.phone,
         realName: user.realName,
         idNumber: user.idNumber,
-        transactions: transactions
+        transactions: transactions,
+        status: user.status
       });
     } else {
       return res.fail({code: -3});
@@ -237,15 +283,12 @@ router.get('/account/check_username', (req, res) => {
 
 router.post('/account/logout', (req, res) => {
   console.log('in logout');
-  return res.success({});
-  /*
   if(req.session && req.session.userId) {
     delete req.session.userId;
     return res.success({});
   } else {
     return res.fail({});
   }
-  */
 });
 
 router.post('/account/change_userName', (req, res) => {
@@ -657,5 +700,68 @@ router.get('/account/get_transaction', (req, res) => {
     });
   });
 });
+
+router.post(
+  '/account/apply_verification', 
+  Promise.coroutine(function *(req, res) {
+    console.log('in /account/apply_verification');
+    try {
+      let user = yield User.findOne({where: {id: req.body.userId}});
+      if (!user) {
+        return res.fail({code: -1});
+      }
+      if (user.status !== 0) {
+        return res.fail({code: -3});
+      }
+      yield User.update({
+        status: 1
+      }, {
+        where: {
+          id: req.body.userId
+        }
+      });
+      return res.success({code: 0});
+    } catch (err) {
+      reportError(err);
+      return res.fail({code: -2});
+    }
+  })
+);
+
+router.post(
+  '/account/find_password'),
+  Promise.coroutine(function *(req, res) {
+    console.log('in /account/find_password');
+    try {
+      let user = yield User.findOne({where: {id: req.body.userName}});
+      if (!user) {
+        return res.fail({code: -1});
+      }
+      if (user.email !== req.body.email) {
+        return res.fail({code: -3});
+      }
+      loginPass = crypto.randomBytes(12).toString('base64');
+      yield User.update({
+        loginPass: cookPassword(loginPass, 
+                   user.loginSalt, 
+                   config.loginSaltPos)
+      }, {
+        where: {
+          id: user.id
+        }
+      });
+      let info = yield transporter.sendMail({
+        from: config.from,
+        to: user.email,
+        subject: 'Blipay密码重置通知',
+        text: `您的新登录密码是${loginPass}，请在登录后尽快修改密码。`
+      });
+      return res.success({code: 0});
+    } catch (err) {
+      reportError(err);
+      return res.fail({code: -2});
+    }
+  })
+);
 
 module.exports = router;

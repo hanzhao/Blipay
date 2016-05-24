@@ -7,21 +7,51 @@ import { Form, Input, Icon, Button } from 'antd';
 
 import styles from './styles';
 
+const fields = {
+  account: 'account',
+  email: 'email',
+};
+
+const translate = (text) => {
+  return text;
+};
+
+@Form.create({})
 class FindPasswordForm extends React.Component {
+
+  getValidateStatus = (field) => {
+    const { isFieldValidating, getFieldError, getFieldValue } = this.props.form;
+
+    if (isFieldValidating(field)) {
+      return 'validating';
+    } else if (getFieldError(field)) {
+      return 'error';
+    } else if (getFieldValue(field)) {
+      return 'success';
+    }
+  };
+
   render() {
+    const { getFieldProps, isFieldValidating, getFieldError } = this.props.form;
     return (
       <Form horizontal>
-        <Form.Item>
+        <Form.Item hasFeedback
+                   validateStatus={this.getValidateStatus(fields.account)}
+                   help={isFieldValidating(fields.account) ? '　' : 
+                         translate(getFieldError(fields.account))}>
           <Input size="large"
                  placeholder="账户"
                  addonBefore={<Icon type="user" />}
                  autoFocus
                  autoComplete="off" />
         </Form.Item>
-        <Form.Item>
+        <Form.Item hasFeedback
+                   validateStatus={this.getValidateStatus(fields.email)}
+                   help={isFieldValidating(fields.email) ? '　' : 
+                         translate(getFieldError(fields.email))}>
           <Input size="large"
-                 placeholder="手机号"
-                 addonBefore={<Icon type="mobile" />}
+                 placeholder="邮箱地址"
+                 addonBefore={<Icon type="mail" />}
                  autoComplete="off" />
         </Form.Item>
         <Button type="primary" size="large"

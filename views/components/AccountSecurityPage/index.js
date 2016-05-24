@@ -4,6 +4,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import FormModal from '../FormModal';
+import UploadModal from '../UploadModal';
 import SecurityRow from '../SecurityRow';
 import styles from './styles';
 import ajax from '../../common/ajax';
@@ -17,6 +18,11 @@ import {
   exitChangeLoginpass,
   changeLoginpass
 } from '../../redux/modules/account/loginpass';
+import { 
+  applyVerification,
+  enterVerification,
+  exitVerification
+} from '../../redux/modules/account/info';
 import { getUserId } from '../../redux/modules/account/auth';
 import store from '../../redux/store';
 
@@ -127,6 +133,17 @@ const validateLoginpass = async (rule, value, callback) => {
   }
 };
 
+const getVerificationBrief = (status) => {
+  switch (status) {
+  case 1:
+    return '实名验证正在审核中。';
+  case 2:
+    return '您已通过实名验证。';
+  default:
+    return '您尚未进行实名验证。';
+  }
+};
+
 const loginpassPropsArray = [
   {
     input: {
@@ -205,33 +222,6 @@ const paypassPropsArray = [
   }
 ];
 
-const emailPropsArray = [
-  {
-    input: {
-      placeholder: '请输入邮箱地址',
-      type: 'email',
-      autoComplete: 'off'
-    },
-    field: [
-      'email', {
-        rules: [{ required: true }]
-      }
-    ]
-  },
-  {
-    input: {
-      placeholder: '请输入验证码',
-      type: 'text',
-      autoComplete: 'off'
-    },
-    field: [
-      'verification', {
-        rules: [{ required: true }]
-      }
-    ]
-  }
-];
-
 @connect(
   (state) => ({
     changingPaypass: state.account.paypass.changingPaypass,
@@ -239,7 +229,11 @@ const emailPropsArray = [
     paypassError: state.account.paypass.errorMsg,
     loginpassError: state.account.loginpass.errorMsg,
     requestingPaypass: state.account.paypass.requesting,
-    requestingLoginpass: state.account.loginpass.requesting
+    requestingLoginpass: state.account.loginpass.requesting,
+    requestingVerification: state.account.info.requestingVerification,
+    verificationError: state.account.info.verificationError,
+    applyingVerification: state.account.info.applyingVerification,
+    verificationStatus: state.account.info.verificationStatus
   }),
   {
     enterChangePaypass,
@@ -247,26 +241,19 @@ const emailPropsArray = [
     changePaypass,
     enterChangeLoginpass,
     exitChangeLoginpass,
-    changeLoginpass
+    changeLoginpass,
+    applyVerification,
+    enterVerification,
+    exitVerification
   }
 )
 class AccountSecurityPage extends React.Component {
-  state = {
-    verifyingEmail: false
-  };
-
-  toggleVerifyEmail = () => {
-    this.setState({
-      verifyingEmail: !this.state.verifyingEmail
-    });
-  };
 
   handleLoginpass = (values) => {
     this.props.changeLoginpass(
       getUserId(store.getState()),
       values.loginpass
     );
-    console.log(values);
   };
 
   handlePaypass = (values) => {
@@ -274,13 +261,12 @@ class AccountSecurityPage extends React.Component {
       getUserId(store.getState()), 
       values.paypass
     );
-    console.log(values);
   };
 
-  handleEmail = (values) => {
-    // TODO
-    console.log(values);
+  handleVerification = () => {
+    this.props.applyVerification(getUserId(store.getState()));
   };
+
   render() {
     const contents = [
       {
@@ -295,9 +281,9 @@ class AccountSecurityPage extends React.Component {
         onClick: this.props.enterChangePaypass
       }, {
         title: '实名验证',
-        brief: '您尚未进行实名验证',
-        btnText: '验证',
-        onClick: this.toggleVerifyEmail
+        brief: getVerificationBrief(this.props.verificationStatus),
+        btnText: this.props.verificationStatus === 1 ? '修改' : '验证',
+        onClick: this.props.enterVerification
       }
     ];
     return (
@@ -325,13 +311,13 @@ class AccountSecurityPage extends React.Component {
                    btnCallback={this.handlePaypass}
                    errorMsg={this.props.paypassError}
                    toggleModal={this.props.exitChangePaypass} />
-        <FormModal title="实名验证"
-                   visible={this.state.verifyingEmail}
-                   num={2}
-                   btnText="确认验证"
-                   propsArray={emailPropsArray}
-                   btnCallback={this.handleEmail}
-                   toggleModal={this.toggleVerifyEmail} />
+        <UploadModal title="实名验证"
+                     visible={this.props.applyingVerification}
+                     loading={this.props.requestingVerification}
+                     errorMsg={this.props.verificationError}
+                     btnText={this.props.verificationStatus === 1 ? '确认修改' : '确认验证'}
+                     btnCallback={this.handleVerification}
+                     toggleModal={this.props.exitVerification} />
       </div>
     );
   }

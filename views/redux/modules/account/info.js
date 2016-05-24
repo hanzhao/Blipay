@@ -21,6 +21,12 @@ const UPDATE_PHONE = 'Blipay/account/UPDATE_PHONE';
 const UPDATE_REALNAME = 'Blipay/account/UPDATE_REALNAME';
 const UPDATE_LASTLOGIN = 'Blipay/account/UPDATE_LASTLOGIN';
 const RESET_INFO = 'Blipay/account/RESET_INFO';
+const APPLY_VERIFICATION = 'Blipay/account/APPLY_VERIFICATION';
+const APPLY_VERIFICATION_SUCC = 'Blipay/account/APPLY_VERIFICATION_SUCC';
+const APPLY_VERIFICATION_FAIL = 'Blipay/account/APPLY_VERIFICATION_FAIL';
+const ENTER_VERIFICATION = 'Blipay/account/ENTER_VERIFICATION';
+const EXIT_VERIFICATION = 'Blipay/account/EXIT_VERIFICATION';
+const UPDATE_VERIFICATION = 'Blipay/account/UPDATE_VERIFICATION';
 
 const initialState = { };
 
@@ -182,6 +188,40 @@ export default (state = initialState, action) => {
       ...state,
       lastLogin: action.date
     };
+  case UPDATE_VERIFICATION:
+    return {
+      ...state,
+      verificationStatus: action.status
+    };
+  case ENTER_VERIFICATION:
+    return {
+      ...state,
+      applyingVerification: true
+    };
+  case EXIT_VERIFICATION:
+    return {
+      ...state,
+      applyingVerification: false
+    };
+  case APPLY_VERIFICATION:
+    return {
+      ...state,
+      requestingVerification: true
+    };
+  case APPLY_VERIFICATION_SUCC:
+    return {
+      ...state,
+      applyingVerification: false,
+      requestingVerification: false,
+      verificationStatus: 1
+    };
+  case APPLY_VERIFICATION_FAIL:
+    return {
+      ...state,
+      applyingVerification: true,
+      requestingVerification: false,
+      verificationError: getErrorMsg(action.error.code)
+    };
   case RESET_INFO:
     return {
       ...state,
@@ -336,4 +376,38 @@ export const getBalance = (globalState) => {
   if (globalState.account.info.balance) {
     return globalState.account.info.balance;
   }
+};
+
+export const applyVerification = (userId) => {
+  return {
+    types: [
+      APPLY_VERIFICATION,
+      APPLY_VERIFICATION_SUCC,
+      APPLY_VERIFICATION_FAIL
+    ],
+    promise: (client) => {
+      return client.post('/account/apply_verification', {
+        userId
+      });
+    }
+  };
+};
+
+export const enterVerification = () => {
+  return {
+    type: ENTER_VERIFICATION
+  };
+};
+
+export const exitVerification = () => {
+  return {
+    type: EXIT_VERIFICATION
+  };
+};
+
+export const updateVerification = (status) => {
+  return {
+    type: UPDATE_VERIFICATION,
+    status
+  };
 };

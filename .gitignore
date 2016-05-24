@@ -47,3 +47,6 @@ public/*.png
 
 # mocha-webpack output file
 .tmp/*
+
+# Folder for uploading photos
+upload/*
