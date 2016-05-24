@@ -39,7 +39,6 @@
     "method-override": "^2.3.5",
     "morgan": "^1.7.0",
     "mysql": "^2.10.2",
-    "redux-connect": "^2.4.0",
     "sequelize": "^3.22.0",
     "serve-favicon": "^2.3.0"
   },
@@ -79,6 +78,7 @@
     "react-router": "^2.0.1",
     "react-router-redux": "^4.0.1",
     "redux": "^3.3.1",
+    "redux-connect": "^2.4.0",
     "redux-form": "^5.2.3",
     "sass-lint": "^1.7.0",
     "sass-loader": "^3.2.0",

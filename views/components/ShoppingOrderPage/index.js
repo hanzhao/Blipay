@@ -14,9 +14,9 @@ import ajax from '../../common/ajax';
 const createForm = Form.create;
 const FormItem = Form.Item;
 let contents = [];
-let tableProps = 
+let tableProps =
 {
-  pagination: 
+  pagination:
   {
     simple: true,
     pageSize: 6
@@ -34,14 +34,14 @@ let columns = [{
       dataIndex: 'name',
       key: 'name',
       render: (d,e) => {
-           return <span className={styles.itemName}>{e.items[0].name}</span>;   
+           return <span className={styles.itemName}>{e.items[0].name}</span>;
       }
     }, {
       title: '单价',
       dataIndex: 'price',
       key: 'price',
       render: (d,e) => {
-           return <span className={styles.itemPrice}>{Number(e.items[0].price).toFixed(2)}</span>;   
+           return <span className={styles.itemPrice}>{Number(e.items[0].price).toFixed(2)}</span>;
       }
     }, {
       title: '数量',
@@ -56,7 +56,7 @@ let columns = [{
       dataIndex: 'totalCost',
       key: 'totalCost',
       render: (d) => {
-           return <span className={styles.itemTotalCost}>{Number(d).toFixed(2)}</span>;   
+           return <span className={styles.itemTotalCost}>{Number(d).toFixed(2)}</span>;
       }
     }, {
       title: '订单状态',
@@ -70,13 +70,13 @@ let columns = [{
 let BasicDemo = React.createClass(
 {
       getInitialState: async ()=> {
-      const res = await ajax.post('/order/order_list',{buyerId:1});
+      const res = await ajax.post('/api/order/order_list',{buyerId:1});
       console.log('buyresult',res);
       Object.assign(contents,res.orders);
       //console.log(contents);
       return {};
     },
-    render() {    
+    render() {
       const pagination = {
         total: contents.length,
         showSizeChanger: true,
@@ -97,7 +97,7 @@ let BasicDemo = React.createClass(
 
 
 class ShoppingOrderPage extends React.Component {
-    render() 
+    render()
     {
       return (
         <BasicDemo />

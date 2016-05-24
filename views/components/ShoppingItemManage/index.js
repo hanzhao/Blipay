@@ -27,14 +27,14 @@ let contents=[];
 let BasicDemo = React.createClass
 (
 {
-    getInitialState: async ()=> 
+    getInitialState: async ()=>
     {
-        const res = await ajax.post('/item/item_list',{filter:{},sellerId: 1});
+        const res = await ajax.post('/api/item/item_list',{filter:{},sellerId: 1});
         Object.assign(contents,res.items);
         console.log(res);
         return {};
    },
-   render() 
+   render()
    {
         return (
          <div className={styles.container}>
@@ -46,7 +46,7 @@ let BasicDemo = React.createClass
                 contents.map((e,i) => (
                   <ShoppingItemManageTable key={i} content={e} />
                 ))
-              }       
+              }
             </div>
         </div>
         );

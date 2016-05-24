@@ -1,6 +1,6 @@
 /*
 <<<<<<< HEAD
-* gou mai shang pin 
+* gou mai shang pin
 */
 
 import React from 'react';
@@ -19,7 +19,7 @@ class ShoppingPage extends React.Component {
            style={{ height: window.innerHeight - 85 }}>
         <Container className={styles.container}>
           <div className={styles.left}>
-            <ShoppingMenu/>
+            <ShoppingMenu />
           </div>
           <div className={styles.right}>
               { this.props.children }

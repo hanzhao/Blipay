@@ -7,13 +7,12 @@ import { Link } from 'react-router';
 import { Menu, Icon } from 'antd';
 
 const menus = [
-  { to: '/shopping/shoppinginfo', text: '浏览宝贝', icon: 'info-circle-o' },
-  { to: '/shopping/shoppingcart', text: '购物车', icon: 'shopping-cart' },
-  { to: '/shopping/shoppingorder', text: '订单管理', icon: 'exception' },
-  { to: '/shopping/shoppingitemadd', text: '商品添加', icon: 'plus-square' },
-  { to: '/shopping/shoppingitemmanage', text: '商品管理', icon: 'exception' },
+  { to: '/shopping/info', text: '浏览宝贝', icon: 'info-circle-o' },
+  { to: '/shopping/cart', text: '购物车', icon: 'shopping-cart' },
+  { to: '/shopping/order', text: '订单管理', icon: 'exception' },
+  { to: '/shopping/itemadd', text: '商品添加', icon: 'plus-square' },
+  { to: '/shopping/itemmanage', text: '商品管理', icon: 'exception' },
 ];
-
 
 class ShoppingMenu extends React.Component {
   render() {
