@@ -1,3 +1,5 @@
+'use strict'
+const User = require('../models').user;
 const Specialaccount = require('../models').specialaccount;
 const Admin =  require('../models').admin;
 const config = require('../config/admin');
@@ -6,6 +8,7 @@ const crypto = require('crypto');
 const router = Router();
 const Identification = require('../models').identification;
 const Arbitration = require('../models').arbitration;
+const Log = require('../models').adminlog;
 
 const cookPassword = (key,salt,saltPos) => {
     var hash = crypto.createHash('sha512');
@@ -16,17 +19,17 @@ const cookPassword = (key,salt,saltPos) => {
 };
 
 /*管理员登录*/
-router.post('/account/login',(req,res) =>{
+router.post('/account/login',Promise.coroutine(function *(req,res){
     console.log('in /admin/login');
     console.log(req.body);
     
-    Admin.findOne({
+    let admin = yield Admin.findOne({
         where:{
             adminName: req.body.userName
         }
     })
-    .then((admin) =>{
-        if(!Admin){
+
+        if(!admin){
             return res.fail({
                 code: -1
             });
@@ -41,30 +44,23 @@ router.post('/account/login',(req,res) =>{
             });
         }
         else{
-            res.fail({
+            return res.fail({
                code: -3 
             });
         }
-    })
-    .catch((err) =>{
-        console.error('error in /admin/login:\n' +err.message);
-        return res.fail({
-            code: -2
-        });
-    });
-});
+}));
 
 /*管理员建立特殊账户*/
-router.post(('/admin/create'),(req,res) => {
+router.post(('/admin/create'),Promise.coroutine(function *(req,res) {
     console.log('in /admin/create');
     console.log(req.body);
      
-    Specialaccount.findOne({
+    let specialaccount = yield Specialaccount.findOne({
         where:{
             name: req.body.name
         }
-    }).then((Specialaccount)=>{
-        if(Specialaccount){
+    });
+        if(specialaccount){
             console.log('account already exist!\n');
             return res.fail({
                 code: -1
@@ -81,32 +77,22 @@ router.post(('/admin/create'),(req,res) => {
                                     loginSalt,
                                     config.loginSaltPos)
         };
-        Specialaccount.create(newSpecialaccount)
-        .then(()=>{
-            return res.success({
+        yield Specialaccount.create(newSpecialaccount)
+        return res.success({
                 code: 0
             });
-        })
-        .catch((err)=>{
-            console.error('error in /admin/create:\n' + err.message);
-            return res.fail({
-                code: -2
-            });
-        });
-    });
-});
+}));
 
 /*删除特殊账户*/
-router.post('/admin/delete',(req,res) =>{
+router.post('/admin/delete',Promise.coroutine(function *(req,res) {
     console.log('int /admin/delete');
     console.log(req.body);
     
-    Specialaccout.destroy({
+    let deletecount = yield Specialaccout.destroy({
         where:{
             name: req.body.name
         }
-    }).then(
-        (deletecount)=>{
+    });
             if(deletecount==0){
                 return res.fail({
                     code: -1
@@ -115,33 +101,31 @@ router.post('/admin/delete',(req,res) =>{
             return res.success({
                 code:0
             });
-        }
-    );
-});
+}));
 
 /*撤销特殊账户权限*/
-router.post('/admin/withdrawal',(req,res)=>{
+router.post('/admin/withdrawal',Promise.coroutine(function *(req,res){
     console.log('in admin/withdrawal');
     console.log(req.body);
 
-    Specialaccount.findOne({
+    let specialaccount = yield Specialaccount.findOne({
         where:{
             name: req.body.name
         }
-    }).then((specialaccount)=>{
+    });
         if(!specialaccount){
             return res.fail({
                 code: -1
             });
         }
         newAuthority=specialaccount.authority&(7^req.body.authority);
-        Specialaccount.update({
+        let result = yield Specialaccount.update({
             authority: newAuthority
         },{
             where:{
                 name: req.body.name
             }
-        }).then((result)=>{
+        });
             if(result[0]==0){
                 return res.fail({
                     code: -2
@@ -150,37 +134,28 @@ router.post('/admin/withdrawal',(req,res)=>{
             return res.success({
                 code: 0
             });
-        }
-        )
-    }
-    ).catch((err)=>{
-        console.error('Error in admin/withdrawal:\n' +err.message);
-        return res.fail({
-            code: -2
-        });
-    });
-});
+}));
 
 /*自动实名认证*/
-router.post('/admin/identification',(req,res)=>{
+router.post('/admin/identification',Promise.coroutine(function *(req,res){
     console.log('in admin/identification');
     console.log(req.body);
 
-    User.findOne({
+    let user = yield User.findOne({
         where:{
             userName: req.body.userName
         }
-    }).then((user)=>{
+    });
         if(!user){
             return res.fail({
                 code: -1
             });
         }
-        Identification.findOne({
+        let identification = yield Identification.findOne({
             where:{
                 realName: user.userName
             }
-        }).then((identification)=>{
+        });
             if(!identification){
                 console.log('no id information has been recorded!\n');
                 return res.fail({
@@ -202,12 +177,10 @@ router.post('/admin/identification',(req,res)=>{
             return res.success({
                 code: 0
             });
-        });
-    });
-});
+}));
 
 /*身份数据库插入信息*/
-router.post('/admin/updateidbase',(req,res)=>{
+router.post('/admin/updateidbase',Promise.coroutine(function *(req,res){
     console.log('in admin/identification');
     console.log(req.body);
 
@@ -216,86 +189,85 @@ router.post('/admin/updateidbase',(req,res)=>{
         idNumber: req.body.idNumber
     };
     
-    Identification.findOne({
+    let identification = yield Identification.findOne({
         where:{
             idNumber: newId.idNumber
         }
-    }).then((identification)=>{
+    });
         if(identification){
             return res.fail({
                 code: -1
             });
         }
-        Identification.create(newId)
-            .then(()=>{
+        yield Identification.create(newId)
                 return res.success({
                     code: 0
                 });
-            });
-    });
-});
+}));
 
 /*审查仲裁内容*/
-router.get('/admin/arbitration',(req,res)=>{
-    Arbitration.findAll({
+router.get('/admin/arbitration',Promise.coroutine(function *(req,res){
+    let arbitration = Arbitration.findAll({
         where: {
             state: 'ing'
         }
-    }).then((arbitration) => {
+    });
         return res.success({
             code: 0,
             content: arbitration
         });
-    });
-});
+}));
 
 /*用户信息删除*/
-router.post('/admin/deleteuser',(req,res) => {
-    User.findOne({
+router.post('/admin/deleteuser',Promise.coroutine(function *(req,res) {
+    let user = User.findOne({
         where:{
             userName: req.body.userName
         }
-    }).then((user) => {
+    });
         if(!user){
             return res.fail({
                 code: -1
             });
         }
-        User.destroy({
+        yield User.destroy({
             where:{
                 userName: user.userName
             }
-        }).then(() => {
+        })
+        yield Log.create({
+            date: 1,
+            content: 'delete',
+            adminName: req.body.adminName,
+            userName: req.body.userName
+        });
             res.success({
                 code: 0
             });
-        });
-    });
-});
+}));
 
 /*用户信息修改*/
-router.post('/admin/modifyuser',(req,res) => {
-    User.update({
+router.post('/admin/modifyuser',Promise.coroutine(function *(req,res) {
+    yield User.update({
         status: req.status,
     }, {
         where: {
             userName: req.body.userName
         }
-    }).then(() => {
+    });
         return res.success({
             code: 0
         });
-    })
-});
+}));
 
 /*用户信息查找*/
 /*通过帐号查找*/
-router.get('/admin/checkbyusername',(req,res) => {
-    User.findOne({
+router.get('/admin/checkbyusername',Promise.coroutine(function *(req,res) {
+    let u = yield User.findOne({
         where:{
             userName: req.body.userName
         }
-    }).then((u) => {
+    });
         if(!u){
             return res.fail({
                 code: -1
@@ -305,16 +277,15 @@ router.get('/admin/checkbyusername',(req,res) => {
             user: u,
             code: 0
         });
-    });
-});
+}));
 
 /*通过真实姓名查找*/
-router.get('/admin/checkbyrealname',(req,res) => {
-    User.findOne({
+router.get('/admin/checkbyrealname',Promise.coroutine(function *(req,res) {
+    let u = yield User.findOne({
         where:{
             realName: req.body.realName
         }
-    }).then((u) => {
+    });
         if(!u){
             return res.fail({
                 code: -1
@@ -324,21 +295,70 @@ router.get('/admin/checkbyrealname',(req,res) => {
             user: u,
             code: 0
         });
-    });
-});
+}));
 
 /*通过status查找*/
-router.get('/admin/checkbystatus',(req,res) =>{
-    User.findAll({
+router.get('/admin/checkbystatus',Promise.coroutine(function *(req,res){
+    let u = yield User.findAll({
         where:{
             status: req.body.status
         }
-    }).then((u) => {
+    });
        return res.success({
             user: u,
             code: 0
        });
+}));
+
+/*查找所有的管理员操作记录*/
+router.get('/admin/log',Promise.coroutine(function *(req,res){
+    let r = yield Log.findAll({
     });
-});
+    return res.success({
+        result: r,
+        code: 0
+    })
+}));
+
+/*查看所有的未自动认证用户*/
+router.get('/admin/verifylist',Promise.coroutine(function *(req,res){
+    let unVerifiedUser= yield User.findAll({
+        where:{
+            status : false
+        }
+    });
+
+    return res.success({
+        code:0,
+        unverifieduser: unVerifiedUser
+    });
+}));
+
+/*获取仲裁信息*/
+router.get('/admin/getarbitration',Promise.coroutine(function *(req,res){
+    let abs = yield Arbitration.findAll({
+        where:{
+            state: 'ing'
+        }
+    });
+    return res.success({
+        code: 0,
+        arbitrations: abs
+    });
+}));
+
+/*解决仲裁*/
+router.post('/admin/dealarbitration',Promise.coroutine(function *(req,res){
+    yield Arbitration.update({
+        state: req.body.op
+    },{
+        where:{
+            userName: req.body.userName
+        }
+    });
+    return res.success({
+        code :0
+    });
+}));
 
 module.exports = router;

@@ -26,5 +26,8 @@ module.exports = (db) =>{
         loginSalt:{
             type: Sequelize.STRING, allowNull: false
         }
+        level:{
+            type: Sequelize.INT,    allowNull:false
+        }
     });
 };
