@@ -11,9 +11,6 @@ function ajaxMiddleware(client) {
       if (typeof action === 'function') {
         return action(dispatch, getState);
       }
-      if (action === undefined) {
-        return next(action);
-      }
       const { promise, types, ...rest } = action;
       if (!promise) {
         return next(action);

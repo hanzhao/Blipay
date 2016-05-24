@@ -1,3 +1,4 @@
+global.Promise = require('bluebird');
 const proxy = require('express')();
 const bodyParser = require('body-parser');
 
@@ -14,7 +15,7 @@ proxy.use((req, res, next) => {
   res.fail = function(data) {
     return this.json({
       code: -1,
-      error: data 
+      error: data
     });
   };
   next();

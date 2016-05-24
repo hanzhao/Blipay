@@ -14,7 +14,7 @@ class MainPage extends React.Component {
   render() {
     return (
       <div className={styles.wrapper}
-           style={{ height: window.innerHeight - 85 }}>
+        style={{ height: window.innerHeight - 85 }}>
         {/* 占满整个屏幕 */}
         <Container className={styles.container}>
           <RegisterOrLoginForm />

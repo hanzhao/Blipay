@@ -7,18 +7,11 @@ import FormModal from '../FormModal';
 import SecurityRow from '../SecurityRow';
 import styles from './styles';
 import ajax from '../../common/ajax';
-import { 
-  enterChangePaypass, 
-  exitChangePaypass, 
-  changePaypass
-} from '../../redux/modules/account/paypass';
-import { 
-  enterChangeLoginpass,
-  exitChangeLoginpass,
-  changeLoginpass
-} from '../../redux/modules/account/loginpass';
-import { getUserId } from '../../redux/modules/account/auth';
-import store from '../../redux/store';
+import {
+  toggleModifyLoginpass,
+  toggleModifyPaypass,
+  toggleVerifyEmail
+} from '../../redux/modules/account';
 
 const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
@@ -39,7 +32,7 @@ const validateNewPaypass = (rule, value, callback) => {
       newPaypass = value;
       callback();
     }
-  } 
+  }
 };
 
 const validateRePaypass = (rule, value, callback) => {
@@ -51,7 +44,7 @@ const validateRePaypass = (rule, value, callback) => {
     } else {
       callback();
     }
-  } 
+  }
 };
 
 const validateNewLoginpass = (rule, value, callback) => {
@@ -66,7 +59,7 @@ const validateNewLoginpass = (rule, value, callback) => {
       newLoginpass = value;
       callback();
     }
-  } 
+  }
 };
 
 const validateReLoginpass = (rule, value, callback) => {
@@ -78,14 +71,14 @@ const validateReLoginpass = (rule, value, callback) => {
     } else {
       callback();
     }
-  } 
+  }
 };
 
 const validatePaypass = async (rule, value, callback) => {
   try {
     const res = await ajax.get(
-      '/account/check_paypass', 
-      { 
+      '/account/check_paypass',
+      {
         userId: getUserId(store.getState()),
         payPass: value
       }
@@ -107,8 +100,8 @@ const validatePaypass = async (rule, value, callback) => {
 const validateLoginpass = async (rule, value, callback) => {
   try {
     const res = await ajax.get(
-      '/account/check_loginpass', 
-      { 
+      '/account/check_loginpass',
+      {
         userId: getUserId(store.getState()),
         loginPass: value
       }
@@ -234,21 +227,15 @@ const emailPropsArray = [
 
 @connect(
   (state) => ({
-    changingPaypass: state.account.paypass.changingPaypass,
-    changingLoginpass: state.account.loginpass.changingLoginpass,
-    paypassError: state.account.paypass.errorMsg,
-    loginpassError: state.account.loginpass.errorMsg,
-    requestingPaypass: state.account.paypass.requesting,
-    requestingLoginpass: state.account.loginpass.requesting
+    showModifyLoginpassModal: state.account.showModifyLoginpassModal,
+    showModifyPaypassModal: state.account.showModifyPaypassModal,
+    showVerifyEmailModal: state.account.showVerifyEmailModal
   }),
-  {
-    enterChangePaypass,
-    exitChangePaypass,
-    changePaypass,
-    enterChangeLoginpass,
-    exitChangeLoginpass,
-    changeLoginpass
-  }
+  (dispatch) => ({
+    toggleModifyLoginpass: () => dispatch(toggleModifyLoginpass()),
+    toggleModifyPaypass: () => dispatch(toggleModifyPaypass()),
+    toggleVerifyEmail: () => dispatch(toggleVerifyEmail())
+  })
 )
 class AccountSecurityPage extends React.Component {
   state = {
@@ -271,7 +258,7 @@ class AccountSecurityPage extends React.Component {
 
   handlePaypass = (values) => {
     this.props.changePaypass(
-      getUserId(store.getState()), 
+      getUserId(store.getState()),
       values.paypass
     );
     console.log(values);
@@ -287,17 +274,17 @@ class AccountSecurityPage extends React.Component {
         title: '账户密码',
         brief: '账户密码用于登录您的账户',
         btnText: '修改',
-        onClick: this.props.enterChangeLoginpass
+        onClick: this.props.toggleModifyLoginpass
       }, {
         title: '支付密码',
         brief: '支付密码用于保障交易安全',
         btnText: '修改',
-        onClick: this.props.enterChangePaypass
+        onClick: this.props.toggleModifyPaypass
       }, {
         title: '实名验证',
         brief: '您尚未进行实名验证',
         btnText: '验证',
-        onClick: this.toggleVerifyEmail
+        onClick: this.props.toggleVerifyEmail
       }
     ];
     return (
@@ -308,30 +295,29 @@ class AccountSecurityPage extends React.Component {
           ))
         }
         <FormModal title="修改登录密码"
-                   visible={this.props.changingLoginpass}
+                   visible={this.props.showModifyLoginpassModal}
                    num={3}
                    btnText="确认修改"
                    propsArray={loginpassPropsArray}
-                   loading={this.props.requestingLoginpass}
-                   btnCallback={this.handleLoginpass}
-                   errorMsg={this.props.loginpassError}
-                   toggleModal={this.props.exitChangeLoginpass} />
+                   btnCallback={this.props.updateLoginpass}
+                   errorMsg={this.props.message}
+                   toggleModal={this.props.toggleModifyLoginpass} />
         <FormModal title="修改支付密码"
-                   visible={this.props.changingPaypass}
+                   visible={this.props.showModifyPaypassModal}
                    num={3}
                    btnText="确认修改"
                    propsArray={paypassPropsArray}
-                   loading={this.props.requestingPaypass}
-                   btnCallback={this.handlePaypass}
-                   errorMsg={this.props.paypassError}
-                   toggleModal={this.props.exitChangePaypass} />
+                   btnCallback={this.props.updatePaypass}
+                   errorMsg={this.props.message}
+                   toggleModal={this.props.toggleModifyPaypass} />
         <FormModal title="实名验证"
-                   visible={this.state.verifyingEmail}
+                   visible={this.props.showVerifyEmailModal}
                    num={2}
                    btnText="确认验证"
                    propsArray={emailPropsArray}
-                   btnCallback={this.handleEmail}
-                   toggleModal={this.toggleVerifyEmail} />
+                   btnCallback={this.props.verifyEmail}
+                   errorMsg={this.props.message}
+                   toggleModal={this.props.toggleVerifyEmail} />
       </div>
     );
   }

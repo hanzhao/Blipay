@@ -6,7 +6,7 @@ import React from 'react';
 import { reduxForm } from 'redux-form';
 import { Form, Input, Icon, Button } from 'antd';
 import { connect } from 'react-redux';
-import { register } from '../../redux/modules/account/register';
+import { register } from '../../redux/modules/account';
 import store from '../../redux/store';
 import ajax from '../../common/ajax';
 import styles from './styles';
@@ -23,7 +23,7 @@ const validate = (values) => {
     errors.loginPass = '请填写登录密码。';
   } else if (!passwordRegex.test(loginPass)) {
     errors.loginPass = '密码必须包含字母和数字组合，长度至少 8 位。';
-  } 
+  }
   if (!payPass) {
     errors.payPass = '请填写支付密码。';
   } else if (!passwordRegex.test(payPass)) {
@@ -38,39 +38,25 @@ const asyncValidate = async (values) => {
   if (!values.userName) {
     return { userName: '请输入用户名。' };
   }
-  return (async () => {
-    try {
-      let res = await ajax.get('/account/check_username', 
-                               { userName: values.userName });
-      console.log(res);
-      if (res.code === 0) {
-        return {};
-      } else if (res.code === -1) {
-        return { userName: '该用户名已被注册。' };
-      } else {
-        return { userName: '检验用户名失败。' };
-      }
-    } catch(err) {
-      console.log(err);
-      if (err.code === -1) {
-        return { userName: '该用户名已被注册。' };
-      } else if (err.code === -2) {
-        return { userName: '检验用户名失败。' };
-      } else {
-        return { userName: '暂时无法连接服务器。' };
-      }
+  try {
+    let res = await ajax.get('/api/account/check_username', {
+      userName: values.userName
+    });
+    return {}
+  } catch (err) {
+    if (err.type === 'USERNAME_EXIST') {
+      return { userName: '该用户名已被注册。' };
+    } else {
+      return { userName: '暂时无法连接服务器。' };
     }
-  })();
-}; 
+  }
+};
 
 @connect(
   (state) => ({
-    registering: state.account.register.registering,
-    errorMsg: state.account.register.errorMsg
-  }), 
-  {
-    register
-  }
+    registering: state.account.registering,
+    errorMsg: state.account.errorMsg
+  })
 )
 @reduxForm({
   form: 'user-register',
@@ -79,35 +65,33 @@ const asyncValidate = async (values) => {
   asyncBlurFields: [ 'userName' ],
   validate
 }, undefined, {
-  onSubmit: (data) => {
-    store.dispatch(register(data.userName, data.loginPass, data.payPass));
-  }
+  onSubmit: (data) => register(data)
 })
 class RegisterForm extends React.Component {
-  
+
   componentWillUnmount() {
     this.props.resetForm();
   }
-  
+
   render() {
-    const { 
-      asyncValidating, 
-      fields: { 
-        userName, 
+    const {
+      asyncValidating,
+      fields: {
+        userName,
         loginPass,
-        payPass 
-      }, 
-      /* resetForm ,*/ 
-      handleSubmit 
+        payPass
+      },
+      /* resetForm ,*/
+      handleSubmit
       /* submitting */} = this.props;
     return (
       <Form horizontal onSubmit={handleSubmit}>
         <Form.Item className={styles.formItem}
                    labelCol={{ span: 2 }}
                    wrapperCol={{ span: 22 }}
-                   label={<Icon style={{fontSize: 15, marginRight: 4}} 
+                   label={<Icon style={{fontSize: 15, marginRight: 4}}
                                 type="user" />}
-                   help={userName.touched && userName.error ? 
+                   help={userName.touched && userName.error ?
                          userName.error : '　'}
                    hasFeedback={userName.touched}
                    validateStatus={
@@ -122,12 +106,12 @@ class RegisterForm extends React.Component {
         <Form.Item className={styles.formItem}
                    labelCol={{ span: 2 }}
                    wrapperCol={{ span: 22 }}
-                   label={<Icon style={{fontSize: 15, marginRight: 4}} 
+                   label={<Icon style={{fontSize: 15, marginRight: 4}}
                                 type="lock" />}
-                   help={loginPass.touched && loginPass.error ? 
+                   help={loginPass.touched && loginPass.error ?
                          loginPass.error : '　'}
                    hasFeedback={loginPass.touched}
-                   validateStatus={loginPass.touched && loginPass.error ? 
+                   validateStatus={loginPass.touched && loginPass.error ?
                                    'error' : 'success'}>
           <Input size="large"
                  type="password"
@@ -137,19 +121,19 @@ class RegisterForm extends React.Component {
         <Form.Item className={styles.formItem}
                    labelCol={{ span: 2 }}
                    wrapperCol={{ span: 22 }}
-                   label={<Icon style={{fontSize: 15, marginRight: 4}} 
+                   label={<Icon style={{fontSize: 15, marginRight: 4}}
                                 type="pay-circle-o" />}
-                   help={payPass.touched && payPass.error ? 
+                   help={payPass.touched && payPass.error ?
                          payPass.error :  '　'}
                    hasFeedback={payPass.touched}
-                   validateStatus={payPass.touched && payPass.error ? 
+                   validateStatus={payPass.touched && payPass.error ?
                                    'error' : 'success'}>
           <Input size="large"
                  type="password"
                  placeholder="支付密码"
                  {...payPass} />
         </Form.Item>
-        <div className={styles.hint}>{this.props.errorMsg ? 
+        <div className={styles.hint}>{this.props.errorMsg ?
                                       this.props.errorMsg : '　'}</div>
         <Button type="primary" size="large"
                 className={styles.btn}

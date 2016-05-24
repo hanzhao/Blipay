@@ -13,6 +13,7 @@ const menus = [
   { to: '/account/security', text: '安全设置', icon: 'unlock' }
 ];
 
+
 class AccountMenu extends React.Component {
   render() {
     return (
