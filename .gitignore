@@ -47,3 +47,6 @@ public/*.png
 
 # mocha-webpack output file
 .tmp/*
+
+# Jetbrain IDE
+.idea/*
