@@ -8,7 +8,7 @@ module.exports = (db) =>{
         adminName:{
             type: Sequelize.STRING, unique: true, allowNull: false
         },
-        loginpass:{
+        loginPass:{
             type: Sequelize.STRING, allowNull:false
         },
         realName:{
