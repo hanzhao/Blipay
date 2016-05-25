@@ -37,6 +37,10 @@ const ARBITRATION = 'Blipay/admin/ARBITRATION';
 const ARBITRATION_SUCCESS = 'Blipay/admin/ARBITRATION_SUCCESS';
 const ARBITRATION_FAIL = 'Blipay/admin/ARBITRATION_FAIL';
 
+//register
+const ADMIN_REGISTER = 'Blipay/admin/ADMIN_REGISTER';
+const ADMIN_REGISTER_SUCCESS = 'Blipay/admin/ADMIN_REGISTER_SUCCESS';
+const ADMIN_REGISTER_FAIL = 'Blipay/admin/ADMIN_REGISTER_FAIL';
 //特殊账户操作
 const CREATE_SPEC_ACT='Blipay/admin/CREATE_SPEC_ACT';
 const CREATE_SPEC_ACT_SUCCESS='Blipay/admin/CREATE_SPEC_ACT_SUCCESS';
@@ -61,22 +65,22 @@ const GET_ADMIN_LOG_FAIL='Blipay/admin/GET_ADMIN_LOG_SUCCESS';
 //更新身份数据库
 const UP_ID='blipay/admin/UP_ID';
 const UP_ID_SUCCESS='blipay/admin/UP_ID_SUCCESS';
-const UP_ID_SUCCESS='blipay/admin/UP_ID_FAIL';
+const UP_ID_FAIL='blipay/admin/UP_ID_FAIL';
 
 
 const messages = {
   USER_NOT_EXIST: '当前用户名未注册。',
   INVALID_USERNAME_OR_PASSWORD: '用户名或密码错误。'
-};
+}
 
 // 用户管理模块初始状态
 const initialState = {
   user: null,
   message: null,
   adminInfo: null,
-  //userList: false,
+  userList: null,
   verificationList: null,
-  arbitrationList: null
+  arbitrationList: null,
   adminLog: null
 };
 
@@ -88,17 +92,17 @@ export const login = (data) => ({
 
 export const getAdminLog = () =>({
     types: [GET_ADMIN_LOG, GET_ADMIN_LOG_SUCCESS, GET_ADMIN_LOG_FAIL],
-    promise: (client) => client.get(/api/admin/log)
+    promise: (client) => client.get('/api/admin/log')
 });
 
 export const logout = () => ({
-  types: [LOGOUT, LOGOUT_SUCCESS, LOGOUT_FAIL],
+  types: [LOGOUT, LOGOUT_SUCCESS, LOGOUT_FAIL]
   //promise: (client) => client.get('/api/admin/logout')
 });
 
 //获取管理员信息
 export const adminInfo = () => ({
-  type: ADMIN_INFO
+  type: ADMIN_INFO,
   promise: (client) => client.get('/api/admin/admininfo')
 });
 
@@ -117,13 +121,13 @@ export const searchForUserName = (data)=>({
 
 /*获取待认证列表*/
 export const verificationList = () => ({
-  type: VERIFICATION_LIST
+  type: VERIFICATION_LIST,
   promise: (client) => client.get('/api/admin/verifylist')
 });
 
 /*获取仲裁信息列表*/
 export const arbitrationList = () => ({
-  type: ARBITRATION_LIST
+  type: ARBITRATION_LIST,
   promise: (client) => client.get('/api/admin/getarbitration')
 });
 
@@ -147,25 +151,25 @@ export const deleteAdmin = (data) => ({
 //传入adminName
 //传入level: 在config/admin.js中有定义enum{LEVELUP,LEVELDOWN}
 export const modifyAdminLevel = (data) =>({
-    types: [MODIFY_ADMIN, MODIFY_ADMIN_SUCCESS, MODIFY_ADMIN_FAIL]，
+    types: [MODIFY_ADMIN, MODIFY_ADMIN_SUCCESS, MODIFY_ADMIN_FAIL],
     promise: (client) => client.post('/api/admin/changelevel', data)
 });
 
 /*新建特殊账户*/
 export const createSpecialAccount = (data) =>({
-    types: [CREATE_SPEC_ACT, CREATE_SPEC_ACT_SUCCESS, CREATE_SPEC_ACT_FAIL]，
+    types: [CREATE_SPEC_ACT, CREATE_SPEC_ACT_SUCCESS, CREATE_SPEC_ACT_FAIL],
     promise: (client) => client.post('/api/admin/create', data)
 });
 
 /*删除特殊账户*/
 export const deleteSpecialAccount = (data) =>({
-    types: [DELETE_SPEC_ACT, DELETE_SPEC_ACT_SUCCESS, DELETE_SPEC_ACT_FAIL]，
+    types: [DELETE_SPEC_ACT, DELETE_SPEC_ACT_SUCCESS, DELETE_SPEC_ACT_FAIL],
     promise: (client) => client.post('/api/admin/delete', data)
 });
 
 /*撤销特殊账户权限*/
 export const withdrawalSpecialAccountAuth = (data) =>({
-    types: [WD_SPEC_ACT_AUTH,WD_SEPC_ACT_AUTH_SUCCESS,WD_SPEC_ACT_AUTH_FAIL]，
+    types: [WD_SPEC_ACT_AUTH,WD_SEPC_ACT_AUTH_SUCCESS,WD_SPEC_ACT_AUTH_FAIL],
     promise: (client) => client.post('/api/admin/withdrawal', data)
 });
 
@@ -215,32 +219,32 @@ export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
     case LOGIN_SUCCESS:
       setTimeout(() => {
-        store.dispatch(push('/admin'))
+        store.dispatch(push('/admin/account/welcome'))
       }, 0)
       return {
         ...state,
-        adminId: action.result.adminId,
+        user: action.result.adminId,
         message: null
       }
     case LOGOUT_SUCCESS:
       setTimeout(() => {
-        store.dispatch(push('/'))
+        store.dispatch(push('/admin'))
       }, 0)
       return {
         ...state,
-        user: null
+        user: null,
         message: null
       }
     case GET_ADMIN_LOG_SUCCESS:
-        return{
-            ...state,
-            adminLog: action.result.log
-            message: null
-        }
+      return{
+        ...state,
+        adminLog: action.result.log,
+        message: null
+      }
     case USER_SEARCH_SUCCESS:
       return{
         ...state,
-        user: action.result.user
+        user: action.result.user,
         message: null
       }
     case ADMIN_INFO:
@@ -260,6 +264,7 @@ export default function reducer(state = initialState, action = {}) {
     case VERIFICATION_LIST:
       return {
         ...state,
+        verificationList: action.result.unVerifiedUser,
         message: null
       }
     case ARBITRATION_LIST:
@@ -271,79 +276,58 @@ export default function reducer(state = initialState, action = {}) {
     case ADD_ADMIN:
       return {
         ...state,
-        message: null,
+        message: null
       }
     case DELETE_ADMIN:
       return {
         ...state,
-        /*adminAction: [ ...state.adminAction,
-                       wrapTransaction(state.result.adminAction)],
-                       */
-        message: null,
-        //adminInfo: null,
-        //userList: null,
-        //verificationList: null,
-        //arbitrationList: null
+        message: null
       }
     case MODIFY_ADMIN:
       return {
         ...state,
-        /*adminAction: [ ...state.adminAction,
-                       wrapTransaction(state.result.adminAction)],
-        */
-        message: null,
+        message: null
       }
     case MODIFY_USER:
       return {
         ...state,
-        /*adminAction: [ ...state.adminAction,
-                       wrapTransaction(state.result.adminAction)],
-        */
-        message: null,
+        message: null
       }
     case VERIFICATION_SUCCESS:
       return {
         ...state,
         message :null
       }
+    case ARBITRATION_LIST:
+      return {
+        ...state,
+        arbitrationList: result.action.arbitrations,
+        message: null
       }
     case ADD_ADMIN_SUCCESS:
       return {
         ...state,
-                       //wrapTransaction(state.result.adminAction)],
-        // 映射 transactions 里的 createdAt 和 updatedAt 变成 Date Object
-        //transactions: action.result.transactions.map(e => wrapTransaction(e))
         message: null
       }
     case DELETE_ADMIN_SUCCESS:
       return {
         ...state,
-        //adminAction: [ ...state.adminAction,
-        //               wrapTransaction(state.result.adminAction)],
         message: null
       }
     case MODIFY_ADMIN_SUCCESS:
       return {
         ...state,
-        //adminAction: [ ...state.adminAction,
-        //               wrapTransaction(state.result.adminAction)],
         message: null
       }
     case MODIFY_USER_SUCCESS:
       return {
         ...state,
-        //adminAction: [ ...state.adminAction,
-        //               wrapTransaction(state.result.adminAction)],
         message: null
       }
     case VERIFICATION_SUCCESS:
       return {
         ...state,
-        //adminAction: [ ...state.adminAction,
-        //               wrapTransaction(state.result.adminAction)],
         message: null
-        verificationList: action.result.unVerifiedUser,
-        
       }
     case ARBITRATION_SUCCESS:
       return {

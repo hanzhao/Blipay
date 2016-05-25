@@ -7,9 +7,6 @@ import AccountRecordTable from '../managementrecord';
 import FormModal from '../managementformmodel';
 import styles from './styles';
 import { Link } from 'react-router';
-import { asyncConnect } from 'redux-connect';
-import ajax from '../../common/ajax';
-import store from '../../redux/store';
 /* 示例validator */
 const validateCard = (rule, value, callback) => {
   if (!value) {
@@ -109,25 +106,10 @@ const fakeData = Array(Math.floor((window.innerHeight - 450) / 50)).fill({
   status: '删除帐号: woot'
 });
 
-
-
 const tableProps = {
   pagination: false
 };
 
-@asyncConnect( 
-  [{  
-    promise: ({ store: { dispatch, getState } }) => {                                                
-    return dispatch(getAdminLog());                                                             
-    }
-  }], 
-  (state) => ({
-    adminName: state.admin.adminName,
-    adminLog: state.admin.adminLog
-  }),   
-  (dispatch) => ({                                                                                   
-  })  
-)
 class AccountWelcomePage extends React.Component {
   state = {
     showTopup: false,
@@ -144,7 +126,6 @@ class AccountWelcomePage extends React.Component {
     });
   };
   render() {
-    const {adminName,adminLog} = this.props;
     return (
       <div className={styles.container}>
         <div className={styles.upperHalf}>
@@ -176,7 +157,7 @@ class AccountWelcomePage extends React.Component {
         <div className={styles.lowerHalf}>
           <div className={styles.title}>最近操作记录</div>
           <div className={styles.tableWrapper}>
-            <AccountRecordTable data={adminLog} tableProps={tableProps}/>
+            <AccountRecordTable data={fakeData} tableProps={tableProps}/>
           </div>
         </div>
         <FormModal title="账户充值"

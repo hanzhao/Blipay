@@ -27,7 +27,7 @@ import AdminWelcomePage from './components/AdminWelcomePage';
 import AdminInfoPage from './components/AdminInfoPage';
 import AdminManager from './components/AdminManager';
 import AdminChange from './components/AdminChange';
-
+import AdminRegisterPage from './components/AdminRegisterPage';
 import AdminJudgement from './components/AdminJudgement';
 
 import AdminVerify from './components/AdminVerify';
@@ -57,6 +57,7 @@ const router = (
           <Route path="/admin/account/verification" component={AdminVerify} />
           <Route path="/admin/account/verification/detail" component={AdminVerifyDetail} />
         </Route>
+        <Route path="/admin/register" component={AdminRegisterPage} />   //调试使用
       </Route>
       <Route path="/" component={App} >
         <IndexRoute component={MainPage} />

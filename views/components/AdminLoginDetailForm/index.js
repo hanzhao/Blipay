@@ -7,12 +7,13 @@ import { reduxForm } from 'redux-form';
 import { Form, Input, Icon, Button } from 'antd';
 import { Link } from 'react-router';
 import styles from './styles';
+import { login } from '../../redux/modules/admin';
 
 @reduxForm({
   form: 'user-login',
   fields: ['username', 'password']
 }, undefined, {
-  onSubmit: (data) => console.log(data)
+  onSubmit: (data) => login(data)
 })
 class LoginForm extends React.Component {
   render() {
@@ -37,13 +38,11 @@ class LoginForm extends React.Component {
                  addonBefore={<Icon type="lock" />}
                  {...password} />
         </Form.Item>
-        <Link to="/admin/account/welcome">
         <Button type="primary" size="large"
                 className={styles.btn}
                 htmlType="submit" >
           登录
         </Button>
-        </Link>
       </Form>
     );
   }

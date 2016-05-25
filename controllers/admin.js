@@ -1,14 +1,14 @@
 'use strict'
-const User = require('../models').User;
-const Specialaccount = require('../models').Specialaccount;
-const Admin =  require('../models').Admin;
+const User = require('../models').user;
+const Specialaccount = require('../models').specialaccount;
+const Admin =  require('../models').admin;
 const config = require('../config/admin');
 const Router = require('express').Router;
 const crypto = require('crypto');
 const router = Router();
-const Identification = require('../models').Identification;
-const Arbitration = require('../models').Arbitration;
-const Log = require('../models').Adminlog;
+const Identification = require('../models').identification;
+const Arbitration = require('../models').arbitration;
+const Log = require('../models').adminlog;
 
 const cookPassword = (key,salt,saltPos) => {
     var hash = crypto.createHash('sha512');
@@ -19,13 +19,13 @@ const cookPassword = (key,salt,saltPos) => {
 };
 
 /*管理员登录*/
-router.post('/admin/login',Promise.coroutine(function *(req,res){
+router.post('/account/login',Promise.coroutine(function *(req,res){
     console.log('in /admin/login');
     console.log(req.body);
-    
+
     let admin = yield Admin.findOne({
         where:{
-            adminName: req.body.userName
+            adminName: req.body.username
         }
     })
 
@@ -35,7 +35,7 @@ router.post('/admin/login',Promise.coroutine(function *(req,res){
             });
         }
         if(cookPassword(
-        req.body.loginPass,
+        req.body.password,
         admin.loginSalt,
         config.loginSaltPos) === admin.loginPass){
             return res.success({
@@ -45,16 +45,36 @@ router.post('/admin/login',Promise.coroutine(function *(req,res){
         }
         else{
             return res.fail({
-               code: -3 
+               code: -3
             });
         }
+}));
+
+/*管理员注册账户*/ //仅仅调试使用
+router.post(('/admin/register'),Promise.coroutine(function *(req,res) {
+    console.log('in /admin/register');
+    console.log(req.body);
+        const loginSalt=crypto.randomBytes(64).toString('base64');
+        const newAdmin = {
+            adminName: req.body.username,
+            level: req.body.level,
+            realName: req.body.adminname,
+            loginSalt: loginSalt,
+            loginPass: cookPassword(req.body.password,
+                                    loginSalt,
+                                    config.loginSaltPos)
+        };
+        yield Admin.create(newAdmin)
+        return res.success({
+                code: 0
+            });
 }));
 
 /*管理员建立特殊账户*/
 router.post(('/admin/create'),Promise.coroutine(function *(req,res) {
     console.log('in /admin/create');
     console.log(req.body);
-     
+
     let specialaccount = yield Specialaccount.findOne({
         where:{
             name: req.body.name
@@ -67,7 +87,6 @@ router.post(('/admin/create'),Promise.coroutine(function *(req,res) {
             });
         }
         const loginSalt=crypto.randomBytes(64).toString('base64');
-        const paySalt=crypto.randomBytes(64).toString('base64');
         const newSpecialaccount = {
             name: req.body.name,
             //订票员，审计员和系统管理员有不同权限
@@ -87,7 +106,7 @@ router.post(('/admin/create'),Promise.coroutine(function *(req,res) {
 router.post('/admin/delete',Promise.coroutine(function *(req,res) {
     console.log('int /admin/delete');
     console.log(req.body);
-    
+
     let deletecount = yield Specialaccout.destroy({
         where:{
             name: req.body.name
@@ -164,7 +183,7 @@ router.post('/admin/identification',Promise.coroutine(function *(req,res){
             }
             if(identification.idNumber!=user.idNumber){
                 return res.fail({
-                    code: -3 
+                    code: -3
                 });
             }
             User.update({
@@ -188,7 +207,7 @@ router.post('/admin/updateidbase',Promise.coroutine(function *(req,res){
         realName: req.body.realName,
         idNumber: req.body.idNumber
     };
-    
+
     let identification = yield Identification.findOne({
         where:{
             idNumber: newId.idNumber
@@ -236,7 +255,7 @@ router.post('/admin/deleteuser',Promise.coroutine(function *(req,res) {
             }
         })
         yield Log.create({
-            date: new Date(),
+            date: 1,
             content: 'delete',
             adminName: req.body.adminName,
             userName: req.body.userName
@@ -310,22 +329,12 @@ router.get('/admin/checkbystatus',Promise.coroutine(function *(req,res){
        });
 }));
 
-/*返回管理员信息列表*/
-router.get('/admin/admininfo',Promise.coroutine(function *(req,res){
-    let r = yield Admin.findAll({
-    });
-    return res.success({
-        adminInfo: r,
-        code: 0
-    });
-}));
-
 /*查找所有的管理员操作记录*/
 router.get('/admin/log',Promise.coroutine(function *(req,res){
     let r = yield Log.findAll({
     });
     return res.success({
-        log: r,
+        adminLog: r,
         code: 0
     })
 }));
