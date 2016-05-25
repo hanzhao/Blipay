@@ -54,7 +54,6 @@ export const clearShoppingCart = () => ({
 })
 
 const initialState = {
-  ...state,
   cartItems: []
 }
 
@@ -89,6 +88,7 @@ export default function reducer(state = initialState, action = {}) {
       }
     case CLEAR_SHOPPING_CART:
       return {
+        ...state,
         cartItems: []
       }
     default:

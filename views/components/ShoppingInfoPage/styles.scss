@@ -1,12 +1,12 @@
 .card {
   margin: 10px 10px 0px;
   cursor: pointer;
+  min-width: 200px;
   & > div > img {
-    width: 160px;
-    height: 160px;
+    width: 100%
   }
   :global(.ant-card-body) {
-    padding: 0px 0px;
+    padding: 10px;
   }
   &:global(.ant-card):hover {
     box-shadow: 0 1px 6px rgba(198, 53, 85, 0.2);

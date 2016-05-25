@@ -14,12 +14,14 @@
       background-color: #ffffff;
     }
     .right {
+      overflow-y: scroll;
       float: left;
       position: relative;
       width: 74%;
       margin-left: 2%;
       height: 100%;
       background-color: #ffffff;
+      padding-bottom: 20px;
     }
     :global(.ant-input-lg) {
       font-size: 12px;
