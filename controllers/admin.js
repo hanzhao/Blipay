@@ -1,14 +1,14 @@
 'use strict'
-const User = require('../models').user;
-const Specialaccount = require('../models').specialaccount;
-const Admin =  require('../models').admin;
+const User = require('../models').User;
+const Specialaccount = require('../models').Specialaccount;
+const Admin =  require('../models').Admin;
 const config = require('../config/admin');
 const Router = require('express').Router;
 const crypto = require('crypto');
 const router = Router();
-const Identification = require('../models').identification;
-const Arbitration = require('../models').arbitration;
-const Log = require('../models').adminlog;
+const Identification = require('../models').Identification;
+const Arbitration = require('../models').Arbitration;
+const Log = require('../models').Adminlog;
 
 const cookPassword = (key,salt,saltPos) => {
     var hash = crypto.createHash('sha512');
@@ -19,7 +19,7 @@ const cookPassword = (key,salt,saltPos) => {
 };
 
 /*管理员登录*/
-router.post('/account/login',Promise.coroutine(function *(req,res){
+router.post('/admin/login',Promise.coroutine(function *(req,res){
     console.log('in /admin/login');
     console.log(req.body);
     
@@ -236,7 +236,7 @@ router.post('/admin/deleteuser',Promise.coroutine(function *(req,res) {
             }
         })
         yield Log.create({
-            date: 1,
+            date: new Date(),
             content: 'delete',
             adminName: req.body.adminName,
             userName: req.body.userName
@@ -310,12 +310,22 @@ router.get('/admin/checkbystatus',Promise.coroutine(function *(req,res){
        });
 }));
 
+/*返回管理员信息列表*/
+router.get('/admin/admininfo',Promise.coroutine(function *(req,res){
+    let r = yield Admin.findAll({
+    });
+    return res.success({
+        adminInfo: r,
+        code: 0
+    });
+}));
+
 /*查找所有的管理员操作记录*/
 router.get('/admin/log',Promise.coroutine(function *(req,res){
     let r = yield Log.findAll({
     });
     return res.success({
-        result: r,
+        log: r,
         code: 0
     })
 }));
@@ -358,6 +368,64 @@ router.post('/admin/dealarbitration',Promise.coroutine(function *(req,res){
     });
     return res.success({
         code :0
+    });
+}));
+
+router.post('/admin/addadmin',Promise.coroutine(function *(req,res){
+    let admin = yield Admin.findOne({
+        where:{
+            name: req.body.name
+        }
+    });
+        if(admin){
+            console.log('account already exist!\n');
+            return res.fail({
+                code: -1
+            });
+        }
+        const loginSalt=crypto.randomBytes(64).toString('base64');
+        const paySalt=crypto.randomBytes(64).toString('base64');
+        const newAdmin = {
+            adminName: req.body.adminName,
+            //订票员，审计员和系统管理员有不同权限
+            level: req.body.level,
+            loginSalt: loginSalt,
+            loginPass: cookPassword(req.body.loginPass,
+                                    loginSalt,
+                                    config.loginSaltPos)
+        };
+        yield Admin.create(newAdmin)
+        return res.success({
+                code: 0
+            });
+    
+}));
+
+/*删除管理员*/
+router.post('/admin/deleteadmin',Promise.coroutine(function *(req,res){
+    yield Admin.destroy({
+        where:{
+            adminName: req.body.adminName
+        }
+    });
+    return res.success({
+        code :0
+    });
+}));
+
+/*更改管理员权限*/
+router.post('/admin/changelevel',Promise.coroutine(function *(req,res){
+    yield Admin.update(
+    {
+        level: level + req.body.changelevel
+    },
+    {
+        where:{
+            adminName: req.body.adminName
+        }
+    });
+    return res.success({
+        code: 0
     });
 }));
 
