@@ -24,6 +24,9 @@ module.exports = (db) => {
     sellerTransId: {
       type: Sequelize.INTEGER
     },
+    refundTransId: {
+      type: Sequelize.INTEGER
+    },
     /* 退款理由等信息 */
     buyerText: {
       type: Sequelize.TEXT

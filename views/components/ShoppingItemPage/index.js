@@ -33,6 +33,7 @@ class ShoppingItemPage extends React.Component {
   }
   render() {
     const { item, handleAddCartItem } = this.props
+    console.log(item);
     return (
       <div>
         <ShoppingPageHeader icon="smile" text="浏览商品" />
@@ -91,7 +92,21 @@ class ShoppingItemPage extends React.Component {
         </div>
         <div className={styles.feedback}>
           <ShoppingPageHeader icon="book" text="详细描述" />
+          <div>
+            商品详细描述
+          </div>
           <ShoppingPageHeader icon="star" text="买家评价" />
+          <div>
+            买家评价
+            {
+              item.reviews.map(e=>(
+                <div>
+                {e.score}
+                {e.text}
+                </div>
+                              ))
+            }
+          </div>
         </div>
       </div>
     )

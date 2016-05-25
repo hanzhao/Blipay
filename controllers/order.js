@@ -21,12 +21,13 @@ const requestReceive = require('../services/account').requestReceive;
 router.post('/item/new', Promise.coroutine(function* (req, res) {
   console.log('in /item/new', req.body);
   const item = yield createItem(req.session.userId, req.body);
-  return res.success({ id: item.id });
+  const reviews = yield item.getReviews();
+  return res.success({ id: item.id, reviews: reviews });
 }));
 
 router.get('/item/show', Promise.coroutine(function* (req, res) {
   console.log('in /item/show', req.query);
-  const item = yield getItem(req.query.id)
+  const item = yield getItem(req.query.id);
   if (!item) {
     return res.status(404).fail()
   }
@@ -93,10 +94,10 @@ router.post('/item/update', Promise.coroutine(function* (req, res) {
     if (!item) {
       throw new Error('Item Not Found.');
     }
-    // TODO: check item owner and authentication
-    // if (item.sellerId != req.session.userId) {
-    //   throw new Error('Auth Fail.');
-    // }
+    // TODO: check item owner and authentication 
+    if (item.sellerId != req.session.userId) {
+      throw new Error('Auth Fail.');
+    }
     yield item.update(req.body);
     return res.success('Item updated.');
   }
@@ -114,9 +115,9 @@ router.post('/item/delete', Promise.coroutine(function* (req, res) {
       throw new Error('Item Not Found.');
     }
     // TODO: check item owner and authentication
-    // if (item.sellerId != req.session.userId) {
-    //   throw new Error('Auth Fail.');
-    // }
+    if (item.sellerId != req.session.userId) {
+      throw new Error('Auth Fail.');
+    }
     yield item.destroy();
     return res.success('Item destroyed');
   }
@@ -129,9 +130,9 @@ router.post('/order/new', Promise.coroutine(function* (req, res) {
   console.log('in /order/new');
   console.log(req.body);
   try {
-    createOrder(req.body.sellerId, req.body.buyerId, req.body.count, req.body.cost, req.body.items);
+    // createOrder(req.body.sellerId, req.body.buyerId, req.body.count, req.body.cost, req.body.items);
     // TODO: add session auth
-    // createOrder(req.body.sellerId, req.session.userId, req.body.count, req.body.cost, req.body.items);
+    yield createOrder(req.body.sellerId, req.session.userId, req.body.count, req.body.cost, req.body.items);
     return res.success('Order created');
   }
   catch (e) {
@@ -171,10 +172,10 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
         if (order.status != 0) {
           throw new Error('illegal operation');
         }
-        // if (req.session.userId != order.buyerId) {
-        //   throw new Error('Auth Failed.');
-        // }
-        const payTrans = yield requestPay(order.buyerId, order.cost);
+        if (req.session.userId != order.buyerId) {
+          throw new Error('Auth Failed.');
+        }
+        const payTrans = yield requestPay(order.buyerId, order.totalCost);
         // const payTrans = 1;
         yield order.update({
           buyerTransId: payTrans,
@@ -201,16 +202,16 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
         if (req.session.userId != order.buyerId) {
           throw new Error('Auth Failed.');
         }
-        items = yield order.getItems();
+        const items = yield order.getItems();
         for (var index = 0; index < items.length; index++) {
-          items[index].addReview(
-            Review.create({
+          yield items[index].addReview(
+            yield Review.create({
               score: req.body.reviews[index].score,
               text: req.body.reviews[index].text
             })
           );
         };
-        const confirmTrans = yield requestReceive(order.sellerId, order.cost);
+        const confirmTrans = yield requestReceive(order.sellerId, order.totalCost);
         yield order.update({
           sellerTransId: confirmTrans,
           status: 3
@@ -251,7 +252,7 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
           throw new Error('illegal operation');
         }
         // TODO:
-        const refundTrans = requestReceive(order.buyerId, order.cost);
+        const refundTrans = requestReceive(order.buyerId, order.totalCost);
         yield order.update({
           status: 5
         });
@@ -276,10 +277,10 @@ router.post('/order/order_list', Promise.coroutine(function* (req, res) {
     }
     let filter = {};
     if (validate(req.body.sellerId)) {
-      filter.sellerId = req.body.sellerId;
+      filter.sellerId = req.session.userId;
     }
     if (validate(req.body.buyerId)) {
-      filter.buyerId = req.body.buyerId;
+      filter.buyerId = req.session.userId;
     }
     if (validate(req.body.filter)) {
       if (validate(req.body.filter.time)) {
@@ -336,7 +337,51 @@ router.post('/item/review', Promise.coroutine(function* (req, res) {
     return res.success({ reviews: reviews });
   }
   catch (e) {
-    return res.fail('in /order/order_list   ' + require('util').inspect(e));
+    return res.fail('in /item/review   ' + require('util').inspect(e));
+  }
+}));
+
+router.post('/cart/get', Promise.coroutine(function* (req, res) {
+  console.log('/cart/get');
+  console.log(req.body);
+  try {
+    const user = yield User.findOne({
+      where: { id: req.session.userId },
+      include: [{ model: item }]
+    });
+    return res.success({ items: user.items });
+  } catch (e) {
+    return res.fail('in /cart/get   ' + require('util').inspect(e));
+  }
+}));
+
+router.post('/cart/add', Promise.coroutine(function* (req, res) {
+  console.log('/cart/add');
+  console.log(req.body);
+  try {
+    const user = yield User.findOne({ where: { id: req.session.userId } });
+    const item = yield Item.findOne({ where: { id: req.body.itemId } });
+    yield user.addItem(item, { count: req.body.itemCount });
+    return res.success('item added to cart');
+  } catch (e) {
+    return res.fail('in /cart/add   ' + require('util').inspect(e));
+  }
+}));
+
+router.post('/cart/update', Promise.coroutine(function* (req, res) {
+  console.log('/cart/update');
+  console.log(req.body);
+  try {
+    const user = yield User.findOne({ where: { id: req.session.userId } });
+    yield user.setItems(null);
+    for (var index = 0; index < req.body.items.length; index++) {
+      var element = req.body.items[index];
+      const item = yield Item.findOne({ where: { id: element.id } });
+      user.addItem(item, { count: element.count });
+    }
+    return res.success('cart updated');
+  } catch (e) {
+    return res.fail('in /cart/update   ' + require('util').inspect(e));
   }
 }));
 
