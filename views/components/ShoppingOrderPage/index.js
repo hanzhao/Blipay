@@ -1,16 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Modal, Menu, Dropdown, Icon, Form, message } from 'antd';
+import { Modal, Form, Input, InputNumber, message } from 'antd';
 import { Button } from 'antd';
 import { Checkbox } from 'antd';
-import { InputNumber, Input } from 'antd';
 import { Pagination } from 'antd';
 import pic from './akarin.png'
 import styles from './styles';
 import FormModal from '../FormModal';
 import { Table } from 'antd';
-import { Cascader } from 'antd';
-import { reduxForm } from 'redux-form';
 import ajax from '../../common/ajax';
 import store from '../../redux/store';
 import classNames from 'classnames';
@@ -53,6 +50,7 @@ const confirm = async function () {
   console.log('Confirm');
   message.success('收货成功');
   contents[this.index].status = 3;
+  showShoppingReviewModal = !showShoppingReviewModal;
   this.view.setState({});
 }
 
@@ -69,10 +67,17 @@ const review = async function () {
 }
 
 const toggleReviewModal = function () {
-  console.log('Review');
-  console.log(visible[this.index]);
-  visible[this.index] = !visible[this.index];
-  console.log(this);
+  showShoppingReviewModal = !showShoppingReviewModal;
+  this.view.setState({});
+}
+
+const toggleRefundModal = function () {
+  showShoppingRefundModal = !showShoppingRefundModal;
+  this.view.setState({});
+}
+
+const toggleRefundConfirmModal = function () {
+  showShoppingRefundConfirmModal = !showShoppingRefundConfirmModal;
   this.view.setState({});
 }
 
@@ -134,10 +139,14 @@ let columns = [{
           else if (userId == d.buyerId)
             return <Button disable='true' type="ghost" onClick={ship}>等待发货</Button>
         case 2:
+          return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={confirm}>确认收货</Button>
+        case 3:
           if (userId == d.buyerId)
-            return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={toggleReviewModal}>确认收货</Button>
-        // case 3:
-        //   return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={toggleReviewModal}>用户评价</Button>
+            return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={toggleRefundModal}>退货申请</Button>
+        case 4:
+          if (userId == d.sellerId)
+            return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={toggleRefundConfirmModal}>退货确认</Button>
+        default:
       }
 
     }
@@ -192,6 +201,42 @@ class ShoppingReviewModal extends React.Component {
               </div>
             ))
           }
+        </Form>
+      </Modal>
+    )
+  }
+}
+
+let showShoppingRefundModal = false;
+class ShoppingRefundModal extends React.Component {
+  render() {
+    return (
+      <Modal title="退货申请"
+             visible={showShoppingRefundModal}
+             view={this}
+             onCancel={toggleRefundModal}>
+        <Form>
+          <FormItem label="退货理由">
+            <Input type='textarea' />
+          </FormItem>
+        </Form>
+      </Modal>
+    )
+  }
+}
+
+let showShoppingRefundConfirmModal = false;
+class ShoppingRefundConfirmModal extends React.Component {
+  render() {
+    return (
+      <Modal title="退货申请"
+             visible={showShoppingRefundConfirmModal}
+             view={this}
+             onCancel={toggleRefundConfirmModal}>
+        <Form>
+          <FormItem label="退货理由">
+            <Input type='textarea' disabled={true} />
+          </FormItem>
         </Form>
       </Modal>
     )
@@ -253,7 +298,9 @@ let BasicDemo = React.createClass(
       };
       return (
         <div>
-
+          <ShoppingReviewModal onCancel={this.props.toggleShoppingReview}/>
+          <ShoppingRefundModal onCancel={this.props.toggleShoppingRefund}/>
+          <ShoppingRefundConfirmModal onCancel={this.props.toggleShoppingRefundConfirm}/>
           <Table className={styles.shoppingOrderTable} columns={columns} dataSource={contents} pagination={pagination} />
         </div>
       );
