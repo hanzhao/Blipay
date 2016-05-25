@@ -27,7 +27,7 @@ module.exports = (db) =>{
             type: Sequelize.STRING, allowNull: false
         },
         level:{
-            type: Sequelize.INT,    allowNull:false
+            type: Sequelize.INTEGER, allowNull:false
         }
     });
 };
