@@ -16,7 +16,7 @@ const createForm = Form.create;
 const FormItem = Form.Item;
 let ORDERS = [];
 let contents = [];
-let visible = [];
+let reviewVisible = [];
 let reviews = [];
 
 let userId = 0;
@@ -42,17 +42,17 @@ const ship = async function () {
   this.view.setState({});
 }
 
-const confirm = async function () {
-  await ajax.post('/api/order/update', {
-    orderId: this.orderId,
-    op: 'confirm'
-  });
-  console.log('Confirm');
-  message.success('收货成功');
-  contents[this.index].status = 3;
-  showShoppingReviewModal = !showShoppingReviewModal;
-  this.view.setState({});
-}
+// const confirm = async function () {
+//   await ajax.post('/api/order/update', {
+//     orderId: this.orderId,
+//     op: 'confirm'
+//   });
+//   console.log('Confirm');
+//   message.success('收货成功');
+//   contents[this.index].status = 3;
+//   showShoppingReviewModal = !showShoppingReviewModal;
+//   this.view.setState({});
+// }
 
 const review = async function () {
   console.log(reviews);
@@ -67,7 +67,7 @@ const review = async function () {
 }
 
 const toggleReviewModal = function () {
-  showShoppingReviewModal = !showShoppingReviewModal;
+  reviewVisible[this.index] = ! reviewVisible[this.index];
   this.view.setState({});
 }
 
@@ -139,7 +139,7 @@ let columns = [{
           else if (userId == d.buyerId)
             return <Button disable='true' type="ghost" onClick={ship}>等待发货</Button>
         case 2:
-          return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={confirm}>确认收货</Button>
+          return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={toggleReviewModal}>确认收货</Button>
         case 3:
           if (userId == d.buyerId)
             return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={toggleRefundModal}>退货申请</Button>
@@ -168,6 +168,8 @@ class ShoppingReviewModal extends React.Component {
   }
   render() {
     console.log('Modal Loaded');
+    console.log(this);
+    console.log(ORDERS);
     const items = ORDERS[this.props.index].items;
     if (visible[this.props.index]) {
       reviews = []
@@ -182,7 +184,7 @@ class ShoppingReviewModal extends React.Component {
     console.log(items);
     return (
       <Modal title="商品评价"
-        visible={visible[this.props.index]}
+        visible={reviewVisible[this.props.index]}
         view={this.props.view}
         index={this.props.index}
         orderId={this.props.orderId}
@@ -298,7 +300,6 @@ let BasicDemo = React.createClass(
       };
       return (
         <div>
-          <ShoppingReviewModal onCancel={this.props.toggleShoppingReview}/>
           <ShoppingRefundModal onCancel={this.props.toggleShoppingRefund}/>
           <ShoppingRefundConfirmModal onCancel={this.props.toggleShoppingRefundConfirm}/>
           <Table className={styles.shoppingOrderTable} columns={columns} dataSource={contents} pagination={pagination} />
