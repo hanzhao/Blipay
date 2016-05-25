@@ -12,12 +12,18 @@ const User = require('./user')(db);
 const Item = require('./item')(db);
 const Transaction = require('./transaction')(db);
 const Order = require('./order')(db);
-const OrderItem = require('./orderitem')(db);
-const CartItem = require('./cartItem')(db);
+const OrderItem = require('./order_item')(db);
 const Review = require('./review')(db);
+const Attachment = require('./attachment')(db);
+const ItemAttachment = require('./item_attachment')(db);
 
+const Admin = require('./admin')(db);
+const Specialaccount = require('./specialaccount')(db);
+const AdminLog = require('./adminlog')(db);
+const Arbitration = require('./arbitration')(db);
+const Identification = require('./identification')(db);
 // 表关联
-Item.belongsTo(User, {
+const ItemSeller = Item.belongsTo(User, {
   as: 'seller'
 });
 
@@ -29,10 +35,17 @@ Order.belongsTo(User, { as: 'buyer' });
 Order.belongsToMany(Item, { through: OrderItem });
 
 Item.hasMany(Review);
-User.hasbelongsToManyMany(Items), {through: CartItem};
+
+Attachment.belongsTo(User)
+Attachment.belongsToMany(Item, { through: ItemAttachment })
+Item.belongsToMany(Attachment, { through: ItemAttachment })
+User.hasMany(Attachment)
+
 
 const initDatabase = Promise.coroutine(function* () {
-  for (let t of [User, Item, Transaction, Order, OrderItem, Review]) {
+  for (let t of [User, Item, Transaction, Order,
+                 OrderItem, Review, Attachment, ItemAttachment,
+                 Admin, AdminLog, Arbitration, Identification, Specialaccount]) {
     yield t.sync();
     console.log(`Table ${t.name} synced`);
   }
@@ -40,6 +53,8 @@ const initDatabase = Promise.coroutine(function* () {
 initDatabase()
 
 module.exports = {
-  User, Item, Transaction, Order, OrderItem, Review,
-  db
+  User, Item, Transaction, Order, OrderItem, Review, Attachment,
+  ItemSeller, ItemAttachment,
+  db,
+  Admin, AdminLog, Arbitration, Identification, Specialaccount
 };

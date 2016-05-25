@@ -13,74 +13,125 @@ import { reduxForm } from 'redux-form';
 import ajax from '../../common/ajax';
 const createForm = Form.create;
 const FormItem = Form.Item;
+
 let contents = [];
+const pay = async function () {
+  console.log(this);
+  await ajax.post('/api/order/update', {
+    orderId: this.orderId,
+    op: 'pay'
+  });
+  contents[this.index].status = 1;
+  this.view.setState({});
+}
+
+const ship = async function () {
+  console.log(this);
+}
+
+const confirm = async function () {
+  console.log(this);
+}
+
 let tableProps =
-{
-  pagination:
   {
-    simple: true,
-    pageSize: 6
-  }
-};
+    pagination:
+    {
+      simple: true,
+      pageSize: 6
+    }
+  };
 let columns = [{
-      title: '',
-      dataIndex: 'thumb',
-      key: 'thumb',
-      render: (d,e) => {
-        return <img src={e.items[0].thumb}  className={styles.itemImage}/>
+  title: '',
+  dataIndex: 'thumb',
+  key: 'thumb',
+  render: (d, e) => {
+    return <img src={e.items[0].thumb}  className={styles.itemImage}/>
+  }
+}, {
+    title: '宝贝',
+    dataIndex: 'name',
+    key: 'name',
+    render: (d, e) => {
+      return <span className={styles.itemName}>{e.items[0].name}</span>;
+    }
+  }, {
+    title: '单价',
+    dataIndex: 'price',
+    key: 'price',
+    render: (d, e) => {
+      return <span className={styles.itemPrice}>{Number(e.items[0].price).toFixed(2) }</span>;
+    }
+  }, {
+    title: '数量',
+    dataIndex: 'count',
+    key: 'count'
+  }, {
+    title: '订单编号',
+    dataIndex: 'id',
+    key: 'id'
+  }, {
+    title: '订单金额',
+    dataIndex: 'totalCost',
+    key: 'totalCost',
+    render: (d) => {
+      return <span className={styles.itemTotalCost}>{Number(d).toFixed(2) }</span>;
+    }
+  }, {
+    title: '订单状态',
+    dataIndex: 'status',
+    key: 'status',
+    render: (d) => {
+      console.log(d);
+      switch (d.status) {
+        case 0:
+          return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={pay}>确认付款</Button>
+        case 1:
+          return <Button type="ghost" onClick={ship}>确认发货</Button>
+        case 2:
+          return <Button type="ghost" onClick={confirm}>确认收货</Button>
+
       }
-    }, {
-      title: '宝贝',
-      dataIndex: 'name',
-      key: 'name',
-      render: (d,e) => {
-           return <span className={styles.itemName}>{e.items[0].name}</span>;
-      }
-    }, {
-      title: '单价',
-      dataIndex: 'price',
-      key: 'price',
-      render: (d,e) => {
-           return <span className={styles.itemPrice}>{Number(e.items[0].price).toFixed(2)}</span>;
-      }
-    }, {
-      title: '数量',
-      dataIndex: 'count',
-      key: 'count'
-    }, {
-      title: '订单编号',
-      dataIndex: 'id',
-      key: 'id'
-    }, {
-      title: '订单金额',
-      dataIndex: 'totalCost',
-      key: 'totalCost',
-      render: (d) => {
-           return <span className={styles.itemTotalCost}>{Number(d).toFixed(2)}</span>;
-      }
-    }, {
-      title: '订单状态',
-      dataIndex: 'status',
-      key: 'status',
-      render: (d) => {
-        return <Button type="ghost">确认付款</Button>
-      }
-    }];
+
+    }
+  }];
 
 let BasicDemo = React.createClass(
-{
-      getInitialState: async ()=> {
-      const res = await ajax.post('/api/order/order_list',{buyerId:1});
-      console.log('buyresult',res);
-      Object.assign(contents,res.orders);
+  {
+    componentDidMount: async function () {
+      const res = await ajax.post('/api/order/order_list', { buyerId: 1 });
+      console.log('buyresult', res);
+      Object.assign(contents, res.orders);
+      for (var index = 0; index < contents.length; index++) {
+        var element = contents[index];
+        element['key'] = element.id;
+        element['status'] = {
+          index: index,
+          sellerId: element.sellerId,
+          buyerId: element.buyerId,
+          orderId: element.id,
+          status: element.status,
+          view: this
+        }
+      }
+      // contents.forEach(function (element) {
+      //   element['key'] = element.id,
+      //     element['status'] = {
+      //       sellerId: element.sellerId,
+      //       buyerId: element.buyerId,
+      //       orderId: element.id,
+      //       status: element.status,
+      //       refresh: this.setState
+      //     }
+      // }, this);
       //console.log(contents);
-      return {};
+      this.setState({});
     },
     render() {
       const pagination = {
         total: contents.length,
         showSizeChanger: true,
-        pageSize:2,
+        pageSize: 20,
         onShowSizeChange(current, pageSize) {
           console.log('Current: ', current, '; PageSize: ', pageSize);
         },
@@ -88,21 +139,20 @@ let BasicDemo = React.createClass(
           console.log('Current: ', current);
         },
       };
-      return(
+      return (
         <Table columns={columns} dataSource={contents} pagination={pagination} />
       );
     }
-});
+  });
 
 
 
 class ShoppingOrderPage extends React.Component {
-    render()
-    {
-      return (
-        <BasicDemo />
-      );
-    }
+  render() {
+    return (
+      <BasicDemo />
+    );
+  }
 }
 BasicDemo = createForm()(BasicDemo);
 export default ShoppingOrderPage;

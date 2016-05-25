@@ -1,35 +1,62 @@
 'use strict';
-const Promise = require('bluebird');
 const Item = require('../models').Item;
+const Attachment = require('../models').Attachment;
+const ItemAttachment = require('../models').ItemAttachment;
+const ItemSeller = require('../models').ItemSeller;
 const User = require('../models').User;
 const Order = require('../models').Order;
 
 const createItem = Promise.coroutine(function* (sellerId, item) {
-  console.log('service: createItem:');
-  console.log(item);
-  try {
-    const user = yield User.findOne({ where: { id: sellerId } });
-    if (!user) {
-      throw new Error('User Not Found.');
-    }
-    if (item.remain < 0 || item.price < 0) {
-      throw new Error('illegal parameter.');
-    }
-    const newItem = yield Item.create({
-      name: item.name,
-      price: item.price,
-      remain: item.remain,
-      thumb: item.thumb,
-      description: item.description
-    });
-    console.log('newItemId: ' + newItem.id);
-    newItem.setSeller(user);
-    return newItem.id;
+  const user = yield User.findOne({ where: { id: sellerId } });
+  if (item.remain < 0) {
+    throw new Error('INVALID_REMAIN');
   }
-  catch (e) {
-    console.error('Error in service newItem:' + e.message);
+  if (item.price < 0) {
+    throw new Error('INVALID_PRICE');
   }
+  const newItem = yield Item.create({
+    name: item.name,
+    price: item.price,
+    remain: item.remain,
+    description: item.description,
+    sellerId: sellerId
+  });
+  yield newItem.setAttachments(item.photo)
+  return newItem;
 });
+
+const getItem = Promise.coroutine(function* (itemId) {
+  const item = yield Item.findById(itemId, {
+    attributes: ['name', 'description', 'price', 'remain'],
+    include: [{
+      model: User,
+      as: 'seller',
+      attributes: ['id', 'realName']
+    }, {
+      model: Attachment,
+      through: ItemAttachment,
+      attributes: ['id']
+    }]
+  })
+  return item
+})
+
+const getItems = Promise.coroutine(function* () {
+  const items = yield Item.findAll({
+    where: { remain: { $gt: 0 } },
+    attributes: ['id', 'name', 'price', 'remain'],
+    include: [{
+      model: User,
+      as: 'seller',
+      attributes: ['id', 'realName']
+    }, {
+      model: Attachment,
+      through: ItemAttachment,
+      attributes: ['id']
+    }]
+  })
+  return items;
+})
 
 const createOrder = Promise.coroutine(
   function* (sellerId, buyerId, count, cost, items) {
@@ -64,14 +91,10 @@ const createOrder = Promise.coroutine(
         newCost += item.price.toFixed(2) * element.count;
         newCount += element.count;
       }
-      if (newCost.toFixed(2) != cost.toFixed(2)) {
-        newOrder.destroy();
-        throw new Error('price chaged.' + newCost + '::' + cost);
-      }
-      if (count != newCount) {
-        newOrder.destroy();
-        throw new Error('count dismatch!');
-      }
+      // if (newCost.toFixed(2) != cost.toFixed(2)) {
+      //   newOrder.destroy();
+      //   throw new Error('price chaged.' + newCost + '::' + cost);
+      // }
     }
     catch (e) {
       console.error('Error in service newOrder:' + require('util').inspect(e));
@@ -104,5 +127,7 @@ const handleRefund = Promise.coroutine(function* (orderId, res, buyerRes, seller
 
 module.exports = {
   createItem,
-  createOrder
+  createOrder,
+  getItem,
+  getItems
 };

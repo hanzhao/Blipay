@@ -1,34 +1,37 @@
-.container {
-  background-color: #ffffff;
-  padding-left: 30px;
-  padding-top: 30px;
-  padding-right: 30px;
-  padding-bottom: 30px;
-
-  .upperHalf {
-    margin-bottom: 0px;
-    .cascader {
-      padding-left: 10px;
-      width: 150px;
-      padding-right: 10px;
+.card {
+  margin: 10px 10px 0px;
+  cursor: pointer;
+  & > div > img {
+    width: 160px;
+    height: 160px;
+  }
+  :global(.ant-card-body) {
+    padding: 0px 0px;
+  }
+  &:global(.ant-card):hover {
+    box-shadow: 0 1px 6px rgba(198, 53, 85, 0.2);
+    border-color: #c63555;
+  }
+  .info {
+    padding: 10px;
+    .name {
+      line-height: 30px;
+      float: left;
     }
-    .inputbox {
-      padding-left: 20px;
-      width: 300px;
-    }
-    .button {
-      margin-left: 20px;
+    .price {
+      line-height: 30px;
+      float: right;
+      color: #c63555;
+      font-size: 20px;
+      &::before {
+        content: '¥';
+      }
     }
   }
+}
 
-  .lowerHalf {
-    .row {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 30px 0;
-      border-bottom: solid #aaa 1px;
-    }
-  }
+.flex {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
 }
