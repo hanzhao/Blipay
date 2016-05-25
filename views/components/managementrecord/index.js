@@ -5,19 +5,19 @@ import styles from './styles';
 
 const columns = [{
   title: '操作时间',
-  dataIndex: 'date',
-  key: 'createAt'
+  dataIndex: 'createdAt',
+  key: 'createdAt'
 }, {
   title: '详细信息',
-  dataIndex: 'description',
+  dataIndex: 'content',
   key: 'content'
 }, {
   title: '操作人',
-  dataIndex: 'amount',
+  dataIndex: 'adminName',
   key: 'adminName'
 }, {
   title: '账户及操作',
-  dataIndex: 'status',
+  dataIndex: 'userName',
   key: 'userName'
 }];
 

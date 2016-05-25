@@ -2,14 +2,19 @@
  * “个人账户”页面中“欢迎页面”选项对应的右侧方框。
  */
 import React from 'react';
+import { Link } from 'react-router';
+import { connect } from 'react-redux';
+import { reduxForm } from 'redux-form';
+import { asyncConnect } from 'redux-connect';
 import { Button } from 'antd';
 import AccountRecordTable from '../managementrecord';
 import FormModal from '../managementformmodel';
 import styles from './styles';
-import { Link } from 'react-router';
-import { asyncConnect } from 'redux-connect';
-import ajax from '../../common/ajax';
 import store from '../../redux/store';
+import ajax from '../../common/ajax';
+import { getAdminLog } from '../../redux/modules/admin';
+
+
 /* 示例validator */
 const validateCard = (rule, value, callback) => {
   if (!value) {
@@ -23,83 +28,6 @@ const validateCard = (rule, value, callback) => {
   }
 };
 
-const withdrawalPropsArray = [
-  {
-    input: {
-      placeholder: '请输入银行卡号',
-      type: 'text',
-      autoComplete: 'off'
-    },
-    field: [
-      'card', {
-        rules: [{ required: true }, { validator: validateCard }]
-      }
-    ]
-  },
-  {
-    input: {
-      placeholder: '请输入提现金额',
-      type: 'text',
-      autoComplete: 'off'
-    },
-    field: [
-      'amount', {
-        rules: [{ required: true }]
-      }
-    ]
-  },
-  {
-    input: {
-      placeholder: '请输入支付密码',
-      type: 'password',
-      autoComplete: 'off'
-    },
-    field: [
-      'password', {
-        rules: [{ required: true }]
-      }
-    ]
-  }
-];
-
-const topupPropsArray = [
-  {
-    input: {
-      placeholder: '请输入银行卡号',
-      type: 'text',
-      autoComplete: 'off'
-    },
-    field: [
-      'card', {
-        rules: [{ required: true }]
-      }
-    ]
-  },
-  {
-    input: {
-      placeholder: '请输入充值金额',
-      type: 'text',
-      autoComplete: 'off'
-    },
-    field: [
-      'amount', {
-        rules: [{ required: true }]
-      }
-    ]
-  },
-  {
-    input: {
-      placeholder: '请输入支付密码',
-      type: 'password',
-      autoComplete: 'off'
-    },
-    field: [
-      'password', {
-        rules: [{ required: true }]
-      }
-    ]
-  }
-];
 
 /* 以下是本页所能显示交易记录的最大数目 */
 const fakeData = Array(Math.floor((window.innerHeight - 450) / 50)).fill({
@@ -122,12 +50,13 @@ const tableProps = {
     }
   }], 
   (state) => ({
-    adminName: state.admin.adminName,
+    adminer: state.admin.adminer,
     adminLog: state.admin.adminLog
   }),   
   (dispatch) => ({                                                                                   
   })  
 )
+
 class AccountWelcomePage extends React.Component {
   state = {
     showTopup: false,
@@ -144,27 +73,28 @@ class AccountWelcomePage extends React.Component {
     });
   };
   render() {
-    const {adminName,adminLog} = this.props;
+    const {adminer,adminLog} = this.props;
     return (
       <div className={styles.container}>
         <div className={styles.upperHalf}>
           <div className={styles.info}>
-            <div className={styles.greeting}>梁露，晚上好！</div>
+            <div className={styles.greeting}>{adminer.realName}，晚上好！</div>
             <div className={styles.lastLogin}>
-              上次登录时间：2015.01.01 12:00
+              上次登录时间：2016.05.11 12:00
             </div>
           </div>
           <div className={styles.verticalBar}/>
           <div className={styles.balance}>
-            <div className={styles.balanceTitle}>您的权限等级为</div>
+            <div className={styles.balanceTitle}>您的权限等级为{adminer.level}</div>
             <div className={styles.balanceLower}>
               <div className={styles.balanceValue}>
-                <span className={styles.balanceHead}>根管理员</span>
+                <span className={styles.balanceHead}>{adminer.level==0?"超级管理员":
+                                                      (adminer.level==1?"订票管理员":
+                                                        (adminer.level==2? "审计员":"高级管理员"))}</span>
               </div>
               <div className={styles.balanceOperation}>
                 <Link to="/admin/account/manager">
-                  <Button className={styles.topup}
-                        onClick={this.toggleTopup}>
+                  <Button className={styles.topup}>
                  编辑管理员
                  </Button>
                 </Link>
@@ -179,20 +109,6 @@ class AccountWelcomePage extends React.Component {
             <AccountRecordTable data={adminLog} tableProps={tableProps}/>
           </div>
         </div>
-        <FormModal title="账户充值"
-                   visible={this.state.showTopup}
-                   num={3}
-                   btnText="确认充值"
-                   propsArray={topupPropsArray}
-                   btnProps={{ onClick: this.submitTopup }}
-                   toggleModal={ this.toggleTopup } />
-        <FormModal title="账户提现"
-                   visible={this.state.showWithdrawal}
-                   num={3}
-                   btnText="确认提现"
-                   propsArray={withdrawalPropsArray}
-                   btnProps={{ onClick: this.submitWithDrawal }}
-                   toggleModal={ this.toggleWithDrawal } />
       </div>
     );
   }

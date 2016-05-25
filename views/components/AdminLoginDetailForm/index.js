@@ -15,6 +15,7 @@ import { login } from '../../redux/modules/admin';
 }, undefined, {
   onSubmit: (data) => login(data)
 })
+
 class LoginForm extends React.Component {
   render() {
     const { fields: {
