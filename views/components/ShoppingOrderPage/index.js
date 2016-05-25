@@ -136,12 +136,19 @@ class ShoppingReviewModal extends React.Component {
              visible={showShoppingReviewModal}
              view={this}
              onCancel={toggleReviewModal}>
-        <div>
-          <input className={classNames({
-            [styles.review]: true,
-            [styles.input]: true
-          })} type="textarea"></input>
-        </div>
+        <Form>
+          <div>
+            <label>评分</label>
+            <input name="score[]"></input>
+          </div>
+          <div>
+            <label>评价</label>
+            <textarea name="text[]" className={classNames({
+              [styles.review]: true,
+              [styles.input]: true
+            })} row="4" col="20"></textarea>
+          </div>
+        </Form>
       </Modal>
     )
   }
