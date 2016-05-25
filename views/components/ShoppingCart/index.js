@@ -35,7 +35,7 @@ class ShoppingCart extends React.Component {
     for (let i = 0; i < this.cartItems.length; i++) {
       let element = this.cartItems[i];
       items.push({
-        itemId: element.attachments[0].id,
+        itemId: element.id,
         count: element.amount
       });
     }

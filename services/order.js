@@ -28,7 +28,7 @@ const createItem = Promise.coroutine(function* (sellerId, item) {
 
 const getItem = Promise.coroutine(function* (itemId) {
   const item = yield Item.findById(itemId, {
-    attributes: ['name', 'description', 'price', 'remain'],
+    attributes: ['id', 'name', 'description', 'price', 'remain'],
     include: [{
       model: User,
       as: 'seller',

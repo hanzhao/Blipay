@@ -98,6 +98,14 @@ class ShoppingItemPage extends React.Component {
           <ShoppingPageHeader icon="star" text="买家评价" />
           <div>
             买家评价
+            {
+              item.reviews.map(e=>(
+                <div>
+                {e.score}
+                {e.text}
+                </div>
+                              ))
+            }
           </div>
         </div>
       </div>

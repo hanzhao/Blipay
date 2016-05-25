@@ -17,6 +17,8 @@ const FormItem = Form.Item;
 let ORDERS = [];
 let contents = [];
 let reviewVisible = [];
+let refundVisible = [];
+let confirmVisible = [];
 let reviews = [];
 
 let userId = 0;
@@ -66,18 +68,20 @@ const review = async function () {
   this.view.setState({});
 }
 
+
+
 const toggleReviewModal = function () {
-  reviewVisible[this.index] = ! reviewVisible[this.index];
+  reviewVisible[this.index] = !reviewVisible[this.index];
   this.view.setState({});
 }
 
 const toggleRefundModal = function () {
-  showShoppingRefundModal = !showShoppingRefundModal;
+  refundVisible[this.index] = !refundVisible[this.index];
   this.view.setState({});
 }
 
 const toggleRefundConfirmModal = function () {
-  showShoppingRefundConfirmModal = !showShoppingRefundConfirmModal;
+  confirmVisible[this.index] = !confirmVisible[this.index];
   this.view.setState({});
 }
 
@@ -90,20 +94,13 @@ let tableProps =
     }
   };
 let columns = [{
-  title: '',
-  dataIndex: 'thumb',
-  key: 'thumb',
+  title: '宝贝',
+  dataIndex: 'name',
+  key: 'name',
   render: (d, e) => {
-    return <img src={e.items[0].thumb}  className={styles.itemImage}/>
+    return <span className={styles.itemName}>{e.items[0].name}</span>;
   }
 }, {
-    title: '宝贝',
-    dataIndex: 'name',
-    key: 'name',
-    render: (d, e) => {
-      return <span className={styles.itemName}>{e.items[0].name}</span>;
-    }
-  }, {
     title: '单价',
     dataIndex: 'price',
     key: 'price',
@@ -155,7 +152,13 @@ let columns = [{
     dataIndex: 'modal',
     key: 'modal',
     render: (d) => {
-      return <ShoppingReviewModal index={d.index} orderId={d.orderId} view={d.view} />
+      return (
+        <div>
+          <ShoppingReviewModal index={d.index} orderId={d.orderId} view={d.view} />
+          <ShoppingRefundModal index={d.index} orderId={d.orderId} view={d.view} />
+          <ShoppingRefundConfirmModal index={d.index} orderId={d.orderId} view={d.view} />
+        </div>
+      )
     }
   }];
 let showShoppingReviewModal = false;
@@ -171,7 +174,7 @@ class ShoppingReviewModal extends React.Component {
     console.log(this);
     console.log(ORDERS);
     const items = ORDERS[this.props.index].items;
-    if (visible[this.props.index]) {
+    if (reviewVisible[this.props.index]) {
       reviews = []
       for (var index = 0; index < items.length; index++) {
         items[index]['index'] = index;
@@ -211,12 +214,16 @@ class ShoppingReviewModal extends React.Component {
 
 let showShoppingRefundModal = false;
 class ShoppingRefundModal extends React.Component {
+
+
   render() {
     return (
       <Modal title="退货申请"
-             visible={showShoppingRefundModal}
-             view={this}
-             onCancel={toggleRefundModal}>
+        visible={refundVisible[this.props.index]}
+        view={this.props.view}
+        index={this.props.index}
+        orderId={this.props.orderId}
+        onCancel={toggleRefundModal}>
         <Form>
           <FormItem label="退货理由">
             <Input type='textarea' />
@@ -232,9 +239,11 @@ class ShoppingRefundConfirmModal extends React.Component {
   render() {
     return (
       <Modal title="退货申请"
-             visible={showShoppingRefundConfirmModal}
-             view={this}
-             onCancel={toggleRefundConfirmModal}>
+        visible={confirmVisible[this.props.index]}
+        view={this.props.view}
+        index={this.props.index}
+        orderId={this.props.orderId}
+        onCancel={toggleRefundConfirmModal}>
         <Form>
           <FormItem label="退货理由">
             <Input type='textarea' disabled={true} />
@@ -254,7 +263,9 @@ let BasicDemo = React.createClass(
       ORDERS = res.orders;
       for (var index = 0; index < contents.length; index++) {
         var element = contents[index];
-        visible.push(false);
+        reviewVisible.push(false);
+        refundVisible.push(false);
+        confirmVisible.push(false);
         element['key'] = element.id;
         element['status'] = {
           index: index,
@@ -300,8 +311,6 @@ let BasicDemo = React.createClass(
       };
       return (
         <div>
-          <ShoppingRefundModal onCancel={this.props.toggleShoppingRefund}/>
-          <ShoppingRefundConfirmModal onCancel={this.props.toggleShoppingRefundConfirm}/>
           <Table className={styles.shoppingOrderTable} columns={columns} dataSource={contents} pagination={pagination} />
         </div>
       );
