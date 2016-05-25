@@ -91,7 +91,13 @@ class ShoppingItemPage extends React.Component {
         </div>
         <div className={styles.feedback}>
           <ShoppingPageHeader icon="book" text="详细描述" />
+          <div>
+            商品详细描述
+          </div>
           <ShoppingPageHeader icon="star" text="买家评价" />
+          <div>
+            买家评价
+          </div>
         </div>
       </div>
     )

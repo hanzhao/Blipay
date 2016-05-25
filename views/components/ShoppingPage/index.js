@@ -1,5 +1,4 @@
 /*
-<<<<<<< HEAD
 * gou mai shang pin
 */
 
@@ -22,6 +21,7 @@ class ShoppingPage extends React.Component {
               { this.props.children }
           </div>
         </Container>
+        <ShoppingCart />
       </div>
     )
   }
