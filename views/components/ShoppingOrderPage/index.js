@@ -1,11 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Modal, Menu, Dropdown, Icon, Form } from 'antd';
+import { Modal, Menu, Dropdown, Icon, Form, message } from 'antd';
 import { Button } from 'antd';
 import { Checkbox } from 'antd';
 import { InputNumber } from 'antd';
 import { Pagination } from 'antd';
-import message from 'antd';
 import pic from './akarin.png'
 import styles from './styles';
 import FormModal from '../FormModal';
@@ -27,7 +26,7 @@ const pay = async function () {
     op: 'pay'
   });
   console.log('Pay');
-  message('付款成功');
+  message.success('付款成功');
   contents[this.index].status = 1;
   this.view.setState({});
 }
@@ -38,7 +37,7 @@ const ship = async function () {
     op: 'ship'
   });
   console.log('Ship');
-  message('发货成功');
+  message.success('发货成功');
   contents[this.index].status = 2;
   this.view.setState({});
 }
@@ -49,7 +48,7 @@ const confirm = async function () {
     op: 'confirm'
   });
   console.log('Confirm');
-  message('收获成功');
+  message.success('收货成功');
   contents[this.index].status = 3;
   this.view.setState({});
 }
@@ -135,7 +134,7 @@ class ShoppingReviewModal extends React.Component {
     return (
       <Modal title="商品评价"
              visible={showShoppingReviewModal}
-             {...this.props}
+             view={this}
              onCancel={toggleReviewModal}>
         <div>
           <input className={classNames({
