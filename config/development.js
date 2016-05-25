@@ -6,8 +6,7 @@ module.exports = {
     db: 'blipay',
     username: 'blipay',
     password: 'blipay',
-    dialect: 'sqlite',
-
+    dialect: 'mysql',
     host: 'localhost',
     pool: {
       min: 0,
