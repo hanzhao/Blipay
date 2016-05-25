@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Icon, Button } from 'antd';
+import { Icon, Button, message } from 'antd';
 import classNames from 'classnames';
 
 import ShoppingCartModal from '../ShoppingCartModal';
@@ -47,6 +47,7 @@ class ShoppingCart extends React.Component {
     });
     if (res)
       this.clearAction();
+      message.success('成功提交订单');
   };
   render() {
     const { cartItems } = this.props

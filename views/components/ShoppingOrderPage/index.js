@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Modal, Form, Input, message } from 'antd';
+import { Modal, Form, Input, InputNumber, message } from 'antd';
 import { Button } from 'antd';
-import { InputNumber } from 'antd';
+import { Checkbox } from 'antd';
+import { Pagination } from 'antd';
 import pic from './akarin.png'
 import styles from './styles';
 import FormModal from '../FormModal';
@@ -13,8 +14,11 @@ import classNames from 'classnames';
 
 const createForm = Form.create;
 const FormItem = Form.Item;
-
+let ORDERS = [];
 let contents = [];
+let visible = [];
+let reviews = [];
+
 let userId = 0;
 const pay = async function () {
   await ajax.post('/api/order/update', {
@@ -48,6 +52,11 @@ const confirm = async function () {
   contents[this.index].status = 3;
   showShoppingReviewModal = !showShoppingReviewModal;
   this.view.setState({});
+}
+
+const review = async function () {
+  console.log(reviews);
+  reviews = [];
 }
 
 const toggleReviewModal = function () {
@@ -114,7 +123,6 @@ let columns = [{
     dataIndex: 'status',
     key: 'status',
     render: (d) => {
-      console.log(d);
       switch (d.status) {
         case 0:
           return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={pay}>确认付款</Button>
@@ -132,30 +140,65 @@ let columns = [{
           if (userId == d.sellerId)
             return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={toggleRefundConfirmModal}>退货确认</Button>
         default:
-        
       }
 
     }
+  }, {
+    title: '',
+    dataIndex: 'modal',
+    key: 'modal',
+    render: (d) => {
+      return <ShoppingReviewModal index={d.index} orderId={d.orderId} view={d.view} />
+    }
   }];
-
 let showShoppingReviewModal = false;
 class ShoppingReviewModal extends React.Component {
+  onChangeScore(e) {
+    console.log(this);
+    reviews[this.index].score = e;
+  }
+  onChangeText(e) {
+    console.log(e);
+    reviews[this.index].text = e;
+  }
   render() {
+    console.log('Modal Loaded');
+    const items = ORDERS[this.props.index].items;
+    if (visible[this.props.index]) {
+      reviews = []
+      for (var index = 0; index < items.length; index++) {
+        var element = items[index];
+        element['index'] = index;
+        reviews.push({
+          score: 5,
+          text: 'Default'
+        })
+      }
+    }
+    console.log(items);
     return (
       <Modal title="商品评价"
-             visible={showShoppingReviewModal}
-             view={this}
-             onCancel={toggleReviewModal}>
+        visible={visible[this.props.index]}
+        view={this.props.view}
+        index={this.props.index}
+        orderId={this.props.orderId}
+        items={items}
+        onOk={review}
+        onCancel={toggleReviewModal}>
         <Form>
-          <FormItem label="评分">
-            <InputNumber min={0} max={5} defaultValue={0} />
-          </FormItem>
-          <FormItem label="评价">
-            <Input type='textarea' className={classNames({
-                [styles.review]: true,
-                [styles.input]: true
-              })} />
-          </FormItem>
+          {
+            items.map(e => (
+              <div>
+                <FormItem label={e.name}></FormItem>
+                <FormItem label="评分">
+                  <InputNumber index={e.index} size="large" min={1} max={5} defaultValue={5} onChange={this.onChangeScore} />
+                </FormItem>
+                <FormItem label="评价">
+                  <Input index={e.index} type='textarea' onChange={this.onChangeText} />
+                </FormItem>
+              </div>
+            ))
+          }
         </Form>
       </Modal>
     )
@@ -204,10 +247,20 @@ let BasicDemo = React.createClass(
       const res = await ajax.post('/api/order/order_list', { buyerId: 1 });
       console.log('buyresult', res);
       Object.assign(contents, res.orders);
+      ORDERS = res.orders;
       for (var index = 0; index < contents.length; index++) {
         var element = contents[index];
+        visible.push(false);
         element['key'] = element.id;
         element['status'] = {
+          index: index,
+          sellerId: element.sellerId,
+          buyerId: element.buyerId,
+          orderId: element.id,
+          status: element.status,
+          view: this
+        };
+        element['modal'] = {
           index: index,
           sellerId: element.sellerId,
           buyerId: element.buyerId,
@@ -233,7 +286,7 @@ let BasicDemo = React.createClass(
       const pagination = {
         total: contents.length,
         showSizeChanger: true,
-        pageSize: 20,
+        pageSize: 10,
         onShowSizeChange(current, pageSize) {
           console.log('Current: ', current, '; PageSize: ', pageSize);
         },
