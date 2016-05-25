@@ -6,33 +6,41 @@ const Item = require('../models').Item;
 const Order = require('../models').Order;
 const OrderItem = require('../models').OrderItem;
 const RefundText = require('../models').RefundText;
+const ItemSeller = require('../models').ItemSeller;
 const Review = require('../models').Review;
 
 const Router = require('express').Router;
 const router = Router();
 const createItem = require('../services/order').createItem;
+const getItem = require('../services/order').getItem;
+const getItems = require('../services/order').getItems;
 const createOrder = require('../services/order').createOrder;
 const requestPay = require('../services/account').requestPay;
 const requestReceive = require('../services/account').requestReceive;
 
 router.post('/item/new', Promise.coroutine(function* (req, res) {
-  console.log('in /item/new');
-  console.log(req.body);
-  try {
-    // TODO: Fetch user from session
-    // createItem(req.session.userId, req.body);
-    const id = yield createItem(req.session.userId, req.body);
-    return res.success("newItem id: " + id);
+  console.log('in /item/new', req.body);
+  const item = yield createItem(req.session.userId, req.body);
+  return res.success({ id: item.id });
+}));
+
+router.get('/item/show', Promise.coroutine(function* (req, res) {
+  console.log('in /item/show', req.query);
+  const item = yield getItem(req.query.id)
+  if (!item) {
+    return res.status(404).fail()
   }
-  catch (e) {
-    console.error('error in /item/new: \t' + e.message);
-    return res.fail('Error inserting new item:' + e.message);
-  }
+  return res.success({ item })
 }));
 
 const validate = (i) => {
   return typeof (i) != 'undefined';
 };
+
+router.get('/items', Promise.coroutine(function* (req, res) {
+  const items = yield getItems()
+  return res.success({ items });
+}))
 
 router.post('/item/item_list', Promise.coroutine(function* (req, res) {
   console.log('in /item/item_list');

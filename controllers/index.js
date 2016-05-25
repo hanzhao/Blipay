@@ -2,11 +2,13 @@
 const Router = require('express').Router;
 const accountRouter = require('./account');
 const orderRouter = require('./order');
+const attachmentRouter = require('./attachment');
 const rootRouter = require('./root');
 
 const apiRouter = Router();
 apiRouter.use(accountRouter);
 apiRouter.use(orderRouter);
+apiRouter.use(attachmentRouter);
 apiRouter.all('*', (req, res) => res.status(404).send('Not Found'))
 
 const router = Router();

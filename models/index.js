@@ -12,11 +12,13 @@ const User = require('./user')(db);
 const Item = require('./item')(db);
 const Transaction = require('./transaction')(db);
 const Order = require('./order')(db);
-const OrderItem = require('./orderitem')(db);
+const OrderItem = require('./order_item')(db);
 const Review = require('./review')(db);
+const Attachment = require('./attachment')(db);
+const ItemAttachment = require('./item_attachment')(db);
 
 // 表关联
-Item.belongsTo(User, {
+const ItemSeller = Item.belongsTo(User, {
   as: 'seller'
 });
 
@@ -29,8 +31,14 @@ Order.belongsToMany(Item, { through: OrderItem });
 
 Item.hasMany(Review);
 
+Attachment.belongsTo(User)
+Attachment.belongsToMany(Item, { through: ItemAttachment })
+Item.belongsToMany(Attachment, { through: ItemAttachment })
+User.hasMany(Attachment)
+
 const initDatabase = Promise.coroutine(function* () {
-  for (let t of [User, Item, Transaction, Order, OrderItem, Review]) {
+  for (let t of [User, Item, Transaction, Order,
+                 OrderItem, Review, Attachment, ItemAttachment]) {
     yield t.sync();
     console.log(`Table ${t.name} synced`);
   }
@@ -38,6 +46,7 @@ const initDatabase = Promise.coroutine(function* () {
 initDatabase()
 
 module.exports = {
-  User, Item, Transaction, Order, OrderItem, Review,
+  User, Item, Transaction, Order, OrderItem, Review, Attachment,
+  ItemSeller, ItemAttachment,
   db
 };

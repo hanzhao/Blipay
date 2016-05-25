@@ -7,15 +7,12 @@ import React from 'react';
 import styles from './styles';
 import Container from '../Container';
 import ShoppingMenu from '../ShoppingMenu';
+import ShoppingCart from '../ShoppingCart';
 
-
-function onChange(value) {
-  console.log(value);
-}
 class ShoppingPage extends React.Component {
   render() {
     return(
-        <div className={styles.wrapper}
+      <div className={styles.wrapper}
            style={{ height: window.innerHeight - 85 }}>
         <Container className={styles.container}>
           <div className={styles.left}>
@@ -25,7 +22,8 @@ class ShoppingPage extends React.Component {
               { this.props.children }
           </div>
         </Container>
-        </div>
+        <ShoppingCart />
+      </div>
     )
   }
 }
