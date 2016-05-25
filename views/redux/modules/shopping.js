@@ -54,6 +54,7 @@ export const clearShoppingCart = () => ({
 })
 
 const initialState = {
+  ...state,
   cartItems: []
 }
 
