@@ -1,7 +1,7 @@
 /*
 * 身份数据库
 */
-Squelize=require('Squelize');
+Sequelize = require('sequelize');
 module.exports=(db)=>{
     return db.define('identification',{
         realName:{
