@@ -72,9 +72,9 @@ const initialState = {
   user: null,
   message: null,
   adminInfo: null,
-  userList: false,
+  userList: null,
   verificationList: null,
-  arbitrationList: null
+  arbitrationList: null,
   adminLog: null
 };
 
@@ -90,13 +90,13 @@ export const getAdminLog = () =>({
 });
 
 export const logout = () => ({
-  types: [LOGOUT, LOGOUT_SUCCESS, LOGOUT_FAIL],
+  types: [LOGOUT, LOGOUT_SUCCESS, LOGOUT_FAIL]
   //promise: (client) => client.get('/api/admin/logout')
 });
 
 //获取管理员信息
 export const adminInfo = () => ({
-  type: ADMIN_INFO
+  type: ADMIN_INFO,
   promise: (client) => client.get('/api/admin/admininfo')
 });
 
@@ -113,13 +113,13 @@ export const searchForUserName = (data)=>({
 
 /*获取待认证列表*/
 export const verificationList = () => ({
-  type: VERIFICATION_LIST
+  type: VERIFICATION_LIST,
   promise: (client) => client.get('/api/admin/verifylist')
 });
 
 /*获取仲裁信息列表*/
 export const arbitrationList = () => ({
-  type: ARBITRATION_LIST
+  type: ARBITRATION_LIST,
   promise: (client) => client.get('/api/admin/getarbitration')
 });
 
@@ -137,25 +137,25 @@ export const deleteAdmin = (data) => ({
 
 /*修改管理员等级*/
 export const modifyAdminLevel = (data) =>({
-    types: [MODIFY_ADMIN, MODIFY_ADMIN_SUCCESS, MODIFY_ADMIN_FAIL]，
+    types: [MODIFY_ADMIN, MODIFY_ADMIN_SUCCESS, MODIFY_ADMIN_FAIL],
     promise: (client) => client.post('/api/admin/changelevel', data)
 });
 
 /*新建特殊账户*/
 export const createSpecialAccount = (data) =>({
-    types: [CREATE_SPEC_ACT, CREATE_SPEC_ACT_SUCCESS, CREATE_SPEC_ACT_FAIL]，
+    types: [CREATE_SPEC_ACT, CREATE_SPEC_ACT_SUCCESS, CREATE_SPEC_ACT_FAIL],
     promise: (client) => client.post('/api/admin/create', data)
 });
 
 /*删除特殊账户*/
 export const deleteSpecialAccount = (data) =>({
-    types: [DELETE_SPEC_ACT, DELETE_SPEC_ACT_SUCCESS, DELETE_SPEC_ACT_FAIL]，
+    types: [DELETE_SPEC_ACT, DELETE_SPEC_ACT_SUCCESS, DELETE_SPEC_ACT_FAIL],
     promise: (client) => client.post('/api/admin/delete', data)
 });
 
 /*撤销特殊账户权限*/
 export const withdrawalSpecialAccountAuth = (data) =>({
-    types: [WD_SPEC_ACT_AUTH,WD_SEPC_ACT_AUTH_SUCCESS,WD_SPEC_ACT_AUTH_FAIL]，
+    types: [WD_SPEC_ACT_AUTH,WD_SEPC_ACT_AUTH_SUCCESS,WD_SPEC_ACT_AUTH_FAIL],
     promise: (client) => client.post('/api/admin/withdrawal', data)
 });
 
@@ -197,19 +197,19 @@ export default function reducer(state = initialState, action = {}) {
       }, 0)
       return {
         ...state,
-        user: null
+        user: null,
         message: null
       }
     case GET_ADMIN_LOG_SUCCESS:
       return{
         ...state,
-        adminLog: action.result.log
+        adminLog: action.result.log,
         message: null
       }
     case USER_SEARCH_SUCCESS:
       return{
         ...state,
-        user: action.result.user
+        user: action.result.user,
         message: null
       }
     case ADMIN_INFO:
@@ -230,22 +230,22 @@ export default function reducer(state = initialState, action = {}) {
     case ADD_ADMIN:
       return {
         ...state,
-        message: null,
+        message: null
       }
     case DELETE_ADMIN:
       return {
         ...state,
-        message: null,
+        message: null
       }
     case MODIFY_ADMIN:
       return {
         ...state,
-        message: null,
+        message: null
       }
     case MODIFY_USER:
       return {
         ...state,
-        message: null,
+        message: null
       }
     case VERIFICATION_LIST:
       return {
@@ -256,7 +256,7 @@ export default function reducer(state = initialState, action = {}) {
     case ARBITRATION_LIST:
       return {
         ...state,
-        arbitrationList: result.action.arbitrations
+        arbitrationList: result.action.arbitrations,
         message: null
       }
     case ADD_ADMIN_SUCCESS:
@@ -282,14 +282,14 @@ export default function reducer(state = initialState, action = {}) {
     case VERIFICATION_SUCCESS:
       return {
         ...state,
-        message: null
         verificationList: action.result.unVerifiedUser,
+        message: null
       }
     case ARBITRATION_SUCCESS:
       return {
         ...state,
-        message: null
         arbitrationList: arbitrations,
+        message: null
       }
     // Errors
     case ADD_ADMIN_FAIL:
