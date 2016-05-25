@@ -19,13 +19,13 @@ const cookPassword = (key,salt,saltPos) => {
 };
 
 /*管理员登录*/
-router.post('/account/login',Promise.coroutine(function *(req,res){
+router.post('/admin/login',Promise.coroutine(function *(req,res){
     console.log('in /admin/login');
     console.log(req.body);
 
     let admin = yield Admin.findOne({
         where:{
-            adminName: req.body.userName
+            adminName: req.body.username
         }
     })
 
@@ -35,7 +35,7 @@ router.post('/account/login',Promise.coroutine(function *(req,res){
             });
         }
         if(cookPassword(
-        req.body.loginPass,
+        req.body.password,
         admin.loginSalt,
         config.loginSaltPos) === admin.loginPass){
             return res.success({
