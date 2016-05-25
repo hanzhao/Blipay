@@ -18,6 +18,8 @@ const LOAD_ITEMS_FAIL = 'Blipay/shopping/LOAD_ITEMS_FAIL'
 const ADD_CART_ITEM = 'Blipay/shopping/ADD_CART_ITEM'
 // 打开购物车模态框
 const TOGGLE_SHOPPING_CART = 'Blipay/shopping/TOGGLE_SHOPPING_CART'
+// delete all items
+const CLEAR_SHOPPING_CART = 'Blipay/shopping/CLEAR_SHOPPING_CART'
 
 // Action Creators
 export const addItem = (data) => ({
@@ -47,7 +49,12 @@ export const toggleShoppingCart = () => ({
   type: TOGGLE_SHOPPING_CART
 })
 
+export const clearShoppingCart = () => ({
+  type: CLEAR_SHOPPING_CART
+})
+
 const initialState = {
+  ...state,
   cartItems: []
 }
 
@@ -79,6 +86,10 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         showShoppingCartModal: !state.showShoppingCartModal
+      }
+    case CLEAR_SHOPPING_CART:
+      return {
+        cartItems: []
       }
     default:
       return state;

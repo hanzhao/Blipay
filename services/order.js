@@ -5,6 +5,7 @@ const ItemAttachment = require('../models').ItemAttachment;
 const ItemSeller = require('../models').ItemSeller;
 const User = require('../models').User;
 const Order = require('../models').Order;
+const Review = require('../models').Review;
 
 const createItem = Promise.coroutine(function* (sellerId, item) {
   const user = yield User.findOne({ where: { id: sellerId } });
@@ -27,7 +28,7 @@ const createItem = Promise.coroutine(function* (sellerId, item) {
 
 const getItem = Promise.coroutine(function* (itemId) {
   const item = yield Item.findById(itemId, {
-    attributes: ['name', 'description', 'price', 'remain'],
+    attributes: ['id', 'name', 'description', 'price', 'remain'],
     include: [{
       model: User,
       as: 'seller',
@@ -36,6 +37,8 @@ const getItem = Promise.coroutine(function* (itemId) {
       model: Attachment,
       through: ItemAttachment,
       attributes: ['id']
+    },{
+      model: Review
     }]
   })
   return item
@@ -91,14 +94,10 @@ const createOrder = Promise.coroutine(
         newCost += item.price.toFixed(2) * element.count;
         newCount += element.count;
       }
-      if (newCost.toFixed(2) != cost.toFixed(2)) {
-        newOrder.destroy();
-        throw new Error('price chaged.' + newCost + '::' + cost);
-      }
-      if (count != newCount) {
-        newOrder.destroy();
-        throw new Error('count dismatch!');
-      }
+      // if (newCost.toFixed(2) != cost.toFixed(2)) {
+      //   newOrder.destroy();
+      //   throw new Error('price chaged.' + newCost + '::' + cost);
+      // }
     }
     catch (e) {
       console.error('Error in service newOrder:' + require('util').inspect(e));

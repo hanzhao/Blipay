@@ -1,5 +1,4 @@
 /*
-<<<<<<< HEAD
 * gou mai shang pin
 */
 
