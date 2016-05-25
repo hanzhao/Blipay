@@ -174,7 +174,6 @@ class ShoppingRefundModal extends React.Component {
           <FormItem label="退货理由">
             <Input type='textarea' />
           </FormItem>
-          <Button type="primary" htmlType="submit">确定</Button>
         </Form>
       </Modal>
     )
@@ -193,7 +192,6 @@ class ShoppingRefundConfirmModal extends React.Component {
           <FormItem label="退货理由">
             <Input type='textarea' disabled={true} />
           </FormItem>
-          <Button type="primary" htmlType="submit">确定</Button>
         </Form>
       </Modal>
     )
