@@ -210,7 +210,7 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
         //     })
         //   );
         // };
-        const confirmTrans = yield requestReceive(order.sellerId, order.cost);
+        const confirmTrans = yield requestReceive(order.sellerId, order.totalCost);
         yield order.update({
           sellerTransId: confirmTrans,
           status: 3

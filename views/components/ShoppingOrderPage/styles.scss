@@ -1,24 +1,21 @@
 .container {
   background-color: #ffffff;
-  padding-left: 30px;
-  padding-top: 30px;
-  padding-right: 30px;
-  padding-bottom: 30px;
-
+  
+  .shoppingOrderTable {
+    margin: 5% 2rem;
+  }
   .itemName {
-          width: 300px;
-          font-type: sans-serif;
-    }
-    .itemImage {
-          width: 100px;
-    }   
-    .itemPrice{
-            font-weight: bold;
-            color: #eeeee;
-    }
-    .itemTotalCost{
-            font-weight: bold;
-            color: #C23456;
-    }
-
+    width: 300px;
+  }
+  .itemImage {
+    width: 100px;
+  }   
+  .itemPrice{
+    font-weight: bold;
+    color: #eeeee;
+  }
+  .itemTotalCost{
+    font-weight: bold;
+    color: #C23456;
+  }
 }

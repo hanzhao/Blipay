@@ -1,10 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Menu, Dropdown, Icon, Form } from 'antd';
+import { Modal, Menu, Dropdown, Icon, Form } from 'antd';
 import { Button } from 'antd';
 import { Checkbox } from 'antd';
 import { InputNumber } from 'antd';
 import { Pagination } from 'antd';
+import message from 'antd';
 import pic from './akarin.png'
 import styles from './styles';
 import FormModal from '../FormModal';
@@ -13,6 +14,7 @@ import { Cascader } from 'antd';
 import { reduxForm } from 'redux-form';
 import ajax from '../../common/ajax';
 import store from '../../redux/store';
+import classNames from 'classnames';
 
 const createForm = Form.create;
 const FormItem = Form.Item;
@@ -20,11 +22,12 @@ const FormItem = Form.Item;
 let contents = [];
 let userId = 0;
 const pay = async function () {
-  console.log(this);
   await ajax.post('/api/order/update', {
     orderId: this.orderId,
     op: 'pay'
   });
+  console.log('Pay');
+  message('付款成功');
   contents[this.index].status = 1;
   this.view.setState({});
 }
@@ -34,17 +37,27 @@ const ship = async function () {
     orderId: this.orderId,
     op: 'ship'
   });
+  console.log('Ship');
+  message('发货成功');
   contents[this.index].status = 2;
   this.view.setState({});
 }
 
 const confirm = async function () {
-  console.log(this);
   await ajax.post('/api/order/update', {
     orderId: this.orderId,
     op: 'confirm'
   });
+  console.log('Confirm');
+  message('收获成功');
   contents[this.index].status = 3;
+  this.view.setState({});
+}
+
+const toggleReviewModal = function () {
+  console.log('Review');
+  showShoppingReviewModal = !showShoppingReviewModal;
+  console.log(this);
   this.view.setState({});
 }
 
@@ -108,11 +121,32 @@ let columns = [{
             return <Button disable='true' type="ghost" onClick={ship}>等待发货</Button>
         case 2:
           return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={confirm}>确认收货</Button>
-
+        case 3:
+          if (userId == d.sellerId)
+            return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={toggleReviewModal}>用户评价</Button>
       }
 
     }
   }];
+
+let showShoppingReviewModal = false;
+class ShoppingReviewModal extends React.Component {
+  render() {
+    return (
+      <Modal title="商品评价"
+             visible={showShoppingReviewModal}
+             {...this.props}
+             onCancel={toggleReviewModal}>
+        <div>
+          <input className={classNames({
+            [styles.review]: true,
+            [styles.input]: true
+          })} type="textarea"></input>
+        </div>
+      </Modal>
+    )
+  }
+}
 
 let BasicDemo = React.createClass(
   {
@@ -158,7 +192,10 @@ let BasicDemo = React.createClass(
         },
       };
       return (
-        <Table columns={columns} dataSource={contents} pagination={pagination} />
+        <div>
+          <ShoppingReviewModal onCancel={this.props.toggleShoppingReview}/>
+          <Table className={styles.shoppingOrderTable} columns={columns} dataSource={contents} pagination={pagination} />
+        </div>
       );
     }
   });
