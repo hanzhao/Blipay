@@ -21,12 +21,13 @@ const requestReceive = require('../services/account').requestReceive;
 router.post('/item/new', Promise.coroutine(function* (req, res) {
   console.log('in /item/new', req.body);
   const item = yield createItem(req.session.userId, req.body);
-  return res.success({ id: item.id });
+  const reviews = yield item.getReviews();
+  return res.success({ id: item.id, reviews: reviews });
 }));
 
 router.get('/item/show', Promise.coroutine(function* (req, res) {
   console.log('in /item/show', req.query);
-  const item = yield getItem(req.query.id)
+  const item = yield getItem(req.query.id);
   if (!item) {
     return res.status(404).fail()
   }
@@ -336,7 +337,7 @@ router.post('/item/review', Promise.coroutine(function* (req, res) {
     return res.success({ reviews: reviews });
   }
   catch (e) {
-    return res.fail('in /order/order_list   ' + require('util').inspect(e));
+    return res.fail('in /item/review   ' + require('util').inspect(e));
   }
 }));
 

@@ -17,8 +17,9 @@ import classNames from 'classnames';
 
 const createForm = Form.create;
 const FormItem = Form.Item;
-
+let ORDERS = [];
 let contents = [];
+let visible = [];
 let userId = 0;
 const pay = async function () {
   await ajax.post('/api/order/update', {
@@ -55,7 +56,8 @@ const confirm = async function () {
 
 const toggleReviewModal = function () {
   console.log('Review');
-  showShoppingReviewModal = !showShoppingReviewModal;
+  console.log(visible[this.index]);
+  visible[this.index] = !visible[this.index];
   console.log(this);
   this.view.setState({});
 }
@@ -109,7 +111,6 @@ let columns = [{
     dataIndex: 'status',
     key: 'status',
     render: (d) => {
-      console.log(d);
       switch (d.status) {
         case 0:
           return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={pay}>确认付款</Button>
@@ -126,21 +127,32 @@ let columns = [{
       }
 
     }
+  }, {
+    title: '',
+    dataIndex: 'modal',
+    key: 'modal',
+    render: (d) => {
+      return <ShoppingReviewModal index={d.index} orderId={d.orderId} view={d.view} />
+    }
   }];
 
 let showShoppingReviewModal = false;
 class ShoppingReviewModal extends React.Component {
+
   render() {
+    console.log(this);
     return (
       <Modal title="商品评价"
-             visible={showShoppingReviewModal}
-             view={this}
-             onCancel={toggleReviewModal}>
+        visible={visible[this.props.index]}
+        view={this.props.view}
+        index={this.props.index}
+        onCancel={toggleReviewModal}>
         <div>
+
           <input className={classNames({
             [styles.review]: true,
             [styles.input]: true
-          })} type="textarea"></input>
+          }) } type="textarea"></input>
         </div>
       </Modal>
     )
@@ -153,10 +165,20 @@ let BasicDemo = React.createClass(
       const res = await ajax.post('/api/order/order_list', { buyerId: 1 });
       console.log('buyresult', res);
       Object.assign(contents, res.orders);
+      ORDERS = res.orders;
       for (var index = 0; index < contents.length; index++) {
         var element = contents[index];
+        visible.push(false);
         element['key'] = element.id;
         element['status'] = {
+          index: index,
+          sellerId: element.sellerId,
+          buyerId: element.buyerId,
+          orderId: element.id,
+          status: element.status,
+          view: this
+        };
+        element['modal'] = {
           index: index,
           sellerId: element.sellerId,
           buyerId: element.buyerId,
@@ -182,7 +204,7 @@ let BasicDemo = React.createClass(
       const pagination = {
         total: contents.length,
         showSizeChanger: true,
-        pageSize: 20,
+        pageSize: 10,
         onShowSizeChange(current, pageSize) {
           console.log('Current: ', current, '; PageSize: ', pageSize);
         },
@@ -192,7 +214,7 @@ let BasicDemo = React.createClass(
       };
       return (
         <div>
-          <ShoppingReviewModal onCancel={this.props.toggleShoppingReview}/>
+
           <Table className={styles.shoppingOrderTable} columns={columns} dataSource={contents} pagination={pagination} />
         </div>
       );
