@@ -21,66 +21,66 @@ const TOGGLE_SHOPPING_CART = 'Blipay/shopping/TOGGLE_SHOPPING_CART'
 
 // Action Creators
 export const addItem = (data) => ({
-	types: [ADD_ITEM, ADD_ITEM_SUCCESS, ADD_ITEM_FAIL],
-	promise: (client) => client.post('/api/item/new', {
-		...data,
-		photo: data.photo.map(e => e.response.data.attachmentId)
-	})
+  types: [ADD_ITEM, ADD_ITEM_SUCCESS, ADD_ITEM_FAIL],
+  promise: (client) => client.post('/api/item/new', {
+    ...data,
+    photo: data.photo.map(e => e.response.data.attachmentId)
+  })
 })
 
 export const loadItem = (id) => ({
-	types: [LOAD_ITEM, LOAD_ITEM_SUCCESS, LOAD_ITEM_FAIL],
-	promise: (client) => client.get('/api/item/show', { id })
+  types: [LOAD_ITEM, LOAD_ITEM_SUCCESS, LOAD_ITEM_FAIL],
+  promise: (client) => client.get('/api/item/show', { id })
 })
 
 export const loadItems = () => ({
-	types: [LOAD_ITEMS, LOAD_ITEMS_SUCCESS, LOAD_ITEMS_FAIL],
-	promise: (client) => client.get('/api/items')
+  types: [LOAD_ITEMS, LOAD_ITEMS_SUCCESS, LOAD_ITEMS_FAIL],
+  promise: (client) => client.get('/api/items')
 })
 
 export const addCartItem = (item) => ({
-	type: ADD_CART_ITEM,
-	item
+  type: ADD_CART_ITEM,
+  item
 })
 
 export const toggleShoppingCart = () => ({
-	type: TOGGLE_SHOPPING_CART
+  type: TOGGLE_SHOPPING_CART
 })
 
 const initialState = {
-	cartItems: []
+  cartItems: []
 }
 
 // Reducer
 export default function reducer(state = initialState, action = {}) {
-	switch (action.type) {
-		case ADD_ITEM_SUCCESS:
-			message.success('商品添加成功')
-			setTimeout(() => {
-				store.dispatch(push(`/shopping/item/${action.result.id}`))
-			}, 0)
-			return state;
-		case LOAD_ITEM_SUCCESS:
-			return {
-				...state,
-				item: action.result.item
-			}
-		case LOAD_ITEMS_SUCCESS:
-			return {
-				...state,
-				items: action.result.items
-			}
-		case ADD_CART_ITEM:
-			return {
-				...state,
-				cartItems: [...state.cartItems, action.item]
-			}
-		case TOGGLE_SHOPPING_CART:
-			return {
-				...state,
-				showShoppingCartModal: !state.showShoppingCartModal
-			}
-		default:
-			return state;
-	}
+  switch (action.type) {
+    case ADD_ITEM_SUCCESS:
+      message.success('商品添加成功')
+      setTimeout(() => {
+        store.dispatch(push(`/shopping/item/${action.result.id}`))
+      }, 0)
+      return state;
+    case LOAD_ITEM_SUCCESS:
+      return {
+        ...state,
+        item: action.result.item
+      }
+    case LOAD_ITEMS_SUCCESS:
+      return {
+        ...state,
+        items: action.result.items
+      }
+    case ADD_CART_ITEM:
+      return {
+        ...state,
+        cartItems: [...state.cartItems, action.item]
+      }
+    case TOGGLE_SHOPPING_CART:
+      return {
+        ...state,
+        showShoppingCartModal: !state.showShoppingCartModal
+      }
+    default:
+      return state;
+  }
 }
