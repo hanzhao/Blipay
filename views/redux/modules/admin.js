@@ -78,6 +78,11 @@ const initialState = {
   adminLog: null
 };
 
+// 注册
+export const adminRegister = (data) => ({
+  types: [ADMIN_REGISTER,ADMIN_REGISTER_SUCCESS,ADMIN_REGISTER_FAIL],
+  promise: (client) => client.post('/api/admin/register', data)
+})
 // 登录
 export const login = (data) => ({
   types: [LOGIN, LOGIN_SUCCESS, LOGIN_FAIL],
@@ -87,11 +92,6 @@ export const login = (data) => ({
 export const getAdminLog = () =>({
     types: [GET_ADMIN_LOG, GET_ADMIN_LOG_SUCCESS, GET_ADMIN_LOG_FAIL],
     promise: (client) => client.get('/api/admin/log')
-});
-
-export const logout = () => ({
-  types: [LOGOUT, LOGOUT_SUCCESS, LOGOUT_FAIL]
-  //promise: (client) => client.get('/api/admin/logout')
 });
 
 //获取管理员信息
@@ -188,7 +188,7 @@ export default function reducer(state = initialState, action = {}) {
       }, 0)
       return {
         ...state,
-        user: action.result.adminId,
+        user: action.result.admin,
         message: null
       }
     case LOGOUT_SUCCESS:
@@ -299,7 +299,6 @@ export default function reducer(state = initialState, action = {}) {
     case VERIFICATION_FAIL:
     case ARBITRATION_FAIL:
     case LOGIN_FAIL:
-    case LOGOUT_FAIL:
       return {
         ...state,
         message: (action.error.type && messages[action.error.type]) || '未知错误'
