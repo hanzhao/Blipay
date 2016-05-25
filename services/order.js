@@ -5,6 +5,7 @@ const ItemAttachment = require('../models').ItemAttachment;
 const ItemSeller = require('../models').ItemSeller;
 const User = require('../models').User;
 const Order = require('../models').Order;
+const Review = require('../models').Review;
 
 const createItem = Promise.coroutine(function* (sellerId, item) {
   const user = yield User.findOne({ where: { id: sellerId } });
@@ -36,6 +37,8 @@ const getItem = Promise.coroutine(function* (itemId) {
       model: Attachment,
       through: ItemAttachment,
       attributes: ['id']
+    },{
+      model: Review
     }]
   })
   return item

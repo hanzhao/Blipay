@@ -58,7 +58,14 @@ const confirm = async function () {
 
 const review = async function () {
   console.log(reviews);
-  reviews = [];
+  console.log(this);
+  await ajax.post('/api/order/update', {
+    orderId: this.orderId,
+    op: 'confirm',
+    reviews: reviews
+  });
+  contents[this.index].status = 4;
+  this.view.setState({});
 }
 
 const toggleReviewModal = function () {
@@ -145,12 +152,10 @@ let columns = [{
 let showShoppingReviewModal = false;
 class ShoppingReviewModal extends React.Component {
   onChangeScore(e) {
-    console.log(this);
-    reviews[this.index].score = e;
+    reviews[this.id].score = e;
   }
   onChangeText(e) {
-    console.log(e);
-    reviews[this.index].text = e;
+    reviews[e.target.id].text = e.target.value;
   }
   render() {
     console.log('Modal Loaded');
@@ -158,8 +163,7 @@ class ShoppingReviewModal extends React.Component {
     if (visible[this.props.index]) {
       reviews = []
       for (var index = 0; index < items.length; index++) {
-        var element = items[index];
-        element['index'] = index;
+        items[index]['index'] = index;
         reviews.push({
           score: 5,
           text: 'Default'
@@ -182,9 +186,9 @@ class ShoppingReviewModal extends React.Component {
               <div>
                 <span>{e.name}</span>
                 <div>评分</div>
-                <InputNumber index={e.index} size="large" min={1} max={5} step={1} defaultValue={5} onChange={this.onChangeScore} />
+                <InputNumber id={e.index} size="large" min={1} max={5} step={1} defaultValue={5} onChange={this.onChangeScore} />
                 <div>评价</div>
-                <Input index={e.index} onChange={this.onChangeText}/>
+                <Input id={e.index} onChange={this.onChangeText}/>
               </div>
             ))
           }

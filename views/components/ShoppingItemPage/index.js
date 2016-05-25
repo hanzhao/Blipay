@@ -33,6 +33,7 @@ class ShoppingItemPage extends React.Component {
   }
   render() {
     const { item, handleAddCartItem } = this.props
+    console.log(item);
     return (
       <div>
         <ShoppingPageHeader icon="smile" text="浏览商品" />

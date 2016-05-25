@@ -202,15 +202,15 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
         if (req.session.userId != order.buyerId) {
           throw new Error('Auth Failed.');
         }
-        // items = yield order.getItems();
-        // for (var index = 0; index < items.length; index++) {
-        //   items[index].addReview(
-        //     Review.create({
-        //       score: req.body.reviews[index].score,
-        //       text: req.body.reviews[index].text
-        //     })
-        //   );
-        // };
+        const items = yield order.getItems();
+        for (var index = 0; index < items.length; index++) {
+          yield items[index].addReview(
+            yield Review.create({
+              score: req.body.reviews[index].score,
+              text: req.body.reviews[index].text
+            })
+          );
+        };
         const confirmTrans = yield requestReceive(order.sellerId, order.totalCost);
         yield order.update({
           sellerTransId: confirmTrans,
