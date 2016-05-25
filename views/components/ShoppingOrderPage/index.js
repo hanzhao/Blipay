@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Modal, Menu, Dropdown, Icon, Form, message } from 'antd';
 import { Button } from 'antd';
 import { Checkbox } from 'antd';
-import { InputNumber } from 'antd';
+import { InputNumber, Input } from 'antd';
 import { Pagination } from 'antd';
 import pic from './akarin.png'
 import styles from './styles';
@@ -20,6 +20,8 @@ const FormItem = Form.Item;
 let ORDERS = [];
 let contents = [];
 let visible = [];
+let reviews = [];
+
 let userId = 0;
 const pay = async function () {
   await ajax.post('/api/order/update', {
@@ -52,6 +54,11 @@ const confirm = async function () {
   message.success('收货成功');
   contents[this.index].status = 3;
   this.view.setState({});
+}
+
+const review = async function () {
+  console.log(reviews);
+  reviews = [];
 }
 
 const toggleReviewModal = function () {
@@ -120,10 +127,10 @@ let columns = [{
           else if (userId == d.buyerId)
             return <Button disable='true' type="ghost" onClick={ship}>等待发货</Button>
         case 2:
-          return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={confirm}>确认收货</Button>
-        case 3:
-          if (userId == d.sellerId)
-            return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={toggleReviewModal}>用户评价</Button>
+          if (userId == d.buyerId)
+            return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={toggleReviewModal}>确认收货</Button>
+        // case 3:
+        //   return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={toggleReviewModal}>用户评价</Button>
       }
 
     }
@@ -135,32 +142,52 @@ let columns = [{
       return <ShoppingReviewModal index={d.index} orderId={d.orderId} view={d.view} />
     }
   }];
-
 let showShoppingReviewModal = false;
 class ShoppingReviewModal extends React.Component {
-
-
-  render() {
+  onChangeScore(e) {
     console.log(this);
+    reviews[this.index].score = e;
+  }
+  onChangeText(e) {
+    console.log(e);
+    reviews[this.index].text = e;
+  }
+  render() {
+    console.log('Modal Loaded');
+    const items = ORDERS[this.props.index].items;
+    if (visible[this.props.index]) {
+      reviews = []
+      for (var index = 0; index < items.length; index++) {
+        var element = items[index];
+        element['index'] = index;
+        reviews.push({
+          score: 5,
+          text: 'Default'
+        })
+      }
+    }
+    console.log(items);
     return (
       <Modal title="商品评价"
         visible={visible[this.props.index]}
         view={this.props.view}
         index={this.props.index}
+        orderId={this.props.orderId}
+        items={items}
+        onOk={review}
         onCancel={toggleReviewModal}>
-        console.log(ORDERS);
         <Form>
-          <div>
-            <label>评分</label>
-            <input name="score[]"></input>
-          </div>
-          <div>
-            <label>评价</label>
-            <textarea name="text[]" className={classNames({
-              [styles.review]: true,
-              [styles.input]: true
-            }) } row="4" col="20"></textarea>
-          </div>
+          {
+            items.map(e => (
+              <div>
+                <span>{e.name}</span>
+                <div>评分</div>
+                <InputNumber index={e.index} size="large" min={1} max={5} step={1} defaultValue={5} onChange={this.onChangeScore} />
+                <div>评价</div>
+                <Input index={e.index} onChange={this.onChangeText}/>
+              </div>
+            ))
+          }
         </Form>
       </Modal>
     )
