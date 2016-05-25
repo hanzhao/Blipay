@@ -363,7 +363,7 @@ router.post('/admin/dealarbitration',Promise.coroutine(function *(req,res){
         state: req.body.op
     },{
         where:{
-            userName: req.body.userName
+            id: req.body.id
         }
     });
     return res.success({
@@ -371,6 +371,19 @@ router.post('/admin/dealarbitration',Promise.coroutine(function *(req,res){
     });
 }));
 
+router.post('/admin/verify',Promise.coroutine(function* (req,res){
+    yield User.update(
+    {
+        status: 2
+    },{
+        where:{
+            userName: req.body.userName
+        }
+    }
+    );
+}));
+
+/*添加管理员*/
 router.post('/admin/addadmin',Promise.coroutine(function *(req,res){
     let admin = yield Admin.findOne({
         where:{

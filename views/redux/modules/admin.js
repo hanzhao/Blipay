@@ -58,6 +58,12 @@ const GET_ADMIN_LOG='Blipay/admin/GET_ADMIN_LOG';
 const GET_ADMIN_LOG_SUCCESS='Blipay/admin/GET_ADMIN_LOG_SUCCESS';
 const GET_ADMIN_LOG_FAIL='Blipay/admin/GET_ADMIN_LOG_SUCCESS';
 
+//更新身份数据库
+const UP_ID='blipay/admin/UP_ID';
+const UP_ID_SUCCESS='blipay/admin/UP_ID_SUCCESS';
+const UP_ID_SUCCESS='blipay/admin/UP_ID_FAIL';
+
+
 const messages = {
   USER_NOT_EXIST: '当前用户名未注册。',
   INVALID_USERNAME_OR_PASSWORD: '用户名或密码错误。'
@@ -102,6 +108,8 @@ export const userList = () => ({
 })
 */
 
+//按用户名查询用户
+//传入用户名
 export const searchForUserName = (data)=>({
     types: [USER_SEARCH, USER_SEARCH_SUCCESS, USER_SEARCH_FAIL],
     promise: (client) => clien.get('/api/admin/checkbyusername',data)
@@ -119,19 +127,25 @@ export const arbitrationList = () => ({
   promise: (client) => client.get('/api/admin/getarbitration')
 });
 
-/*建立特殊账户*/
+/*建立管理员*/
+/*传入adminName
+*传入loginPass
+*/
 export const addAdmin = (data) => ({
   types: [ADD_ADMIN, ADD_ADMIN_SUCCESS, ADD_ADMIN_FAIL],
   promise: (client) => client.post('/api/admin/addadmin', data)
 });
 
-/*删除特殊账户*/
+/*删除管理员*/
+//传入adminName
 export const deleteAdmin = (data) => ({
   types: [DELETE_ADMIN, DELETE_ADMIN_SUCCESS, DELETE_ADMIN_FAIL],
   promise: (client) => client.post('/api/admin/deleteadmin', data)
 });
 
 /*修改管理员等级*/
+//传入adminName
+//传入level: 在config/admin.js中有定义enum{LEVELUP,LEVELDOWN}
 export const modifyAdminLevel = (data) =>({
     types: [MODIFY_ADMIN, MODIFY_ADMIN_SUCCESS, MODIFY_ADMIN_FAIL]，
     promise: (client) => client.post('/api/admin/changelevel', data)
@@ -164,15 +178,27 @@ export const modifyUser = (data) => ({
 })*/
 
 /*手动解决仲裁*/
-export const arbitration = (data) => ({
+//传入订单id
+//enum in{'ing','accept','deny'} 注意这里是字符串
+export const dealArbitration = (data) => ({
   types: [ARBITRATION_PASS, ARBITRATION_SUCCESS, ARBITRATION_FAIL],
   promise: (client) => client.post('/api/admin/dealarbitration', data)
 });
 
 /*更新身份数据库*/
+//传入realName
+//传入idNumber
 export const uopdateIdBase = (data) => ({
-  types: [VERIFICATION, VERIFICATION_SUCCESS, VERIFICATION_FAIL],
+  types: [UP_ID, UP_ID_SUCCESS, UP_ID_FAIL],
   promise: (client) => client.post('/api/admin/updateidbase', data)
+});
+
+/*手动验证*/
+/*传入userName
+*/
+export const varification = (data) =>({
+    types: [VERIFICATION,VERIFICATION_SUCCESS, VERIFICATION_FAIL],
+    promise: (client) => client.post('/api/admin/verify',data)
 });
 
 // Helper
@@ -239,6 +265,7 @@ export default function reducer(state = initialState, action = {}) {
     case ARBITRATION_LIST:
       return {
         ...state,
+        arbitrationList: arbitrations,
         message: null
       }
     case ADD_ADMIN:
@@ -274,17 +301,11 @@ export default function reducer(state = initialState, action = {}) {
         */
         message: null,
       }
-    case VERIFICATION_LIST:
+    case VERIFICATION_SUCCESS:
       return {
         ...state,
-        verificationList: action.result.unverifieduser,
         message :null
       }
-    case ARBITRATION_LIST:
-      return {
-        ...state,
-        arbitrationList: result.action.arbitrations
-        message: null
       }
     case ADD_ADMIN_SUCCESS:
       return {
@@ -330,7 +351,6 @@ export default function reducer(state = initialState, action = {}) {
         //adminAction: [ ...state.adminAction,
         //               wrapTransaction(state.result.adminAction)],
         message: null
-        arbitrationList: arbitrations,
       }
     // Errors
     case ADD_ADMIN_FAIL:
@@ -341,6 +361,7 @@ export default function reducer(state = initialState, action = {}) {
     case ARBITRATION_FAIL:
     case LOGIN_FAIL:
     case LOGOUT_FAIL:
+    case UP_ID_FAIL:
       return {
         ...state,
         message: (action.error.type && messages[action.error.type]) || '未知错误'
