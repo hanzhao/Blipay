@@ -17,11 +17,6 @@ const Review = require('./review')(db);
 const Attachment = require('./attachment')(db);
 const ItemAttachment = require('./item_attachment')(db);
 
-const Admin = require('./admin')(db);
-const Specialaccount = require('./specialaccount')(db);
-const AdminLog = require('./adminlog')(db);
-const Arbitration = require('./arbitration')(db);
-const Identification = require('./identification')(db);
 // 表关联
 const ItemSeller = Item.belongsTo(User, {
   as: 'seller'
@@ -41,11 +36,9 @@ Attachment.belongsToMany(Item, { through: ItemAttachment })
 Item.belongsToMany(Attachment, { through: ItemAttachment })
 User.hasMany(Attachment)
 
-
 const initDatabase = Promise.coroutine(function* () {
   for (let t of [User, Item, Transaction, Order,
-                 OrderItem, Review, Attachment, ItemAttachment,
-                 Admin, AdminLog, Arbitration, Identification, Specialaccount]) {
+                 OrderItem, Review, Attachment, ItemAttachment]) {
     yield t.sync();
     console.log(`Table ${t.name} synced`);
   }
@@ -55,6 +48,5 @@ initDatabase()
 module.exports = {
   User, Item, Transaction, Order, OrderItem, Review, Attachment,
   ItemSeller, ItemAttachment,
-  db,
-  Admin, AdminLog, Arbitration, Identification, Specialaccount
+  db
 };

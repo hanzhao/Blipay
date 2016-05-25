@@ -7,7 +7,7 @@ module.exports = (db) =>{
         },
         /*authority type is defined in ../config/admin*/
         authority:{
-            type: Sequelize.INTEGER, allowNull: false
+            type: Sequelize.INT, allowNull: false
         },
         /*password*/
         loginpass:{
