@@ -201,15 +201,15 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
         if (req.session.userId != order.buyerId) {
           throw new Error('Auth Failed.');
         }
-        items = yield order.getItems();
-        for (var index = 0; index < items.length; index++) {
-          items[index].addReview(
-            Review.create({
-              score: req.body.reviews[index].score,
-              text: req.body.reviews[index].text
-            })
-          );
-        };
+        // items = yield order.getItems();
+        // for (var index = 0; index < items.length; index++) {
+        //   items[index].addReview(
+        //     Review.create({
+        //       score: req.body.reviews[index].score,
+        //       text: req.body.reviews[index].text
+        //     })
+        //   );
+        // };
         const confirmTrans = yield requestReceive(order.sellerId, order.cost);
         yield order.update({
           sellerTransId: confirmTrans,
@@ -251,7 +251,7 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
           throw new Error('illegal operation');
         }
         // TODO:
-        const refundTrans = requestReceive(order.buyerId, order.cost);
+        const refundTrans = requestReceive(order.buyerId, order.totalCost);
         yield order.update({
           status: 5
         });

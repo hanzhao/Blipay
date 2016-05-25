@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Menu, Dropdown, Icon, Form } from 'antd';
 import { Button } from 'antd';
 import { Checkbox } from 'antd';
@@ -11,10 +12,13 @@ import { Table } from 'antd';
 import { Cascader } from 'antd';
 import { reduxForm } from 'redux-form';
 import ajax from '../../common/ajax';
+import store from '../../redux/store';
+
 const createForm = Form.create;
 const FormItem = Form.Item;
 
 let contents = [];
+let userId = 0;
 const pay = async function () {
   console.log(this);
   await ajax.post('/api/order/update', {
@@ -26,11 +30,22 @@ const pay = async function () {
 }
 
 const ship = async function () {
-  console.log(this);
+  await ajax.post('/api/order/update', {
+    orderId: this.orderId,
+    op: 'ship'
+  });
+  contents[this.index].status = 2;
+  this.view.setState({});
 }
 
 const confirm = async function () {
   console.log(this);
+  await ajax.post('/api/order/update', {
+    orderId: this.orderId,
+    op: 'confirm'
+  });
+  contents[this.index].status = 3;
+  this.view.setState({});
 }
 
 let tableProps =
@@ -87,9 +102,12 @@ let columns = [{
         case 0:
           return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={pay}>确认付款</Button>
         case 1:
-          return <Button type="ghost" onClick={ship}>确认发货</Button>
+          if (userId == d.sellerId)
+            return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={ship}>确认发货</Button>
+          else if (userId == d.buyerId)
+            return <Button disable='true' type="ghost" onClick={ship}>等待发货</Button>
         case 2:
-          return <Button type="ghost" onClick={confirm}>确认收货</Button>
+          return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={confirm}>确认收货</Button>
 
       }
 
@@ -146,9 +164,16 @@ let BasicDemo = React.createClass(
   });
 
 
-
+@connect(
+  (state) => ({
+    user: state.account.user
+  })
+)
 class ShoppingOrderPage extends React.Component {
   render() {
+    const {user} = this.props;
+    console.log(user);
+    userId = user.id;
     return (
       <BasicDemo />
     );
