@@ -1,6 +1,6 @@
 const Sequelize=require('sequelize');
 module.exports=(db)=>{
-    return db.define('arbitraion',{
+    return db.define('arbitration',{
         userName:{
             type: Sequelize.STRING, allowNull : false
         },

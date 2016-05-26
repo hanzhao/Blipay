@@ -33,6 +33,8 @@ const VERIFICATION_SUCCESS = 'Blipay/admin/VERIFICATION_SUCCESS';
 const VERIFICATION_FAIL = 'Blipay/admin/VERIFICATION_FAIL';
 // 仲裁
 const ARBITRATION_LIST = 'Blipay/admin/ARBITRATION_LIST';
+const ARBITRATION_LIST_SUCCESS = 'Blipay/admin/ARBITRATION_LIST_SUCCESS';
+const ARBITRATION_LIST_FAIL = 'Blipay/admin/ARBITRATION_LIST_FAIL';
 const ARBITRATION = 'Blipay/admin/ARBITRATION';
 const ARBITRATION_SUCCESS = 'Blipay/admin/ARBITRATION_SUCCESS';
 const ARBITRATION_FAIL = 'Blipay/admin/ARBITRATION_FAIL';
@@ -126,8 +128,8 @@ export const verificationList = () => ({
 });
 
 /*获取仲裁信息列表*/
-export const arbitrationList = () => ({
-  type: ARBITRATION_LIST,
+export const getArbitrationList = () => ({
+  types: [ARBITRATION_LIST,ARBITRATION_LIST_SUCCESS,ARBITRATION_LIST_FAIL],
   promise: (client) => client.get('/api/admin/getarbitration')
 });
 
@@ -253,6 +255,12 @@ export default function reducer(state = initialState, action = {}) {
         adminInfo: action.result.adminInfo,
         message: null
       }
+    case ARBITRATION_LIST_SUCCESS:
+      return {
+        ...state,
+        arbitrationList: action.result.arbitrationList,
+        message: null
+      }
     /*case USER_LIST:
       return {
         ...state,
@@ -267,12 +275,7 @@ export default function reducer(state = initialState, action = {}) {
         verificationList: action.result.unVerifiedUser,
         message: null
       }
-    case ARBITRATION_LIST:
-      return {
-        ...state,
-        arbitrationList: arbitrations,
-        message: null
-      }
+
     case ADD_ADMIN:
       return {
         ...state,
@@ -301,7 +304,6 @@ export default function reducer(state = initialState, action = {}) {
     case ARBITRATION_LIST:
       return {
         ...state,
-        arbitrationList: result.action.arbitrations,
         message: null
       }
     case ADD_ADMIN_SUCCESS:
@@ -343,6 +345,7 @@ export default function reducer(state = initialState, action = {}) {
     case MODIFY_USER_FAIL:
     case VERIFICATION_FAIL:
     case ARBITRATION_FAIL:
+    case ARBITRATION_LIST_FAIL:
     case LOGIN_FAIL:
     case LOGOUT_FAIL:
     case UP_ID_FAIL:

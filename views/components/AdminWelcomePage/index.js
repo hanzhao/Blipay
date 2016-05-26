@@ -43,18 +43,18 @@ const tableProps = {
   pagination: false
 };
 
-@asyncConnect( 
-  [{  
-    promise: ({ store: { dispatch, getState } }) => {                                                
-    return dispatch(getAdminLog());                                                             
+@asyncConnect(
+  [{
+    promise: ({ store: { dispatch, getState } }) => {
+      return dispatch(getAdminLog());                                                             
     }
-  }], 
+  }],
   (state) => ({
     adminer: state.admin.adminer,
     adminLog: state.admin.adminLog
-  }),   
-  (dispatch) => ({                                                                                   
-  })  
+  }),
+  (dispatch) => ({
+  })
 )
 
 class AccountWelcomePage extends React.Component {

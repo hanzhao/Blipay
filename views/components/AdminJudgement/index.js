@@ -1,21 +1,26 @@
 import React from 'react';
-
+import { Link } from 'react-router';
+import { connect } from 'react-redux';
+import { reduxForm } from 'redux-form';
+import { asyncConnect } from 'redux-connect';
 import { Input, Col, Table, Button } from 'antd';
+import store from '../../redux/store';
+import { getArbitrationList } from '../../redux/modules/admin';
 
 import styles from './styles';
 
 
 const columns = [{
   title: '投诉方',
-  dataIndex: 'sname',
-  key: 'sname'
+  dataIndex: 'userName',
+  key: 'userName'
 },{
   title: '被投诉方',
-  dataIndex: 'mname',
-  key: 'mname'
+  dataIndex: 'complained',
+  key: 'complained'
 },{
   title: '投诉细节',
-  key: 'operation',
+  key: 'content',
   render(){
     return(
       <div>
@@ -48,33 +53,59 @@ const columns = [{
   }
 }];
 
-const datatest = Array(60).fill({
-  sname: 'gg',
-  mname: '213048574393'
-});
+// const datatest = Array(60).fill({
+//   userName: 'gg',
+//   complained: '213048574393'
+// });
+//
+// const data = [{
+//   key: '1',
+//   userName: 'wzy',
+//   complained: '012345267908'
+// },{
+//   key: '2',
+//   userName: 'al',
+//   complained: '836410284675'
+// },{
+//   key: '3',
+//   userName: 'www',
+//   complained: '023422567908'
+// }];
+function addKey(data){
+  let res = new Array()
+  for(let i = 0; i < data.length ;i++){
+    res.push({
+      ...data[i],
+      key:i
+    });
+  }
+  return res;
+}
 
-const data = [{
-  key: '1',
-  sname: 'wzy',
-  mname: '012345267908'
-},{
-  key: '2',
-  sname: 'al',
-  mname: '836410284675'
-},{
-  key: '3',
-  sname: 'www',
-  mname: '023422567908'
-}];
+@asyncConnect(
+  [{
+    promise: ({ store: { dispatch, getState } }) => {
+      return dispatch(getArbitrationList());
+    }
+  }],
+  (state) => ({
+    adminer: state.admin.adminer,
+    arbitrationList: state.admin.arbitrationList
+  }),
+  (dispatch) => ({
+  })
+)
 
 class AdminJudgement extends React.Component {
   render() {
+    const {adminer,arbitrationList} = this.props;
+    console.log(arbitrationList);
     return (
       <div className={styles.container}>
         <Table text
                className={styles.table}
                columns={columns}
-               dataSource={data} />
+               dataSource={addKey(arbitrationList||[])} />
       </div>
     );
   }

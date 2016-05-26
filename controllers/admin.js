@@ -233,7 +233,7 @@ router.get('/admin/arbitration',Promise.coroutine(function *(req,res){
     });
         return res.success({
             code: 0,
-            content: arbitration
+            arbitrationList: arbitration
         });
 }));
 
@@ -372,7 +372,7 @@ router.get('/admin/getarbitration',Promise.coroutine(function *(req,res){
     });
     return res.success({
         code: 0,
-        arbitrations: abs
+        arbitrationList: abs
     });
 }));
 
@@ -430,7 +430,7 @@ router.post('/admin/addadmin',Promise.coroutine(function *(req,res){
         return res.success({
                 code: 0
             });
-    
+
 }));
 
 /*删除管理员*/
