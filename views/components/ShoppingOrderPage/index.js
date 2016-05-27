@@ -138,32 +138,32 @@ class ShoppingReviewModal extends React.Component {
     showRefundModal: state.shopping.showRefundModal,
     orderId: state.shopping.refundOrderId
   }),
-  (dispatch)=>({
-    refundRequest: (id,reason)=>dispatch(refundReq(id,reason))
+  (dispatch) => ({
+    refundRequest: (id, reason) => dispatch(refundReq(id, reason))
   })
 )
 @reduxForm({
   form: 'refund',
   fields: ['reason']
 }, undefined, {
-  onSubmit: (data) => {}
-})
+    onSubmit: (data) => { }
+  })
 class ShoppingRefundModal extends React.Component {
 
   render() {
-    const{fields:{
+    const {fields: {
       reason
-    },refundRequest,orderId} = this.props;
-    const handler = ()=>{
+    }, refundRequest, orderId} = this.props;
+    const handler = () => {
       console.log(orderId)
       console.log(reason.value)
-      refundRequest(orderId,reason.value)
+      refundRequest(orderId, reason.value)
     }
     return (
       <Modal title="退货申请"
         visible={this.props.showRefundModal}
         onOk={handler}
-        onCancel={toggleRefundModal.bind(this,undefined)}>
+        onCancel={toggleRefundModal.bind(this, undefined) }>
         <Form>
           <FormItem label="退货理由">
             <Input type='textarea' {...reason} />
@@ -203,7 +203,7 @@ class ShoppingRefundModal extends React.Component {
   }],
   (state) => ({
     orders: state.shopping.orders.map((e, i) => ({ ...e, key: i })),
-    userId: state.account.user.id
+userId: state.account.user.id
   })
 )
 class ShoppingOrderPage extends React.Component {
@@ -260,7 +260,11 @@ class ShoppingOrderPage extends React.Component {
       render: (text, record) => {
         switch (record.status) {
           case 0:
-            return <Button type="ghost" onClick={ pay.bind(this, record.id) }>确认付款</Button>
+            if (this.props.userId == record.buyerId)
+              return <Button type="ghost" onClick={ pay.bind(this, record.id) }>确认付款</Button>
+            else if (this.props.userId == record.sellerId)
+              return <spin>等待付款</spin>
+            break;
           case 1:
             if (this.props.userId == record.sellerId)
               return <Button type="ghost" onClick={ ship.bind(this, record.id) }>确认发货</Button>
@@ -268,13 +272,20 @@ class ShoppingOrderPage extends React.Component {
               return <spin>等待发货</spin>
             break;
           case 2:
-            return <Button type="ghost" onClick={toggleReviewModal.bind(this, record) }>确认收货</Button>
+            if (this.props.userId == record.buyerId)
+              return <Button type="ghost" onClick={toggleReviewModal.bind(this, record) }>确认收货</Button>
+            else if (this.props.userId == record.sellerId)
+              return <spin>等待收货</spin>
+            break;
           case 3:
             if (this.props.userId == record.buyerId)
-              return <Button type="ghost" onClick={toggleRefundModal.bind(this,record.id)}>退货申请</Button>
+              return <Button type="ghost" onClick={toggleRefundModal.bind(this, record.id) }>退货申请</Button>
+            else if (this.props.userId == record.sellerId)
+              return <spin>对方已收货</spin>
+            break;
           case 4:
             if (this.props.userId == record.sellerId)
-              return <Button type="ghost" onClick={toggleRefundConfirmModal}>退货确认</Button>
+              return <Button type="ghost" onClick={toggleRefundConfirmModal}>处理退货请求</Button>
           default:
         }
       }

@@ -60,7 +60,10 @@ const REFUND_REQ_FAIL = 'Blipay/shopping/REFUND_REQ_FAIL'
 
 
 const messages = {
-  
+  NO_ITEM: '商品不存在',
+  AUTH_FAIL: '权限不足',
+  NO_ORDER: '订单不存在',
+  INVALID_OP: '非法操作'
 }
 
 // Action Creators
@@ -159,7 +162,7 @@ export const refundReq = (orderId, reason) => ({
   promise: (client) => client.post('/api/order/update', {
     orderId: orderId,
     refundReason: reason,
-    op:'reqRefund'
+    op: 'reqRefund'
   })
 })
 
@@ -274,6 +277,23 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         showRefundModal: !state.showRefundModal
+      }
+    case ADD_ITEM_FAIL:
+    case BUY_CART_ITEMS_FAIL:
+    case LOAD_ITEM_FAIL:
+    case LOAD_ITEMS_FAIL:
+    case LOAD_ORDERS_FAIL:
+    case SHIP_ORDER_FAIL:
+    case CONFIRM_RECEIVE_FAIL:
+    case REFUND_REQ_FAIL:
+      message.error((action.error.type && messages[action.error.type]) || '未知错误')
+      return {
+        ...state
+      }
+    case PAY_ORDER_FAIL:
+      message.error('余额不足')
+      return {
+        ...state
       }
     default:
       return state;
