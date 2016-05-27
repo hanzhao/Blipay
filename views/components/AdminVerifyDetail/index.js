@@ -4,10 +4,8 @@
 import React from 'react';
 import { Link } from 'react-router';
 import photo from './2233.png';
-<<<<<<< HEAD
+
 import FormModal from '../FormModal';
-=======
->>>>>>> 9bdfeba65869c313476b1c0c4a16b21face3418a
 import { Input, Button, Row,Col, Table,Popconfirm,message,Form,Modal} from 'antd';
 import styles from './styles';
 
