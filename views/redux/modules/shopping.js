@@ -140,7 +140,7 @@ export const payOrder = (orderId) => ({
   })
 })
 
-export const ship_order = (orderId) => ({
+export const shipOrder = (orderId) => ({
   types: [SHIP_ORDER, SHIP_ORDER_SUCCESS, SHIP_ORDER_FAIL],
   promise: (client) => client.post('/api/order/update', {
     orderId: orderId,

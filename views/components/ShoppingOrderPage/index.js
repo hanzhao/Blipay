@@ -22,7 +22,7 @@ import {
   toggleShoppingRefund,
   toggleShoppingRefundConfirm,
   payOrder,
-  ship_order,
+  shipOrder,
   confirmReceive,
   refundReq
 } from '../../redux/modules/shopping';
@@ -34,7 +34,7 @@ const pay = function (id) {
 }
 
 const ship = function (id) {
-  store.dispatch(ship_order(id));
+  store.dispatch(shipOrder(id));
 }
 
 const toggleReviewModal = function (order) {
