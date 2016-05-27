@@ -1,6 +1,6 @@
-const QUERY = 'Blipay/account/QUERY';
-const QUERY_SUCC = 'Blipay/account/QUERY_SUCC';
-const QUERY_FAIL = 'Blipay/account/QUERY_FAIL';
+const QUERY = 'Blipay/auditor/QUERY';
+const QUERY_SUCC = 'Blipay/auditor/QUERY_SUCC';
+const QUERY_FAIL = 'Blipay/auditor/QUERY_FAIL';
 
 const initialState = {
   queryResult: null,
@@ -43,14 +43,16 @@ export default (state = initialState, action) => {
     return state;
   case QUERY_SUCC:
     return {
-      queryResult: action.result.transaction.map(
+      queryResult: action.result.order.map(
         (e, i) => {
           return {
             date: getDate(e.createdAt),
             status: getStatus(e.status),
             description: getDescription(e.type),
-            amount: e.amount,
-            userId:e.userId
+            amount: e.totalCost,
+            buyerId:e.buyerTransId,
+            sellerId:e.sellerTransId,
+            id:e.id
           };
         }
       ).reverse()
@@ -88,7 +90,7 @@ export const query = (userId, queryStartDate, queryEndDate) => {
     ],
     promise: (client) => {
       console.log('in promise');
-      return client.get('/account/get_transaction', {
+      return client.get('/auditor/get_transaction', {
         userId,
         queryStartDate,
         queryEndDate

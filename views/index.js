@@ -28,6 +28,8 @@ import AuditSearchPage from './components/AuditSearchPage';
 import AuditLogPage from './components/AuditLogPage';
 
 import { isLoggedIn } from './redux/modules/account/auth';
+import { AuditorisLoggedIn } from './redux/modules/auditor/auth';
+
 
 const history = syncHistoryWithStore(browserHistory, store);
 
@@ -35,6 +37,13 @@ const checkLogin = (nextState, replace, callback) => {
   if (!isLoggedIn(store.getState()) && 
       (nextState.location.pathname !== '/'))
     replace('/');
+  callback();
+};
+
+const AuditorcheckLogin = (nextState, replace, callback) => {
+  if (!AuditorisLoggedIn(store.getState()) && 
+      (nextState.location.pathname !== '/auditor'))
+    replace('/auditor');
   callback();
 };
 const router = (
@@ -45,12 +54,13 @@ const router = (
       </Route>
       <Route path="/auditor" component = {AuditApp}>
         <IndexRoute component={AuditorLoginPage} />
-      
+        <Route onEnter={AuditorcheckLogin}>
       <Route path="/audit" component={AuditPage}>
         <IndexRoute component={AuditLatestRecordPage} />
         <Route path="/audit/check" component={AuditCheckPage} />
           <Route path="/audit/search" component={AuditSearchPage} />
           <Route path="/audit/log" component={AuditLogPage} />
+        </Route>
       </Route>
       </Route>
       <Route path="/" component={App}>

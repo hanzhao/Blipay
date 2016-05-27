@@ -1,4 +1,7 @@
-const Auditor = require('../models').User;
+const User = require('../models').User;
+const Transaction = require('../models').Transaction;
+const Order = require('../models').Order;
+const Record = require('../models').Record;
 const config = require('../config/auditor');
 const Router = require('express').Router;
 const crypto = require('crypto');
@@ -18,25 +21,25 @@ router.post('/auditor/login', Promise.coroutine(function *(req, res) {
   console.log('in /auditor/login');
   console.log(req.body);
   try {
-    const auditor = yield Auditor.findOne({where: {userName: req.body.userName}});
-    if (!auditor) {
+    const user = yield User.findOne({where: {userName: req.body.userName}});
+    if (!user) {
       return res.fail({code: -1});
     }
     if (cookPassword(
           req.body.loginPass, 
-          auditor.loginSalt, 
+          user.loginSalt, 
           config.loginSaltPos
-        ) === auditor.loginPass) {
-      yield auditor.update({lastLogin: Date().toString()}, {where: {id: auditor.id}});
+        ) === user.loginPass) {
+      yield user.update({lastLogin: Date().toString()}, {where: {id: user.id}});
       /*const transactions = yield Transaction.findAll({ 
-                                   where: {userId: auditor.id},
+                                   where: {userId: user.id},
                                    order: ['createdAt'],
                                    limit: 10
                                  });*/
       return res.success({
         code: 0,
-        userId: auditor.id,
-        lastLogin: (new Date(auditor.lastLogin)).toLocaleString(),
+        userId: user.id,
+        lastLogin: (new Date(user.lastLogin)).toLocaleString(),
       });
     } else {
       return res.fail({code: -3});
@@ -50,12 +53,12 @@ router.post('/auditor/login', Promise.coroutine(function *(req, res) {
 router.get('/auditor/check_loginpass', (req, res) => {
   console.log('in check_loginpass');
   console.log(req.query);
-  Auditor.findOne({
+  User.findOne({
     where: {
       id: req.query.userId
     }
-  }).then((auditor) => {
-    if (!auditor) {
+  }).then((user) => {
+    if (!user) {
       console.log('check_loginpass: userId not exists');
       return res.fail({
         code: -1
@@ -63,8 +66,8 @@ router.get('/auditor/check_loginpass', (req, res) => {
     }
     if (cookPassword(
           req.query.loginPass, 
-          auditor.loginSalt, 
-          config.loginSaltPos)  === auditor.loginPass) {
+          user.loginSalt, 
+          config.loginSaltPos)  === user.loginPass) {
       return res.success({
         code: 0
       });
@@ -85,12 +88,12 @@ router.get('/auditor/check_loginpass', (req, res) => {
 router.get('/auditor/check_username', (req, res) => {
   console.log('in check_username');
   console.log(req.query);
-  Auditor.findOne({
+  User.findOne({
     where: {
       userName: req.query.userName
     }
-  }).then((auditor) => {
-    if (!auditor) {
+  }).then((user) => {
+    if (!user) {
       console.log('check_username: not exists');
       return res.success({
         code: 0
@@ -109,7 +112,7 @@ router.get('/auditor/check_username', (req, res) => {
   });
 });
 
-router.post('/account/logout', (req, res) => {
+router.post('/auditor/logout', (req, res) => {
   console.log('in logout');
   if(req.session.userId) {
     delete req.session.userId;
@@ -118,5 +121,95 @@ router.post('/account/logout', (req, res) => {
     return res.fail({});
   }
 });
+
+
+router.get('/auditor/get_transaction', (req, res) => {
+  console.log('in /auditor/get_transaction');
+  console.log(req.query);
+  User.findAll({  
+  })
+  .then((user) => {
+    if (!user) {
+      return res.fail({
+        code: -1
+      });
+    } else {
+      Order.findAll({
+        where: {
+          createdAt: {
+            $between: [req.query.queryStartDate, req.query.queryEndDate]
+          }
+        }
+      })
+      .then((tran) => {
+        return res.success({
+          code: 0,
+          order: tran
+        });
+      });
+    }
+  })
+  .catch((err) => {
+    console.error('Error occurs in /auditor/get_transaction with following message.\n' +
+                 err.message);
+    return res.fail({
+      code: -2
+    });
+  });
+});
+
+router.post('/auditor/getdata', (req, res) => {
+  console.log('in /auditor/getdata');
+  console.log(req.body);
+  Order.findAll({
+    })
+  .then(()=>{
+  const buyertransid = order.buyerTransId;
+  const sellertransid = order.sellerTransId;
+
+  Transaction.findone({
+      where:{
+        id:buyertransid
+      }
+
+  })
+  .then(()=>{
+    const customertrans = transaction.amount
+  })
+
+  Transaction.findone({
+    where:{
+      id:sellertransid
+    }
+  })
+  .then(()=>{
+    const sellertrans = transaction.amount
+  })
+
+
+    if (true){
+        const newrecord ={
+           cost:order.totalCost,
+           customerTrans:customertrans,
+           sellerTrans:sellertrans,
+           status:order.status,
+           wrongType:1,
+           info:1
+        }
+        Record.create(newrecord)
+}
+})
+  .catch((err) => {
+    console.error('Error occurs in /account/charge with following message.\n' +
+                 err.message);
+    return res.fail({
+      code: -2
+    });
+  });
+});
+
+  
+
+
 
 module.exports = router;

@@ -77,7 +77,8 @@ export default (state=initialState, action) => {
             date: getDate(e.createdAt),
             status: getStatus(e.status),
             description: getDescription(e.type),
-            amount: e.amount
+            amount: e.amount,
+            userId:e.userId
           };
         }
       ).reverse(),
@@ -167,7 +168,8 @@ export default (state=initialState, action) => {
             date: getDate(e.createdAt),
             status: getStatus(e.status),
             description: getDescription(e.type),
-            amount: e.amount
+            amount: e.amount,
+            userId:e.userId
           };
         }
       ).reverse()

@@ -5,25 +5,20 @@ const Sequelize = require('sequelize');
 
 module.exports = (db) => {
   return db.define('order', {
-    /* 商品总数 */
-    count: {
-      type: Sequelize.INTEGER
-    },
     /* 订单价格 */
-    cost: {
+    totalCost: {
       type: Sequelize.DECIMAL(10, 2)
     },
     /* 状态 */
     status: {
       type: Sequelize.INTEGER
     },
-    /* 买家金额变动 */
-    customerTrans: {
-      type: Sequelize.DECIMAL(10, 2)
+    /* 转账交易信息 */
+    buyerTransId: {
+      type: Sequelize.INTEGER
     },
-    /* 卖家金额变动 */
-    sellerTrans: {
-      type: Sequelize.DECIMAL(10, 2)
-    }
+    sellerTransId: {
+      type: Sequelize.INTEGER
+    },
   });
 };

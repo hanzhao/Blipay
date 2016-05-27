@@ -21,9 +21,13 @@ module.exports = (db) => {
     status: {
       type: Sequelize.INTEGER
     },
-    /*交易时间*/
-    time: {
-      type: Sequelize.DATE
+    /*錯誤狀態*/
+    wrongType: {
+      type: Sequelize.INTEGER
+    },
+    /*bei zhu*/
+    info: {
+      type: Sequelize.STRING
     }
   });
 };

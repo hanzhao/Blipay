@@ -2,96 +2,75 @@
  * 每日生成最新帳單
  */
 import React from 'react';
-import {DatePicker,Table} from 'antd';
-import styles from './styles.scss'
-function onChange(value) {
-  console.log(value);
-}
-const dataSource = [{
-  key: '1',
-  time: '0115',
-  id: '00001',
-  buyer: 'Joseph',
-  buy: '-4',
-  seller: 'Sam',
-  sell: '+4',
-  status: 'finished',
-}, {
-  key: '2',
-  time: '0225',
-  id: '00002',
-  buyer: 'Joseph',
-  buy: '-4',
-  seller: 'Sam',
-  sell: '+4',
-  status: 'finished',
-},{
-	  key: '3',
-  time: '0335',
-  id: '00003',
-  buyer: 'Joseph',
-  buy: '-4',
-  seller: 'Sam',
-  sell: '+4',
-  status: 'finished',
-},{
-	  key: '4',
-  time: '0527',
-  id: '00004',
-  buyer: 'Joseph',
-  buy: '-4',
-  seller: 'Sam',
-  sell: '+4',
-  status: 'finished',
-},{
-	  key: '5',
-  time: '0748',
-  id: '00005',
-  buyer: 'Joseph',
-  buy: '-4',
-  seller: 'Sam',
-  sell: '+4',
-  status: 'finished',
-}];
+import { connect } from 'react-redux';
+import { reduxForm } from 'redux-form';
+import { Form, DatePicker, Button } from 'antd';
+import AuditRecordTable from '../AuditRecordTable';
+import { query } from '../../redux/modules/auditor/query';
+import { AuditorgetUserId } from '../../redux/modules/auditor/auth';
+import store from '../../redux/store';
+import styles from './styles';
 
-const columns = [{
-  title: 'time',
-  dataIndex: 'time',
-  key: 'time',
-}, {
-  title: 'id',
-  dataIndex: 'id',
-  key: 'id',
-}, {
-  title: 'buyer',
-  dataIndex: 'buyer',
-  key: 'buyer',
-}, {
-  title: 'buy',
-  dataIndex: 'buy',
-  key: 'buy',
-}, {
-  title: 'seller',
-  dataIndex: 'seller',
-  key: 'seller',
-},{
-  title: 'sell',
-  dataIndex: 'sell',
-  key: 'sell',
-},{
-  title: 'status',
-  dataIndex: 'status',
-  key: 'status',
-}];
+function onChange(value) {
+    store.dispatch(query(AuditorgetUserId(store.getState()), 
+      `${value.getFullYear()}-${value.getMonth()+1}-${value.getDate()}`, 
+      `${value.getFullYear()}-${value.getMonth()+1}-${value.getDate()+1}`
+    ));
+};
+
+const disabledDate = function (current) {
+  // can not select days after today
+  return current && current.getTime() > Date.now();
+};
+
+const tableProps = {
+  pagination: {
+    simple: true,
+    /* 一页能显示的交易记录的最大数目 */
+    pageSize: Math.max(0, Math.floor((window.innerHeight - 350) / 50))
+  }
+};
+@connect(
+  (state) => ({
+    queryResult: state.auditor.query.queryResult,
+    errorMsg: state.auditor.query.errorMsg
+  }), 
+  {
+    query
+  }
+)
+@reduxForm({
+  form: 'user-query',
+  fields: ['chosenDate']
+  }, undefined, {
+  onSubmit: (data) => {
+    let d1 = new Date(data.chosenDate);
+    store.dispatch(query(AuditorgetUserId(store.getState()), 
+      `${d1.getFullYear()}-${d1.getMonth()+1}-${d1.getDate()}`, 
+      `${d1.getFullYear()}-${d1.getMonth()+1}-${d1.getDate()+1}`
+    ));
+  }
+})
+
+
+
 
 class AuditLatestRecordPage extends React.Component {
   render() {
+    const {  
+      fields: {chosenDate}, 
+      handleSubmit} = this.props;
     return (
-
-    	<div className={styles.datePicker}>
-    <DatePicker onChange={onChange} styles={{padding:30}}/>
-<Table dataSource={dataSource} columns={columns} />
-    	</div>
+      <Form horizontal onSubmit={handleSubmit}>
+        <div className={styles.container}>
+          <DatePicker  class={styles.picker} {...chosenDate} onChange={onChange} disabledDate={disabledDate}/>
+          <div className={styles.wrapper}>
+            <AuditRecordTable className={styles.table}
+                                data={this.props.queryResult ? this.props.queryResult : null}
+                                tableProps={tableProps}/>
+          </div>
+        </div>
+      </Form>
     );
   }
 }

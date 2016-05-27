@@ -5,7 +5,6 @@
 import React from 'react';
 
 import { Table,Icon,DatePicker,Button } from'antd';
-import LogoutBar from '../LogoutBar/';
 import Container from '../Container/';
 import AuditMenu from '../AuditMenu';
 import styles from './styles';

@@ -22,12 +22,13 @@ export default (state=initialState, action) => {
   let msg;
   switch(action.type) {
   case LOGIN:
-    return {
+    return { 
       ...state,
       loggingIn: true,
       loggedIn: false,
       errorMsg: null
     };
+
   case LOGIN_SUCC:
     return {
       ...state,
@@ -39,7 +40,7 @@ export default (state=initialState, action) => {
   case LOGIN_FAIL:
     switch(action.error.code) {
     case -1:
-      msg = '用户名未被注册。';
+      msg = '审计员账户错误。';
       break;
     case -2:
       msg = '服务器内部错误。';
@@ -80,13 +81,13 @@ export default (state=initialState, action) => {
   }
 };
 
-export const isLoggedIn = (globalState) => {
+export const AuditorisLoggedIn = (globalState) => {
   return globalState.auditor && 
          globalState.auditor.auth &&
          globalState.auditor.auth.userId;
 };
 
-export const login = (userName, loginPass) => {
+export const Auditorlogin = (userName, loginPass) => {
   return {
     types: [LOGIN, LOGIN_SUCC, LOGIN_FAIL],
     promise: (client) => {
@@ -98,7 +99,7 @@ export const login = (userName, loginPass) => {
   }
 };
 
-export const logout = () => {
+export const Auditorlogout = () => {
   return {
     types: [LOGOUT, LOGOUT_SUCC, LOGOUT_FAIL],
     promise: (client) => {
@@ -107,7 +108,7 @@ export const logout = () => {
   };
 };
 
-export const getUserId = (globalState) => {
+export const AuditorgetUserId = (globalState) => {
   if (globalState.auditor &&
       globalState.auditor.auth)
     return globalState.auditor.auth.userId;
@@ -115,7 +116,7 @@ export const getUserId = (globalState) => {
     return undefined;
 };
 
-export const getErrorMsg = (globalState) => {
+export const AuditorgetErrorMsg = (globalState) => {
   if (globalState.auditor &&
       globalState.auditor.auth)
     return globalState.auditor.auth.errorMsg;

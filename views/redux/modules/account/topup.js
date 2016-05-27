@@ -74,7 +74,7 @@ export const topup = (userId, amount) => {
       TOPUP_FAIL
     ],
     promise: (client) => {
-      return client.post('/account/charge', {
+      return client.post('/auditor/getdata', {
         userId,
         amount
       });

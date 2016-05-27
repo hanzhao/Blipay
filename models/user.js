@@ -7,22 +7,17 @@ module.exports = (db) => {
   return db.define('user', {
     /* 用户名 */
     userName: {
-      type: Sequelize.STRING, 
+      type: Sequelize.STRING,
       unique: true,
       allowNull: false
     },
-    /* 登录密码盐 */
+    /* 密码盐 */
     loginSalt: {
       type: Sequelize.STRING,
       allowNull: false
     },
     /* 登录密码 */
     loginPass: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
-    /* 支付密码盐 */
-    paySalt: {
       type: Sequelize.STRING,
       allowNull: false
     },
@@ -37,7 +32,7 @@ module.exports = (db) => {
     },
     /* 身份证号 */
     idNumber: {
-      type: Sequelize.STRING, 
+      type: Sequelize.STRING,
       unique: true
     },
     /* 邮箱地址 */
@@ -57,7 +52,7 @@ module.exports = (db) => {
       type: Sequelize.DECIMAL(12, 2),
       defaultValue: 0
     },
-    /* 实名验证状态 */
+    /* 实名验证状态, 0为未验证，1为审核中，2为通过验证 */
     status: {
       type: Sequelize.INTEGER,
       defaultValue: 0

@@ -7,14 +7,14 @@ import { connect } from 'react-redux';
 import { push } from 'react-router-redux'; 
 import { reduxForm } from 'redux-form';
 import { Form, Input, Icon, Button } from 'antd';
-import { login, isLoggedIn, getErrorMsg } from '../../redux/modules/auditor/auth';
+import { Auditorlogin, AuditorisLoggedIn, AuditorgetErrorMsg } from '../../redux/modules/auditor/auth';
 import store from '../../redux/store';
 import styles from './styles';
 
 const waitLogin = () => {
-  if (isLoggedIn(store.getState())) {
+  if (AuditorisLoggedIn(store.getState())) {
     store.dispatch(push('/audit'));
-  } else if (getErrorMsg(store.getState())) {
+  } else if (AuditorgetErrorMsg(store.getState())) {
     return;
   } else {
     setTimeout(waitLogin, 500);
@@ -23,20 +23,20 @@ const waitLogin = () => {
 
 @connect(
   (state) => ({
-    loggingIn: state.account.auth.loggingIn,
-    errorMsg: state.account.auth.errorMsg
+    loggingIn: state.auditor.auth.loggingIn,
+    errorMsg: state.auditor.auth.errorMsg
   }), 
   {
-    login
+    Auditorlogin
   }
 )
 
 @reduxForm({
-  form: 'user-login',
+  form: 'user-Auditorlogin',
   fields: ['username', 'password']
 }, undefined, {
   onSubmit: (data) => {
-    store.dispatch(login(data.username, data.password));
+    store.dispatch(Auditorlogin(data.username, data.password));
     waitLogin();
   }
 })
