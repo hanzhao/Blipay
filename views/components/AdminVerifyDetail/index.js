@@ -4,6 +4,8 @@
 import React from 'react';
 import { Link } from 'react-router';
 import photo from './2233.png';
+
+import FormModal from '../FormModal';
 import { Input, Button, Row,Col, Table,Popconfirm,message,Form,Modal} from 'antd';
 import styles from './styles';
 
@@ -46,14 +48,12 @@ const Reject = React.createClass({
         <Modal ref="modal"
           visible={this.state.visible}
           title="拒绝验证" onOk={this.handleOk} onCancel={this.handleCancel}
-
           footer={[
             <Button key="back" type="ghost" size="large" onClick={this.handleCancel}>返 回</Button>,
             <Button key="submit" type="primary" size="large" loading={this.state.loading} onClick={this.handleOk}>
               提 交
             </Button>,
           ]}>
-
           <Input placeholder="请输入拒绝理由" />
 
         </Modal>
