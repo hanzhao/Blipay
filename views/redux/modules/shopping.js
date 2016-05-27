@@ -26,9 +26,17 @@ const BUY_CART_ITEMS_FAIL = 'Blipay/shopping/BUY_CART_ITEMS_FAIL'
 // 清空购物车
 const CLEAR_SHOPPING_CART = 'Blipay/shopping/CLEAR_SHOPPING_CART'
 
+// 获取订单信息
+const LOAD_ORDERS = 'Blipay/shopping/LOAD_ORDERS'
+const LOAD_ORDERS_SUCCESS = 'Blipay/shopping/LOAD_ORDERS_SUCCESS'
+const LOAD_ORDERS_FAIL = 'Blipay/shopping/LOAD_ORDERS_FAIL'
+
+// 确认收货及评价
 const CONFIRM_RECEIVE = 'Blipay/shopping/CONFIRM_RECEIVE'
 const CONFIRM_RECEIVE_SUCCESS = 'Blipay/shopping/CONFIRM_RECEIVE_SUCCESS'
 const CONFIRM_RECEIVE_FAIL = 'Blipay/shopping/CONFIRM_RECEIVE_FAIL'
+
+
 
 // Action Creators
 export const addItem = (data) => ({
@@ -72,6 +80,11 @@ export const buyCartItems = () => ({
   promise: (client) => client.post('/api/order/new', {
     items: store.getState().shopping.cartItems.map(e => e.id)
   })
+})
+
+export const loadOrders = () => ({
+  types: [LOAD_ORDERS, LOAD_ORDERS_SUCCESS, LOAD_ORDERS_FAIL],
+  promise: (client) => client.post('/api/order/order_list', { sellerId: true, buyerId: true })
 })
 
 export const confirmReceive = (data) => ({
@@ -119,12 +132,17 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         cartItems: [...state.cartItems.slice(0, action.idx),
-                    ...state.cartItems.slice(action.idx + 1)],
+          ...state.cartItems.slice(action.idx + 1)],
         showShoppingCartModal: state.cartItems.length > 1
       }
     case BUY_CART_ITEMS_SUCCESS:
       return {
         ...state
+      }
+    case LOAD_ORDERS_SUCCESS:
+      return {
+        ...state,
+        orders: action.result.orders
       }
     case CLEAR_SHOPPING_CART:
       return {

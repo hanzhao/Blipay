@@ -35,7 +35,6 @@ import AdminVerifyDetail from './components/AdminVerifyDetail';
 import ShoppingPage from './components/ShoppingPage';
 import ShoppingItemPage from './components/ShoppingItemPage';
 import ShoppingWelcomePage from './components/ShoppingWelcomePage';
-import ShoppingCartPage from './components/ShoppingCartPage';
 import ShoppingOrderPage from './components/ShoppingOrderPage';
 import ShoppingInfoPage from './components/ShoppingInfoPage';
 import ShoppingAddItemPage from './components/ShoppingAddItemPage';
@@ -71,7 +70,6 @@ const router = (
           <IndexRoute component={ShoppingInfoPage} />
           <Route path="/shopping/item/:itemId" component={ShoppingItemPage} />
           <Route path="/shopping/info" component={ShoppingInfoPage} />
-          <Route path="/shopping/cart" component={ShoppingCartPage} />
           <Route path="/shopping/order" component={ShoppingOrderPage} />
           <Route path="/shopping/add_item" component={ShoppingAddItemPage} />
           <Route path="/shopping/manage_item" component={ShoppingItemManage} />

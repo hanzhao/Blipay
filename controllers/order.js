@@ -183,7 +183,7 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
           throw new Error('Auth Failed.');
         }
         const payTrans = yield requestPay(order.buyerId, order.totalCost,
-        `成功支付订单 #${order.id}` );
+          `成功支付订单 #${order.id}`);
         // const payTrans = 1;
         yield order.update({
           buyerTransId: payTrans,
@@ -284,12 +284,12 @@ router.post('/order/order_list', Promise.coroutine(function* (req, res) {
       const order = yield Order.findOne({ where: { id: req.body.id } });
       return res.success({ orders: [order] });
     }
-    let filter = {};
+    let filter = { $or: [] };
     if (validate(req.body.sellerId)) {
-      filter.sellerId = req.session.userId;
+      filter.$or.push({ sellerId: req.session.userId });
     }
     if (validate(req.body.buyerId)) {
-      filter.buyerId = req.session.userId;
+      filter.$or.push({ buyerId: req.session.userId });
     }
     if (validate(req.body.filter)) {
       if (validate(req.body.filter.time)) {
