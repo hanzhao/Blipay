@@ -26,7 +26,8 @@ router.post('/photo/new', upload.single('photo'),
       blob: buf
     })
     return res.success({ attachmentId: attachment.id })
-  }))
+  })
+);
 
 router.get('/photo/show', Promise.coroutine(function* (req, res) {
   const attachment = yield Attachment.findById(req.query.id, {
@@ -36,6 +37,6 @@ router.get('/photo/show', Promise.coroutine(function* (req, res) {
     return res.status(404).end()
   }
   return res.end(attachment.blob)
-}))
+}));
 
 module.exports = router;

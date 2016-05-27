@@ -43,7 +43,8 @@ const getItem = Promise.coroutine(function* (itemId) {
           {
             model: User
           }]
-      }]
+      }
+    ]
   })
   return item
 })
@@ -61,7 +62,8 @@ const getItems = Promise.coroutine(function* () {
         model: Attachment,
         through: ItemAttachment,
         attributes: ['id']
-      }]
+      }
+    ]
   })
   return items;
 })

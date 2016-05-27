@@ -21,47 +21,21 @@ import {
   toggleShoppingReview,
   toggleShoppingRefund,
   toggleShoppingRefundConfirm,
-  pay_order,
+  payOrder,
   ship_order,
   confirmReceive,
   refundReq
 } from '../../redux/modules/shopping';
 
-
-const createForm = Form.create;
 const FormItem = Form.Item;
-let ORDERS = [];
-let contents = [];
-let reviewVisible = [];
-let refundVisible = [];
-let confirmVisible = [];
-let reviews = [];
 
-
-
-// let userId = 0;
 const pay = function (id) {
-  store.dispatch(pay_order(id));
+  store.dispatch(payOrder(id));
 }
 
 const ship = function (id) {
   store.dispatch(ship_order(id));
 }
-
-
-// const review = async function () {
-//   console.log(reviews);
-//   console.log(this);
-//   await ajax.post('/api/order/update', {
-//     orderId: this.orderId,
-//     op: 'confirm',
-//     reviews: reviews
-//   });
-//   contents[this.index].status = 4;
-//   this.view.setState({});
-// }
-
-
 
 const toggleReviewModal = function (order) {
   store.dispatch(toggleShoppingReview(order));
@@ -76,8 +50,6 @@ const toggleRefundConfirmModal = function () {
 }
 
 
-
-
 @connect(
   (state) => ({
     showReviewModal: state.shopping.showReviewModal,
@@ -88,8 +60,8 @@ const toggleRefundConfirmModal = function () {
   })
 )
 class ShoppingReviewModal extends React.Component {
-  reviews = [];
   render() {
+    let reviews = [];
     const { order, confirm } = this.props;
     const handler = () => {
       console.log(reviews)
@@ -142,10 +114,11 @@ class ShoppingReviewModal extends React.Component {
     refundRequest: (id, reason) => dispatch(refundReq(id, reason))
   })
 )
-@reduxForm({
-  form: 'refund',
-  fields: ['reason']
-}, undefined, {
+@reduxForm(
+  {
+    form: 'refund',
+    fields: ['reason']
+  }, undefined, {
     onSubmit: (data) => { }
   })
 class ShoppingRefundModal extends React.Component {
@@ -163,7 +136,7 @@ class ShoppingRefundModal extends React.Component {
       <Modal title="退货申请"
         visible={this.props.showRefundModal}
         onOk={handler}
-        onCancel={toggleRefundModal.bind(this, undefined) }>
+        onCancel={toggleRefundModal.bind(this) }>
         <Form>
           <FormItem label="退货理由">
             <Input type='textarea' {...reason} />
@@ -202,8 +175,8 @@ class ShoppingRefundModal extends React.Component {
     }
   }],
   (state) => ({
-    orders: state.shopping.orders.map((e, i) => ({ ...e, key: i })),
-userId: state.account.user.id
+    userId: state.account.user.id,
+    orders: state.shopping.orders.map((e, i) => ({ ...e, key: i }))
   })
 )
 class ShoppingOrderPage extends React.Component {
@@ -295,7 +268,7 @@ class ShoppingOrderPage extends React.Component {
     const {orders} = this.props;
     console.log(orders);
     const pagination = {
-      total: contents.length,
+      total: orders.length,
       showSizeChanger: true,
       pageSize: 10,
       onShowSizeChange(current, pageSize) {
