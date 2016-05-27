@@ -139,7 +139,7 @@ router.post('/order/new', Promise.coroutine(function* (req, res) {
   try {
     // createOrder(req.body.sellerId, req.body.buyerId, req.body.count, req.body.cost, req.body.items);
     // TODO: add session auth
-    yield createOrder(req.body.items);
+    yield createOrder(req.session.userId, req.body.items);
     return res.success('Order created');
   }
   catch (e) {

@@ -70,7 +70,10 @@ export const clearShoppingCart = () => ({
 export const buyCartItems = () => ({
   types: [BUY_CART_ITEMS, BUY_CART_ITEMS_SUCCESS, BUY_CART_ITEMS_FAIL],
   promise: (client) => client.post('/api/order/new', {
-    items: store.getState().shopping.cartItems.map(e => e.id)
+    items: store.getState().shopping.cartItems.map(e => ({
+      id: e.id,
+      amount: e.amount
+    }))
   })
 })
 
@@ -123,8 +126,14 @@ export default function reducer(state = initialState, action = {}) {
         showShoppingCartModal: state.cartItems.length > 1
       }
     case BUY_CART_ITEMS_SUCCESS:
+      message.success('订单生成成功')
+      setTimeout(() => {
+        store.dispatch(push(`/shopping/order`))
+      }, 0)
       return {
-        ...state
+        ...state,
+        showShoppingCartModal: false,
+        cartItems: []
       }
     case CLEAR_SHOPPING_CART:
       return {

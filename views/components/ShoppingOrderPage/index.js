@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router'
 import { connect } from 'react-redux';
 import { Modal, Form, Input, InputNumber, Rate, message } from 'antd';
 import { Button } from 'antd';
@@ -106,66 +107,82 @@ let columns = [{
   title: '宝贝',
   dataIndex: 'name',
   key: 'name',
-  render: (d, e) => {
-    return <span className={styles.itemName}>{e.items[0].name}</span>;
+  render: (text, record) => (
+    <div>
+    {
+      record.items.map((item, i) => (
+        <div key={i} className={styles.itemPrice}>
+          <Link to={`/shopping/item/${item.id}`}>{ item.name }</Link>
+        </div>
+      ))
+    }
+    </div>
+  )
+}, {
+  title: '单价',
+  dataIndex: 'price',
+  key: 'price',
+  render: (text, record) => (
+    <div>
+    {
+      record.items.map((item, i) => (
+        <div key={i} className={styles.itemPrice}>
+          {item.price.toFixed(2) }
+        </div>
+      ))
+    }
+    </div>
+  )
+}, {
+  title: '总数量',
+  dataIndex: 'count',
+  key: 'count',
+}, {
+  title: '订单金额',
+  dataIndex: 'totalCost',
+  key: 'totalCost',
+  render: (d) => {
+    return <span className={styles.itemTotalCost}>{Number(d).toFixed(2) }</span>;
   }
 }, {
-    title: '单价',
-    dataIndex: 'price',
-    key: 'price',
-    render: (d, e) => {
-      return <span className={styles.itemPrice}>{Number(e.items[0].price).toFixed(2) }</span>;
+  title: '订单状态',
+  dataIndex: 'status',
+  key: 'status',
+  render: (d) => {
+    switch (d.status) {
+      case 0:
+        return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={pay}>确认付款</Button>
+      case 1:
+        if (userId == d.sellerId)
+          return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={ship}>确认发货</Button>
+        else if (userId == d.buyerId)
+          return <Button disable='true' type="ghost" onClick={ship}>等待发货</Button>
+      case 2:
+        return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={toggleReviewModal}>确认收货</Button>
+      case 3:
+        if (userId == d.buyerId)
+          return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={toggleRefundModal}>退货申请</Button>
+      case 4:
+        if (userId == d.sellerId)
+          return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={toggleRefundConfirmModal}>退货确认</Button>
+      default:
     }
-  }, {
-    title: '数量',
-    dataIndex: 'count',
-    key: 'count'
-  }, {
-    title: '订单金额',
-    dataIndex: 'totalCost',
-    key: 'totalCost',
-    render: (d) => {
-      return <span className={styles.itemTotalCost}>{Number(d).toFixed(2) }</span>;
-    }
-  }, {
-    title: '订单状态',
-    dataIndex: 'status',
-    key: 'status',
-    render: (d) => {
-      switch (d.status) {
-        case 0:
-          return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={pay}>确认付款</Button>
-        case 1:
-          if (userId == d.sellerId)
-            return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={ship}>确认发货</Button>
-          else if (userId == d.buyerId)
-            return <Button disable='true' type="ghost" onClick={ship}>等待发货</Button>
-        case 2:
-          return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={toggleReviewModal}>确认收货</Button>
-        case 3:
-          if (userId == d.buyerId)
-            return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={toggleRefundModal}>退货申请</Button>
-        case 4:
-          if (userId == d.sellerId)
-            return <Button type="ghost" index={d.index} orderId={d.orderId} view={d.view} onClick={toggleRefundConfirmModal}>退货确认</Button>
-        default:
-      }
 
-    }
-  }, {
-    title: '',
-    dataIndex: 'modal',
-    key: 'modal',
-    render: (d) => {
-      return (
-        <div>
-          <ShoppingReviewModal index={d.index} orderId={d.orderId} view={d.view} />
-          <ShoppingRefundModal index={d.index} orderId={d.orderId} view={d.view} />
-          <ShoppingRefundConfirmModal index={d.index} orderId={d.orderId} view={d.view} />
-        </div>
-      )
-    }
-  }];
+  }
+}, {
+  title: '',
+  dataIndex: 'modal',
+  key: 'modal',
+  render: (d) => {
+    return (
+      <div>
+        <ShoppingReviewModal index={d.index} orderId={d.orderId} view={d.view} />
+        <ShoppingRefundModal index={d.index} orderId={d.orderId} view={d.view} />
+        <ShoppingRefundConfirmModal index={d.index} orderId={d.orderId} view={d.view} />
+      </div>
+    )
+  }
+}];
 let showShoppingReviewModal = false;
 class ShoppingReviewModal extends React.Component {
   onChangeScore(e) {
