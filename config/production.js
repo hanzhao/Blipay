@@ -13,5 +13,6 @@ module.exports = {
       max: 10,
       idle: 1000
     }
-  }
+  },
+  upload: './upload'
 };

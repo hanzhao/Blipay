@@ -1,0 +1,25 @@
+.container {
+  background-color: #ffffff;
+
+  .shoppingOrderTable {
+    margin: 5% 2rem;
+  }
+  .itemName {
+    width: 300px;
+  }
+  .itemImage {
+    width: 100px;
+  }
+  .itemPrice{
+    font-weight: bold;
+    color: #eeeee;
+  }
+  .itemTotalCost{
+    font-weight: bold;
+    color: #C23456;
+  }
+}
+
+.table {
+  padding: 0px 20px;
+}
