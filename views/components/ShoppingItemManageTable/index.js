@@ -11,7 +11,7 @@ class ShoppingItenManageTable extends React.Component {
   render() {
     const handleSubmit = ()=> {
       this.props.form.validateFields(async (errors) => {
-        let res=await ajax.post('/api/item/update', 
+        let res=await ajax.post('/api/item/update',
           {
             id: this.props.content.id,
             name:  this.props.content.name ,
@@ -44,10 +44,11 @@ class ShoppingItenManageTable extends React.Component {
         this.props.content.name= e.target.value;
        console.log(e.target.value);
     };
+    console.log(this.props.content)
     return (
           <Card className={styles.shoppingInfoCard}>
               <div className={styles.itemImageDiv}>
-              <img alt="example" width="100%" src= {this.props.content.thumb} />
+                <img alt="example" width="100%" src= {`/api/photo/show?id=${this.props.content.attachments[0].id}`} />
               </div>
               <div> 商品名称 </div>
               <Input defaultValue={this.props.content.name} onChange={onChangeName}/>

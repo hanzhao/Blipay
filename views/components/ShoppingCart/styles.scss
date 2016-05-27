@@ -19,17 +19,21 @@
   bottom: 0px;
   width: 100%;
   height: 50px;
-  background-color: rgba(0, 0, 0, 0.5);
-  transition: all 1s;
+  background-color: rgba(0, 0, 0, 0.1);
+  transition: all .8s;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+  }
   .inner {
     color: #f50;
     position: absolute;
     height: 50px;
     right: 100px;
+    padding-right: 20px;
     .cartIcon {
       display: inline-block;
       cursor: pointer;
-      width: 48px;
+      width: 180px;
       height: 48px;
       text-align: center;
       &:hover {
@@ -45,6 +49,11 @@
           animation-iteration-count: infinite;
         }
       }
+    }
+    .viewCart {
+      font-size: 20px;
+      line-height: 48px;
+      margin-left: .5em;
     }
     .counter {
       position: relative;
@@ -78,9 +87,4 @@
 .pricer {
   font-size: 20px;
   margin-left: 20px;
-  .price {
-    &::before {
-      content: '¥';
-    }
-  }
 }

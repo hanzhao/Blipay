@@ -1,7 +1,6 @@
 .container {
   background-color: #ffffff;
   padding-left: 30px;
-  padding-top: 30px;
   padding-right: 30px;
   padding-bottom: 30px;
 
@@ -23,15 +22,18 @@
 
   .lowerHalf {
     margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     .itemName {
-            width: 300px;
-            font-type: sans-serif;
-      }
-      .itemImage {
-            width: 100px;
-      }
-      .operationButton {
-            margin-top: 10px;
-      }   
+      width: 300px;
+      font-type: sans-serif;
+    }
+    .itemImage {
+      width: 100px;
+    }
+    .operationButton {
+      margin-top: 10px;
+    }
   }
 }

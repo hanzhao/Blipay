@@ -17,7 +17,7 @@ class ShoppingPage extends React.Component {
           <div className={styles.left}>
             <ShoppingMenu />
           </div>
-          <div className={styles.right}>
+          <div className={styles.right} id="shopping-right">
               { this.props.children }
           </div>
         </Container>

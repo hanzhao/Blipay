@@ -38,7 +38,10 @@ const getItem = Promise.coroutine(function* (itemId) {
       through: ItemAttachment,
       attributes: ['id']
     },{
-      model: Review
+      model: Review,
+      include: [{
+        model: User
+      }]
     }]
   })
   return item
@@ -61,49 +64,47 @@ const getItems = Promise.coroutine(function* () {
   return items;
 })
 
-const createOrder = Promise.coroutine(
-  function* (sellerId, buyerId, count, cost, items) {
-    console.log('service: createOrder:');
-    console.log(items);
-    try {
-      const seller = yield User.findOne({ where: { id: sellerId } });
-      const buyer = yield User.findOne({ where: { id: buyerId } });
-      if (!seller || !buyer) {
-        throw new Error('User Not Found');
+const createOrder = Promise.coroutine(function* (buyerId, items) {
+  console.log('service: createOrder:', items);
+  try {
+    items = yield Promise.all(items.map(Promise.coroutine(function* (e) {
+      return {
+        e: yield Item.findById(e.id),
+        amount: e.amount
       }
-      let newOrder = yield Order.create({
-        count: count,
-        totalCost: cost,
-        status: 0
-      });
-      yield newOrder.setSeller(seller);
-      yield newOrder.setBuyer(buyer);
-      let newCost = 0;
-      let newCount = 0;
-      for (var i = 0; i < items.length; i++) {
-        const element = items[i];
-        const item = yield Item.findOne({ where: { id: element.itemId } });
-        if (!item) {
-          throw new Error('Item Not Found:' + element.itemId);
-        }
-        yield item.decrement('remain',{by: element.count});
-        yield newOrder.addItem(item, {
-          count: element.count,
-          cost: item.price * element.count
-        });
-        newCost += item.price.toFixed(2) * element.count;
-        newCount += element.count;
-      }
-      // if (newCost.toFixed(2) != cost.toFixed(2)) {
-      //   newOrder.destroy();
-      //   throw new Error('price chaged.' + newCost + '::' + cost);
-      // }
+    })))
+    console.log(items)
+    const seller = yield User.findOne({ where: { id: items[0].e.sellerId } });
+    const buyer = yield User.findOne({ where: { id: buyerId } });
+    if (!seller || !buyer) {
+      throw new Error('User Not Found');
     }
-    catch (e) {
-      console.error('Error in service newOrder:' + require('util').inspect(e));
+    let count = 0, cost = 0
+    items.forEach(e => {
+      count += e.amount
+      cost += e.amount * e.e.price
+    })
+    let newOrder = yield Order.create({
+      count: count,
+      totalCost: cost,
+      status: 0
+    });
+    yield newOrder.setSeller(seller);
+    yield newOrder.setBuyer(buyer);
+    for (var i = 0; i < items.length; ++i) {
+      const item = items[i];
+      yield item.e.decrement('remain',{ by: item.amount });
+      yield newOrder.addItem(item.e, {
+        count: item.amount,
+        cost: item.e.price * item.amount
+      });
     }
   }
-);
+  catch (e) {
+    console.error(e.stack)
+    console.error('Error in service newOrder:' + require('util').inspect(e));
+  }
+});
 
 const handleRefund = Promise.coroutine(function* (orderId, res, buyerRes, sellerRes) {
   console.log('service: handleRefund:');

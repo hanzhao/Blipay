@@ -6,6 +6,10 @@
       width: 45%;
       margin-right: 5%;
       float: left;
+      & > div {
+        width: 300px;
+        margin: 0 auto;
+      }
     }
     .info {
       float: left;
@@ -37,7 +41,6 @@
       .buttonContainer {
         position: absolute;
         text-align: center;
-        bottom: 40px;
         width: 100%;
       }
     }
@@ -49,7 +52,29 @@
   padding-bottom: 10px;
 }
 
+.description {
+  font-size: 14px;
+  text-indent: 2em;
+  margin-left: 30px;
+}
+
 .feedback {
   position: absolute;
   top: 450px;
+}
+
+.reviews {
+  margin-left: 30px;
+  .review {
+    min-height: 150px;    
+    .line {
+      line-height: 40px;
+      height: 40px;
+      font-size: 14px;
+      .userName {
+        margin-right: 10px;
+      }
+    }
+
+  }
 }

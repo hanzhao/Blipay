@@ -1,6 +1,7 @@
 import React from 'react'
-import { Alert, Button, Icon, Row, Col, InputNumber } from 'antd'
+import { Alert, Button, Icon, Row, Col, InputNumber, Rate } from 'antd'
 import { asyncConnect } from 'redux-connect'
+import moment from 'moment'
 
 import ShoppingPageHeader from '../ShoppingPageHeader';
 import ShoppingPhotosCarousel from '../ShoppingPhotosCarousel';
@@ -10,6 +11,35 @@ import {
 } from '../../redux/modules/shopping';
 
 import styles from './styles';
+
+const renderDescription = (text) => (
+  <div className={styles.description}>
+    { text.split("\n").map((t, i) => (
+      <div key={i}>{ t }</div>
+    )) }
+  </div>
+)
+
+class ReviewContent extends React.Component {
+  render() {
+    const { e } = this.props
+    console.log(e)
+    return (
+      <div className={styles.review}>
+        <div className={styles.line}>
+          <span className={styles.userName}>
+            { e.user.userName }
+          </span>
+          <Rate disabled defaultValue={e.score} />
+          { moment(e.createdAt).format('LLL') }
+        </div>
+        <div className={styles.detail}>
+          评论详情：{ e.text }
+        </div>
+      </div>
+    )
+  }
+}
 
 @asyncConnect(
   [{
@@ -93,19 +123,15 @@ class ShoppingItemPage extends React.Component {
         <div className={styles.feedback}>
           <ShoppingPageHeader icon="book" text="详细描述" />
           <div>
-            商品详细描述
+            { renderDescription(item.description) }
           </div>
           <ShoppingPageHeader icon="star" text="买家评价" />
-          <div>
-            买家评价
-            {
-              item.reviews.map(e=>(
-                <div>
-                {e.score}
-                {e.text}
-                </div>
-                              ))
-            }
+          <div className={styles.reviews}>
+          {
+            item.reviews.map(e => (
+              <ReviewContent key={e.id} e={e} />
+            ))
+          }
           </div>
         </div>
       </div>

@@ -7,6 +7,8 @@ const Order = require('../models').Order;
 const OrderItem = require('../models').OrderItem;
 const RefundText = require('../models').RefundText;
 const ItemSeller = require('../models').ItemSeller;
+const Attachment = require('../models').Attachment;
+const ItemAttachment = require('../models').ItemAttachment;
 const Review = require('../models').Review;
 
 const Router = require('express').Router;
@@ -77,7 +79,12 @@ router.post('/item/item_list', Promise.coroutine(function* (req, res) {
         where: filter,
         order: req.body.base + req.body.order,
         offset: req.body.head,
-        limit: req.body.length
+        limit: req.body.length,
+        include: [{
+          model: Attachment,
+          through: ItemAttachment,
+          attributes: ['id']
+        }]
       })
     });
   }
@@ -94,7 +101,7 @@ router.post('/item/update', Promise.coroutine(function* (req, res) {
     if (!item) {
       throw new Error('Item Not Found.');
     }
-    // TODO: check item owner and authentication 
+    // TODO: check item owner and authentication
     if (item.sellerId != req.session.userId) {
       throw new Error('Auth Fail.');
     }
@@ -132,7 +139,7 @@ router.post('/order/new', Promise.coroutine(function* (req, res) {
   try {
     // createOrder(req.body.sellerId, req.body.buyerId, req.body.count, req.body.cost, req.body.items);
     // TODO: add session auth
-    yield createOrder(req.body.sellerId, req.session.userId, req.body.count, req.body.cost, req.body.items);
+    yield createOrder(req.session.userId, req.body.items);
     return res.success('Order created');
   }
   catch (e) {
@@ -175,7 +182,8 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
         if (req.session.userId != order.buyerId) {
           throw new Error('Auth Failed.');
         }
-        const payTrans = yield requestPay(order.buyerId, order.totalCost);
+        const payTrans = yield requestPay(order.buyerId, order.totalCost,
+        `成功支付订单 #${order.id}` );
         // const payTrans = 1;
         yield order.update({
           buyerTransId: payTrans,
@@ -207,7 +215,8 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
           yield items[index].addReview(
             yield Review.create({
               score: req.body.reviews[index].score,
-              text: req.body.reviews[index].text
+              text: req.body.reviews[index].text,
+              userId: req.session.userId
             })
           );
         };

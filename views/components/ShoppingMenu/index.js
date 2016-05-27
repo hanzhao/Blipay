@@ -8,7 +8,6 @@ import { Menu, Icon } from 'antd';
 
 const menus = [
   { to: '/shopping/info', text: '浏览宝贝', icon: 'info-circle-o' },
-  { to: '/shopping/cart', text: '购物车', icon: 'shopping-cart' },
   { to: '/shopping/order', text: '订单管理', icon: 'exception' },
   { to: '/shopping/add_item', text: '商品添加', icon: 'plus-square' },
   { to: '/shopping/manage_item', text: '商品管理', icon: 'exception' },

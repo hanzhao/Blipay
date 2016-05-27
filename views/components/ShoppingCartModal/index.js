@@ -1,10 +1,25 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Modal, Table } from 'antd';
+import { Modal, Table, Button } from 'antd';
 
+import { deleteCartItem, buyCartItems } from '../../redux/modules/shopping';
+import store from '../../redux/store';
 import styles from './styles';
 
+const deleteItem = (id) => {
+  store.dispatch(deleteCartItem(id))
+}
+
 const columns = [{
+  title: ' ',
+  dataIndex: 'attachments',
+  key: 'attachments',
+  render(text) {
+    return (
+      <img className={styles.itemAvatar} src={`/api/photo/show?id=${text[0].id}`} />
+    )
+  }
+}, {
   title: '商品名',
   dataIndex: 'name',
   key: 'name',
@@ -30,6 +45,19 @@ const columns = [{
       <span>{ (record.amount * record.price).toFixed(2) }</span>
     )
   }
+}, {
+  title: ' ',
+  dataIndex: 'id',
+  key: 'operation',
+  render(text, record) {
+    return (
+      <span>
+        <Button onClick={deleteItem.bind(this, record.key)}>
+          删除
+        </Button>
+      </span>
+    )
+  }
 }]
 
 const getTotalPrice = (items) => (
@@ -40,6 +68,9 @@ const getTotalPrice = (items) => (
   (state) => ({
     cartItems: state.shopping.cartItems.map((e, i) => ({ ...e, key: i })),
     showShoppingCartModal: state.shopping.showShoppingCartModal
+  }),
+  (dispatch) => ({
+    buyCartItems: () => dispatch(buyCartItems())
   })
 )
 class ShoppingCartModal extends React.Component {
@@ -47,12 +78,17 @@ class ShoppingCartModal extends React.Component {
     return (
       <Modal title="购物车"
              visible={this.props.showShoppingCartModal}
+             className={styles.modal}
              {...this.props}>
         <Table dataSource={this.props.cartItems}
                columns={columns}
                pagination={false} />
         <div className={styles.total}>
           总计：¥{ getTotalPrice(this.props.cartItems).toFixed(2) }
+          <Button type="primary" className={styles.btn}
+                  onClick={this.props.buyCartItems}>
+            马上结算
+          </Button>
         </div>
       </Modal>
     )
