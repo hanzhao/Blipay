@@ -1,12 +1,8 @@
 'use strict';
 
 const Promise = require('bluebird');
-const User = require('../models').User;
 const Item = require('../models').Item;
 const Order = require('../models').Order;
-const OrderItem = require('../models').OrderItem;
-const RefundText = require('../models').RefundText;
-const ItemSeller = require('../models').ItemSeller;
 const Attachment = require('../models').Attachment;
 const ItemAttachment = require('../models').ItemAttachment;
 const Review = require('../models').Review;
@@ -99,11 +95,11 @@ router.post('/item/update', Promise.coroutine(function* (req, res) {
   try {
     const item = yield Item.findOne({ where: { id: req.body.id } });
     if (!item) {
-      throw new Error('Item Not Found.');
+      return res.fail({ type: 'NO_ITEM' })
     }
     // TODO: check item owner and authentication
     if (item.sellerId != req.session.userId) {
-      throw new Error('Auth Fail.');
+      return res.fail({ type: 'AUTH_FAIL' })
     }
     yield item.update(req.body);
     return res.success('Item updated.');
@@ -119,7 +115,7 @@ router.post('/item/delete', Promise.coroutine(function* (req, res) {
   try {
     const item = yield Item.findOne({ where: { id: req.body.id } });
     if (!item) {
-      throw new Error('Item Not Found.');
+      return res.fail({ type: 'NO_ITEM' })
     }
     // TODO: check item owner and authentication
     if (item.sellerId != req.session.userId) {
@@ -137,8 +133,6 @@ router.post('/order/new', Promise.coroutine(function* (req, res) {
   console.log('in /order/new');
   console.log(req.body);
   try {
-    // createOrder(req.body.sellerId, req.body.buyerId, req.body.count, req.body.cost, req.body.items);
-    // TODO: add session auth
     yield createOrder(req.session.userId, req.body.items);
     return res.success('Order created');
   }
@@ -153,12 +147,12 @@ router.post('/order/delete', Promise.coroutine(function* (req, res) {
   try {
     const order = yield Order.findOne({ where: { id: req.body.orderId } });
     if (!order) {
-      throw new Error('Order Not Found.');
+      return res.fail({ type: 'NO_ORDER' })
     }
-    // TODO:
+    // TODO: Use transaction
 
     yield order.destroy();
-    return res.success("Order deleted");
+    return res.success('Order deleted');
   }
   catch (e) {
     return res.fail('in /order/delete   ' + e.message);
@@ -171,20 +165,18 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
   try {
     const order = yield Order.findOne({ where: { id: req.body.orderId } });
     if (!order) {
-      throw new Error('Order Not Found.');
+      return res.fail({ type: 'NO_ORDER' });
     }
     switch (req.body.op) {
       case 'pay':
-        // TODO:
         if (order.status != 0) {
-          throw new Error('illegal operation');
+          return res.fail({ type: 'INVALID_OP' })
         }
         if (req.session.userId != order.buyerId) {
-          throw new Error('Auth Failed.');
+          return res.fail({ type: 'AUTH_FAIL' })
         }
         const payTrans = yield requestPay(order.buyerId, order.totalCost,
-        `成功支付订单 #${order.id}` );
-        // const payTrans = 1;
+          `成功支付订单 #${order.id}`);
         yield order.update({
           buyerTransId: payTrans,
           status: 1
@@ -192,11 +184,11 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
         break;
       case 'ship':
         if (order.status != 1) {
-          throw new Error('illegal operation');
+          return res.fail({ type: 'INVALID_OP' })
         }
         // TODO:
         if (req.session.userId != order.sellerId) {
-          throw new Error('Auth Failed.');
+          return res.fail({ type: 'AUTH_FAIL' })
         }
         yield order.update({
           status: 2
@@ -204,11 +196,11 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
         break;
       case 'confirm':
         if (order.status != 2) {
-          throw new Error('illegal operation');
+          return res.fail({ type: 'INVALID_OP' })
         }
         // TODO:
         if (req.session.userId != order.buyerId) {
-          throw new Error('Auth Failed.');
+          return res.fail({ type: 'AUTH_FAIL' })
         }
         const items = yield order.getItems();
         for (var index = 0; index < items.length; index++) {
@@ -220,19 +212,22 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
             })
           );
         };
-        const confirmTrans = yield requestReceive(order.sellerId, order.totalCost);
+        const confirmTrans = yield requestReceive(
+          order.sellerId, order.totalCost,
+          `获得订单 #${order.id} 的收益`
+        );
         yield order.update({
           sellerTransId: confirmTrans,
           status: 3
         });
         break;
       case 'reqRefund':
-        if (order.status != 2 || order.status != 3) {
-          throw new Error('illegal operation');
+        if (order.status != 2 && order.status != 3) {
+          return res.fail({ type: 'INVALID_OP' })
         }
         // TODO:
         if (req.session.userId != order.buyerId) {
-          throw new Error('Auth Failed.');
+          return res.fail({ type: 'AUTH_FAIL' })
         }
         if (!validate(req.body.refundReason)) {
           throw new Error('Expect refundReason');
@@ -244,7 +239,7 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
         break;
       case 'refuseRefund':
         if (order.status != 4) {
-          throw new Error('illegal operation');
+          return res.fail({ type: 'INVALID_OP' })
         }
         // TODO:
         if (!validate(req.body.refuseReason)) {
@@ -258,16 +253,17 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
         break;
       case 'confirmRefund':
         if (order.status != 4) {
-          throw new Error('illegal operation');
+          return res.fail({ type: 'INVALID_OP' })
         }
         // TODO:
         const refundTrans = requestReceive(order.buyerId, order.totalCost);
         yield order.update({
-          status: 5
+          status: 5,
+          refundTransId: refundTrans
         });
         break;
       default:
-        return res.fail('Illegal operation.');
+        return res.fail({ type: 'INVALID_OP' })
     }
     return res.success(order);
   }
@@ -284,12 +280,12 @@ router.post('/order/order_list', Promise.coroutine(function* (req, res) {
       const order = yield Order.findOne({ where: { id: req.body.id } });
       return res.success({ orders: [order] });
     }
-    let filter = {};
+    let filter = { $or: [] };
     if (validate(req.body.sellerId)) {
-      filter.sellerId = req.session.userId;
+      filter.$or.push({ sellerId: req.session.userId });
     }
     if (validate(req.body.buyerId)) {
-      filter.buyerId = req.session.userId;
+      filter.$or.push({ buyerId: req.session.userId });
     }
     if (validate(req.body.filter)) {
       if (validate(req.body.filter.time)) {
@@ -299,21 +295,6 @@ router.post('/order/order_list', Promise.coroutine(function* (req, res) {
         filter.status = req.body.filter.status;
       }
     }
-    // if (validate(req.body.base)) {
-    //   orders = yield Order.findAll({
-    //     where: filter,
-    //     order: req.body.base + ' ' + req.body.order,
-    //     offset: req.body.head,
-    //     limit: req.body.length
-    //   });
-    // }
-    // else {
-    //   orders = yield Order.findAll({
-    //     where: filter,
-    //     offset: req.body.head,
-    //     limit: req.body.length
-    //   });
-    // }
     let queryOrder = '';
     if (validate(req.body.base)) {
       queryOrder = req.body.base + ' ' + req.body.order;
@@ -347,50 +328,6 @@ router.post('/item/review', Promise.coroutine(function* (req, res) {
   }
   catch (e) {
     return res.fail('in /item/review   ' + require('util').inspect(e));
-  }
-}));
-
-router.post('/cart/get', Promise.coroutine(function* (req, res) {
-  console.log('/cart/get');
-  console.log(req.body);
-  try {
-    const user = yield User.findOne({
-      where: { id: req.session.userId },
-      include: [{ model: item }]
-    });
-    return res.success({ items: user.items });
-  } catch (e) {
-    return res.fail('in /cart/get   ' + require('util').inspect(e));
-  }
-}));
-
-router.post('/cart/add', Promise.coroutine(function* (req, res) {
-  console.log('/cart/add');
-  console.log(req.body);
-  try {
-    const user = yield User.findOne({ where: { id: req.session.userId } });
-    const item = yield Item.findOne({ where: { id: req.body.itemId } });
-    yield user.addItem(item, { count: req.body.itemCount });
-    return res.success('item added to cart');
-  } catch (e) {
-    return res.fail('in /cart/add   ' + require('util').inspect(e));
-  }
-}));
-
-router.post('/cart/update', Promise.coroutine(function* (req, res) {
-  console.log('/cart/update');
-  console.log(req.body);
-  try {
-    const user = yield User.findOne({ where: { id: req.session.userId } });
-    yield user.setItems(null);
-    for (var index = 0; index < req.body.items.length; index++) {
-      var element = req.body.items[index];
-      const item = yield Item.findOne({ where: { id: element.id } });
-      user.addItem(item, { count: element.count });
-    }
-    return res.success('cart updated');
-  } catch (e) {
-    return res.fail('in /cart/update   ' + require('util').inspect(e));
   }
 }));
 

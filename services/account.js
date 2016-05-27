@@ -74,7 +74,7 @@ const requestPay = (userId, amount, info) => {
   });
 };
 
-const requestReceive = (userId, amount) => {
+const requestReceive = (userId, amount, info) => {
   return new Promise((resolve, reject) => {
     if (isNaN(amount)) {
       return reject(new Error('amount is invalid'));
@@ -91,7 +91,8 @@ const requestReceive = (userId, amount) => {
         userId: user.id,
         amount: amount,
         type: 4,
-        status: 1
+        status: 1,
+        info: info || `收入 ${amount} 元`
       };
       Transaction.create(newTransaction)
       .then(() => {

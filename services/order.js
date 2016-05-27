@@ -2,19 +2,18 @@
 const Item = require('../models').Item;
 const Attachment = require('../models').Attachment;
 const ItemAttachment = require('../models').ItemAttachment;
-const ItemSeller = require('../models').ItemSeller;
 const User = require('../models').User;
 const Order = require('../models').Order;
 const Review = require('../models').Review;
 
 const createItem = Promise.coroutine(function* (sellerId, item) {
-  const user = yield User.findOne({ where: { id: sellerId } });
   if (item.remain < 0) {
     throw new Error('INVALID_REMAIN');
   }
   if (item.price < 0) {
     throw new Error('INVALID_PRICE');
   }
+  // TODO
   const newItem = yield Item.create({
     name: item.name,
     price: item.price,
@@ -22,27 +21,30 @@ const createItem = Promise.coroutine(function* (sellerId, item) {
     description: item.description,
     sellerId: sellerId
   });
-  yield newItem.setAttachments(item.photo)
+  yield newItem.setAttachments(item.photo);
   return newItem;
 });
 
 const getItem = Promise.coroutine(function* (itemId) {
   const item = yield Item.findById(itemId, {
     attributes: ['id', 'name', 'description', 'price', 'remain'],
-    include: [{
-      model: User,
-      as: 'seller',
-      attributes: ['id', 'realName']
-    }, {
-      model: Attachment,
-      through: ItemAttachment,
-      attributes: ['id']
-    },{
-      model: Review,
-      include: [{
-        model: User
-      }]
-    }]
+    include: [
+      {
+        model: User,
+        as: 'seller',
+        attributes: ['id', 'realName']
+      }, {
+        model: Attachment,
+        through: ItemAttachment,
+        attributes: ['id']
+      }, {
+        model: Review,
+        include: [
+          {
+            model: User
+          }]
+      }
+    ]
   })
   return item
 })
@@ -51,15 +53,17 @@ const getItems = Promise.coroutine(function* () {
   const items = yield Item.findAll({
     where: { remain: { $gt: 0 } },
     attributes: ['id', 'name', 'price', 'remain'],
-    include: [{
-      model: User,
-      as: 'seller',
-      attributes: ['id', 'realName']
-    }, {
-      model: Attachment,
-      through: ItemAttachment,
-      attributes: ['id']
-    }]
+    include: [
+      {
+        model: User,
+        as: 'seller',
+        attributes: ['id', 'realName']
+      }, {
+        model: Attachment,
+        through: ItemAttachment,
+        attributes: ['id']
+      }
+    ]
   })
   return items;
 })
@@ -93,7 +97,7 @@ const createOrder = Promise.coroutine(function* (buyerId, items) {
     yield newOrder.setBuyer(buyer);
     for (var i = 0; i < items.length; ++i) {
       const item = items[i];
-      yield item.e.decrement('remain',{ by: item.amount });
+      yield item.e.decrement('remain', { by: item.amount });
       yield newOrder.addItem(item.e, {
         count: item.amount,
         cost: item.e.price * item.amount
@@ -106,32 +110,34 @@ const createOrder = Promise.coroutine(function* (buyerId, items) {
   }
 });
 
-const handleRefund = Promise.coroutine(function* (orderId, res, buyerRes, sellerRes) {
-  console.log('service: handleRefund:');
-  try {
-    const order = yield Order.findOne({where: {id:orderId}});
-    if(!order){
-      throw new Error('Fatal error, from B5 or data failure');
+const handleRefund = Promise.coroutine(
+  function* (orderId, res, buyerRes, sellerRes) {
+    console.log('service: handleRefund:');
+    try {
+      const order = yield Order.findOne({ where: { id: orderId } });
+      if (!order) {
+        throw new Error('Fatal error, from B5 or data failure');
+      }
+      yield order.update({
+        buyerRes: buyerRes,
+        sellerRes: sellerRes,
+        status: 7
+      });
+      if (res) {
+        // TODO:
+      }
+      else {
+        // TODO:
+      }
+    } catch (e) {
+      console.error('Error in service handleRefund:' + e.message);
     }
-    yield order.update({
-      buyerRes: buyerRes,
-      sellerRes: sellerRes,
-      status: 7
-    });
-    if(res){
-      // TODO:
-    }
-    else{
-      // TODO:
-    }
-  } catch (e) {
-    console.error('Error in service handleRefund:' + require('util').inspect(e));
-  }
-});
+  });
 
 module.exports = {
   createItem,
   createOrder,
   getItem,
-  getItems
+  getItems,
+  handleRefund
 };
