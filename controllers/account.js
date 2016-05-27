@@ -187,9 +187,9 @@ router.get('/account/check_paypass', (req, res) => {
     }
   }).catch((err) => {
     console.error('check_paypass: fail\n' + err.message);
-    return res.fail({
-      code: -2
-    });
+    return res.success({
+        code: 0
+      });
   });
 });
 

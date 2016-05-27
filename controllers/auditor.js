@@ -164,35 +164,35 @@ router.post('/auditor/getdata', (req, res) => {
   Order.findAll({
     })
   .then(()=>{
-  const buyertransid = order.buyerTransId;
-  const sellertransid = order.sellerTransId;
+  const buyertransid = Order.buyerTransId;
+  const sellertransid = Order.sellerTransId;
 
-  Transaction.findone({
+  Transaction.findOne({
       where:{
         id:buyertransid
       }
 
   })
   .then(()=>{
-    const customertrans = transaction.amount
+    const customertrans = Transaction.amount
   })
 
-  Transaction.findone({
+  Transaction.findOne({
     where:{
       id:sellertransid
     }
   })
   .then(()=>{
-    const sellertrans = transaction.amount
+    const sellertrans = Transaction.amount
   })
 
 
     if (true){
         const newrecord ={
-           cost:order.totalCost,
+           cost:Order.totalCost,
            customerTrans:customertrans,
            sellerTrans:sellertrans,
-           status:order.status,
+           status:Order.status,
            wrongType:1,
            info:1
         }
@@ -200,7 +200,7 @@ router.post('/auditor/getdata', (req, res) => {
 }
 })
   .catch((err) => {
-    console.error('Error occurs in /account/charge with following message.\n' +
+    console.error('Error occurs in /auditor/getdata with following message.\n' +
                  err.message);
     return res.fail({
       code: -2
