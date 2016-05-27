@@ -26,17 +26,42 @@ const BUY_CART_ITEMS_FAIL = 'Blipay/shopping/BUY_CART_ITEMS_FAIL'
 // 清空购物车
 const CLEAR_SHOPPING_CART = 'Blipay/shopping/CLEAR_SHOPPING_CART'
 
+// 订单页面各Modal
+const TOGGLE_SHOPPING_REVIEW = 'Blipay/shopping/TOGGLE_SHOPPING_REVIEW'
+const TOGGLE_SHOPPING_REFUND = 'Blipay/shopping/TOGGLE_SHOPPING_REFUND'
+const TOGGLE_SHOPPING_REFUND_CONFIRM = 'Blipay/shopping/TOGGLE_SHOPPING_REFUND_CONFIRM'
+
 // 获取订单信息
 const LOAD_ORDERS = 'Blipay/shopping/LOAD_ORDERS'
 const LOAD_ORDERS_SUCCESS = 'Blipay/shopping/LOAD_ORDERS_SUCCESS'
 const LOAD_ORDERS_FAIL = 'Blipay/shopping/LOAD_ORDERS_FAIL'
+
+// 付款
+const PAY_ORDER = 'Blipay/shopping/PAY_ORDER'
+const PAY_ORDER_SUCCESS = 'Blipay/shopping/PAY_ORDER_SUCCESS'
+const PAY_ORDER_FAIL = 'Blipay/shopping/PAY_ORDER_FAIL'
+
+// 发货
+const SHIP_ORDER = 'Blipay/shopping/SHIP_ORDER'
+const SHIP_ORDER_SUCCESS = 'Blipay/shopping/SHIP_ORDER_SUCCESS'
+const SHIP_ORDER_FAIL = 'Blipay/shopping/SHIP_ORDER_FAIL'
+
 
 // 确认收货及评价
 const CONFIRM_RECEIVE = 'Blipay/shopping/CONFIRM_RECEIVE'
 const CONFIRM_RECEIVE_SUCCESS = 'Blipay/shopping/CONFIRM_RECEIVE_SUCCESS'
 const CONFIRM_RECEIVE_FAIL = 'Blipay/shopping/CONFIRM_RECEIVE_FAIL'
 
+// 退货请求
 
+const REFUND_REQ = 'Blipay/shopping/REFUND_REQ'
+const REFUND_REQ_SUCCESS = 'Blipay/shopping/REFUND_REQ_SUCCESS'
+const REFUND_REQ_FAIL = 'Blipay/shopping/REFUND_REQ_FAIL'
+
+
+const messages = {
+  
+}
 
 // Action Creators
 export const addItem = (data) => ({
@@ -57,6 +82,11 @@ export const loadItems = () => ({
   promise: (client) => client.get('/api/items')
 })
 
+export const loadOrders = () => ({
+  types: [LOAD_ORDERS, LOAD_ORDERS_SUCCESS, LOAD_ORDERS_FAIL],
+  promise: (client) => client.post('/api/order/order_list', { sellerId: true, buyerId: true })
+})
+
 export const addCartItem = (item) => ({
   type: ADD_CART_ITEM,
   item
@@ -71,6 +101,20 @@ export const toggleShoppingCart = () => ({
   type: TOGGLE_SHOPPING_CART
 })
 
+export const toggleShoppingReview = (order) => ({
+  type: TOGGLE_SHOPPING_REVIEW,
+  order
+})
+
+export const toggleShoppingRefund = (orderId) => ({
+  type: TOGGLE_SHOPPING_REFUND,
+  orderId
+})
+
+export const toggleShoppingRefundConfirm = () => ({
+  type: TOGGLE_SHOPPING_REFUND_CONFIRM
+})
+
 export const clearShoppingCart = () => ({
   type: CLEAR_SHOPPING_CART
 })
@@ -78,25 +122,53 @@ export const clearShoppingCart = () => ({
 export const buyCartItems = () => ({
   types: [BUY_CART_ITEMS, BUY_CART_ITEMS_SUCCESS, BUY_CART_ITEMS_FAIL],
   promise: (client) => client.post('/api/order/new', {
-    items: store.getState().shopping.cartItems.map(e => e.id)
+    items: store.getState().shopping.cartItems.map(e => ({
+      id: e.id,
+      amount: e.amount
+    }))
   })
 })
 
-export const loadOrders = () => ({
-  types: [LOAD_ORDERS, LOAD_ORDERS_SUCCESS, LOAD_ORDERS_FAIL],
-  promise: (client) => client.post('/api/order/order_list', { sellerId: true, buyerId: true })
+export const pay_order = (orderId) => ({
+  types: [PAY_ORDER, PAY_ORDER_SUCCESS, PAY_ORDER_FAIL],
+  promise: (client) => client.post('/api/order/update', {
+    orderId: orderId,
+    op: 'pay'
+  })
 })
 
-export const confirmReceive = (data) => ({
+export const ship_order = (orderId) => ({
+  types: [SHIP_ORDER, SHIP_ORDER_SUCCESS, SHIP_ORDER_FAIL],
+  promise: (client) => client.post('/api/order/update', {
+    orderId: orderId,
+    op: 'ship'
+  })
+})
+
+export const confirmReceive = (orderId, reviews) => ({
   types: [CONFIRM_RECEIVE, CONFIRM_RECEIVE_SUCCESS, CONFIRM_RECEIVE_FAIL],
   promise: (client) => client.post('/api/order/update', {
-    ...data,
+    orderId: orderId,
+    reviews: reviews,
     op: 'confirm'
   })
 })
 
+export const refundReq = (orderId, reason) => ({
+  types: [REFUND_REQ, REFUND_REQ_SUCCESS, REFUND_REQ_FAIL],
+  promise: (client) => client.post('/api/order/update', {
+    orderId: orderId,
+    refundReason: reason,
+    op:'reqRefund'
+  })
+})
+
 const initialState = {
-  cartItems: []
+  cartItems: [],
+  reviewItems: [],
+  showReviewModal: false,
+  showRefundModal: false,
+  showRefundConfirmModal: false
 }
 
 // Reducer
@@ -128,6 +200,23 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         showShoppingCartModal: !state.showShoppingCartModal
       }
+    case TOGGLE_SHOPPING_REVIEW:
+      return {
+        ...state,
+        showReviewModal: !state.showReviewModal,
+        reviewOrder: action.order
+      }
+    case TOGGLE_SHOPPING_REFUND:
+      return {
+        ...state,
+        showRefundModal: !state.showRefundModal,
+        refundOrderId: action.orderId
+      }
+    case TOGGLE_SHOPPING_REFUND_CONFIRM:
+      return {
+        ...state,
+        showRefundConfirmModal: !state.showRefundConfirmModal
+      }
     case DELETE_CART_ITEM:
       return {
         ...state,
@@ -136,8 +225,14 @@ export default function reducer(state = initialState, action = {}) {
         showShoppingCartModal: state.cartItems.length > 1
       }
     case BUY_CART_ITEMS_SUCCESS:
+      message.success('订单生成成功')
+      setTimeout(() => {
+        store.dispatch(push(`/shopping/order`))
+      }, 0)
       return {
-        ...state
+        ...state,
+        showShoppingCartModal: false,
+        cartItems: []
       }
     case LOAD_ORDERS_SUCCESS:
       return {
@@ -148,6 +243,37 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         cartItems: []
+      }
+    case PAY_ORDER_SUCCESS:
+      message.success('订单支付成功')
+      setTimeout(() => {
+        store.dispatch(push(`/shopping/order`))
+      }, 0)
+      return {
+        ...state
+      }
+    case SHIP_ORDER_SUCCESS:
+      message.success('发货成功')
+      setTimeout(() => {
+        store.dispatch(push(`/shopping/order`))
+      }, 0)
+      return {
+        ...state
+      }
+    case CONFIRM_RECEIVE_SUCCESS:
+      message.success('收货成功')
+      setTimeout(() => {
+        store.dispatch(push(`/shopping/order`))
+      }, 0)
+      return {
+        ...state,
+        showReviewModal: !state.showReviewModal
+      }
+    case REFUND_REQ_SUCCESS:
+      message.success('退货请求成功')
+      return {
+        ...state,
+        showRefundModal: !state.showRefundModal
       }
     default:
       return state;
