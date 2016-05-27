@@ -9,6 +9,14 @@ import { Link } from 'react-router';
 import store from '../../redux/store';
 import ajax from '../../common/ajax';
 
+
+function showPopup(){
+  message.success('注册成功！');
+  setTimeout(() => {
+    location.replace('/admin');
+  }, 1000)
+}
+
 @reduxForm({
   form: 'user-register',
   fields: ['username', 'password','level','realname','phone','email']
@@ -82,7 +90,7 @@ class RegisterForm extends React.Component {
                  {...email} />
         </Form.Item>
         <Button type="primary" size="large"
-                htmlType="submit" >
+                htmlType="submit" onClick={showPopup}>
           register
         </Button>
       </Form>

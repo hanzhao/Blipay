@@ -386,6 +386,7 @@ router.post('/admin/dealarbitration',Promise.coroutine(function *(req,res){
         }
     });
     return res.success({
+        op: req.body.op,
         code :0
     });
 }));

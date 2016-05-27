@@ -52,7 +52,7 @@ const Reject = React.createClass({
             <Button key="submit" type="primary" size="large" loading={this.state.loading} onClick={this.handleOk}>
               提 交
             </Button>,
-          ]}
+          ]}>
 
           <Input placeholder="请输入拒绝理由" />
 

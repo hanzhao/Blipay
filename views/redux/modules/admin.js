@@ -1,5 +1,6 @@
 import store from '../store'
 import { push } from 'react-router-redux'
+import { message } from 'antd';
 
 // Action 表
 // 登陆/登出
@@ -65,9 +66,9 @@ const GET_ADMIN_LOG_SUCCESS='Blipay/admin/GET_ADMIN_LOG_SUCCESS';
 const GET_ADMIN_LOG_FAIL='Blipay/admin/GET_ADMIN_LOG_SUCCESS';
 
 //更新身份数据库
-const UP_ID='blipay/admin/UP_ID';
-const UP_ID_SUCCESS='blipay/admin/UP_ID_SUCCESS';
-const UP_ID_FAIL='blipay/admin/UP_ID_FAIL';
+const UPDATE_ID='blipay/admin/UPDATE_ID';
+const UPDATE_ID_SUCCESS='blipay/admin/UPDATE_ID_SUCCESS';
+const UPDATE_ID_FAIL='blipay/admin/UPDATE_ID_FAIL';
 
 
 const messages = {
@@ -187,7 +188,7 @@ export const modifyUser = (data) => ({
 //传入订单id
 //enum in{'ing','accept','deny'} 注意这里是字符串
 export const dealArbitration = (data) => ({
-  types: [ARBITRATION_PASS, ARBITRATION_SUCCESS, ARBITRATION_FAIL],
+  types: [ARBITRATION, ARBITRATION_SUCCESS, ARBITRATION_FAIL],
   promise: (client) => client.post('/api/admin/dealarbitration', data)
 });
 
@@ -195,7 +196,7 @@ export const dealArbitration = (data) => ({
 //传入realName
 //传入idNumber
 export const uopdateIdBase = (data) => ({
-  types: [UP_ID, UP_ID_SUCCESS, UP_ID_FAIL],
+  types: [UPDATE_ID, UPDATE_ID_SUCCESS, UPDATE_ID_FAIL],
   promise: (client) => client.post('/api/admin/updateidbase', data)
 });
 
@@ -332,10 +333,13 @@ export default function reducer(state = initialState, action = {}) {
         message: null
       }
     case ARBITRATION_SUCCESS:
+      if (action.result.op=='accept') {
+        message.success('仲裁要求已接受');
+      }else{
+        message.success('仲裁要求已拒绝');
+      }
       return {
         ...state,
-        //adminAction: [ ...state.adminAction,
-        //               wrapTransaction(state.result.adminAction)],
         message: null
       }
     // Errors
@@ -348,7 +352,7 @@ export default function reducer(state = initialState, action = {}) {
     case ARBITRATION_LIST_FAIL:
     case LOGIN_FAIL:
     case LOGOUT_FAIL:
-    case UP_ID_FAIL:
+    case UPDATE_ID_FAIL:
       return {
         ...state,
         message: (action.error.type && messages[action.error.type]) || '未知错误'

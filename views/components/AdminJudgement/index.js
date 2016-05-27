@@ -3,74 +3,13 @@ import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { asyncConnect } from 'redux-connect';
-import { Input, Col, Table, Button } from 'antd';
+import { Input, Col, Table, Button, Modal } from 'antd';
 import store from '../../redux/store';
-import { getArbitrationList } from '../../redux/modules/admin';
-
+import { getArbitrationList,dealArbitration } from '../../redux/modules/admin';
+import ajax from '../../common/ajax';
 import styles from './styles';
 
-
-const columns = [{
-  title: '投诉方',
-  dataIndex: 'userName',
-  key: 'userName'
-},{
-  title: '被投诉方',
-  dataIndex: 'complained',
-  key: 'complained'
-},{
-  title: '投诉细节',
-  key: 'content',
-  render(){
-    return(
-      <div>
-      <span>
-        <Button className={styles.addBtn}>
-        细节
-        </Button>
-      </span>
-      </div>
-    );
-  }
-},{
-  title: ' ',
-  key: '  ',
-  render(){
-    return(
-      <div>
-      <span>
-        <Button className={styles.addBtn}>
-        通过
-        </Button>
-      </span>
-      <span>
-        <Button className={styles.addBtn}>
-        拒绝
-        </Button>
-      </span>
-      </div>
-    );
-  }
-}];
-
-// const datatest = Array(60).fill({
-//   userName: 'gg',
-//   complained: '213048574393'
-// });
-//
-// const data = [{
-//   key: '1',
-//   userName: 'wzy',
-//   complained: '012345267908'
-// },{
-//   key: '2',
-//   userName: 'al',
-//   complained: '836410284675'
-// },{
-//   key: '3',
-//   userName: 'www',
-//   complained: '023422567908'
-// }];
+//给table的数据集每个元素加上key
 function addKey(data){
   let res = new Array()
   for(let i = 0; i < data.length ;i++){
@@ -81,6 +20,66 @@ function addKey(data){
   }
   return res;
 }
+
+//弹窗显示细节
+function showDetail(content){
+  Modal.info({
+    title: '仲裁细节',
+    content: (
+      <div>
+        <p>{content}</p>
+      </div>
+    ),
+    onOk() {}
+  });
+}
+
+const ops = { acceptOp: 'accept',denyOp: 'deny'}
+
+const dealArbitrationInTable = (id,op) => {
+  store.dispatch(dealArbitration({id,op}));
+  store.dispatch(getArbitrationList());
+}
+
+//定义表头以及每行渲染
+const columns = [{
+  title: '投诉方',
+  dataIndex: 'userName',
+  key: 'userName'
+},{
+  title: '被投诉方',
+  dataIndex: 'complained',
+  key: 'complained'
+},{
+  title: '投诉细节',
+  dataIndex: 'content',
+  key: 'content',
+  render(text){
+    return(
+      <div>
+        <Button className={styles.addBtn} onClick={showDetail.bind(this,text)}>
+        细节
+        </Button>
+      </div>
+    );
+  }
+},{
+  title: ' ',
+  dataIndex: 'id',
+  key: 'id',
+  render(text){
+    return(
+      <div>
+          <Button id={text} className={styles.addBtn} onClick={dealArbitrationInTable.bind(this,text,ops.acceptOp)}>
+            通过
+          </Button>
+          <Button id={text} className={styles.addBtn} onClick={dealArbitrationInTable.bind(this,text,ops.denyOp)}>
+            拒绝
+          </Button>
+      </div>
+    );
+  }
+}];
 
 @asyncConnect(
   [{
