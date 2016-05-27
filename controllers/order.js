@@ -213,7 +213,8 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
           );
         };
         const confirmTrans = yield requestReceive(
-          order.sellerId, order.totalCost
+          order.sellerId, order.totalCost,
+          `获得订单 #${order.id} 的收益`
         );
         yield order.update({
           sellerTransId: confirmTrans,
