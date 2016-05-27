@@ -10,4 +10,8 @@ module.exports = (db) => {
       }
     }
   });
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> ac6e5dd1f1a982cc515dd8e25514bf5dcab79f79
