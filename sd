@@ -1,0 +1,276 @@
+[1mdiff --cc models/index.js[m
+[1mindex f442201,dbd184e..0000000[m
+[1m--- a/models/index.js[m
+[1m+++ b/models/index.js[m
+[36m@@@ -12,25 -12,81 +12,102 @@@[m [mconst User = require('./user')(db)[m
+  const Item = require('./item')(db);[m
+  const Transaction = require('./transaction')(db);[m
+  const Order = require('./order')(db);[m
+[32m+ <<<<<<< HEAD[m
+[32m +const OrderItem = require('./orderitem')(db);[m
+[32m++=======[m
+[32m++<<<<<<< HEAD[m
+[32m+ const OrderItem = require('./order_item')(db);[m
+[32m+ const Review = require('./review')(db);[m
+[32m+ const Attachment = require('./attachment')(db);[m
+[32m+ const ItemAttachment = require('./item_attachment')(db);[m
+[32m+ const Record = require('./record')(db);[m
+[32m+ [m
+[32m+ =======[m
+[32m+ const OrderItem = require('./orderitem')(db);[m
+[32m+ >>>>>>> ac6e5dd1f1a982cc515dd8e25514bf5dcab79f79[m
+[32m++>>>>>>> c5c82097afa011e1e504412a8426700b540f36ce[m
+  // 表关联[m
+[31m- Item.belongsTo(User, {[m
+[32m+ const ItemSeller = Item.belongsTo(User, {[m
+    as: 'seller'[m
+  });[m
+[32m+ [m
+  Transaction.belongsTo(User);[m
+[32m+ User.hasMany(Transaction);[m
+[32m+ [m
+[32m+ Order.belongsTo(User, { as: 'seller' });[m
+[32m+ Order.belongsTo(User, { as: 'buyer' });[m
+[32m+ [m
+[32m+ Item.hasMany(Review);[m
+  [m
+[32m+ Attachment.belongsTo(User)[m
+[32m+ Attachment.belongsToMany(Item, { through: ItemAttachment })[m
+[32m+ Item.belongsToMany(Attachment, { through: ItemAttachment })[m
+[32m+ User.hasMany(Attachment)[m
+[32m+ [m
+[32m+ <<<<<<< HEAD[m
+[32m +Order.belongsTo(User, { as: 'seller' });[m
+[32m +Order.belongsTo(User, { as: 'customer' });[m
+[32m +Order.belongsToMany(Item, { through: OrderItem });[m
+[32m +[m
+[32m +// Sync table to database[m
+[32m +(Promise.coroutine(function* () {[m
+[32m +  for (let t of [User, Item, Transaction, Order, OrderItem]) {[m
+[32m +    yield t.sync({ force: true })[m
+[32m +    console.log(`Table ${t.name} synced`);[m
+[32m +  }[m
+[32m +}))()[m
+[32m +[m
+[32m +module.exports = {[m
+[32m +  User, Item, Transaction, Order, OrderItem[m
+[32m++=======[m
+[32m++<<<<<<< HEAD[m
+[32m+ Record.belongsTo(User, { as: 'seller' });[m
+[32m+ Record.belongsTo(User, { as: 'buyer' });[m
+[32m+ Record.belongsTo(Order);[m
+[32m+ [m
+[32m+ const initDatabase = Promise.coroutine(function* () {[m
+[32m+   for (let t of [User, Item, Transaction, Order,[m
+[32m+                  OrderItem, Review, Attachment, ItemAttachment]) {[m
+[32m+     yield t.sync();[m
+[32m+ =======[m
+[32m+ Order.belongsTo(User, {as: 'seller'});[m
+[32m+ Order.belongsTo(User, {as: 'customer'});[m
+[32m+ Order.belongsToMany(Item, {through: OrderItem});[m
+[32m+ [m
+[32m+ [User, Item, Transaction, Order, OrderItem].forEach((t) => {[m
+[32m+   t.sync().then(() => {[m
+[32m+ >>>>>>> ac6e5dd1f1a982cc515dd8e25514bf5dcab79f79[m
+[32m+     console.log(`Table ${t.name} synced`);[m
+[32m+   }[m
+[32m+ })[m
+[32m+ initDatabase()[m
+[32m+ [m
+[32m+ module.exports = {[m
+[32m+ <<<<<<< HEAD[m
+[32m+   User, Item, Transaction, Order, OrderItem, Review, Attachment,[m
+[32m+   ItemSeller, ItemAttachment,[m
+[32m+   db[m
+[32m+ =======[m
+[32m+   User, Item, Transaction, Order, OrderItem[m
+[32m+ >>>>>>> ac6e5dd1f1a982cc515dd8e25514bf5dcab79f79[m
+[32m++>>>>>>> c5c82097afa011e1e504412a8426700b540f36ce[m
+  };[m
+[32m+ /*[m
+[32m+ Order.build({[m
+[32m+ 	id: 1,[m
+[32m+ 	totalCost: 10,[m
+[32m+ 	status: 3,[m
+[32m+ 	buyerId: 1,[m
+[32m+ 	sellerId: 1,[m
+[32m+ 	buyerTransId:1,[m
+[32m+     sellerTransId: 2[m
+[32m+ }).save();[m
+[32m+ [m
+[32m+ Order.build({[m
+[32m+ 	id: 2,[m
+[32m+ 	totalCost: 20,[m
+[32m+ 	status: 1, [m
+[32m+ 	buyerTransId:3,[m
+[32m+     sellerTransId: 4[m
+[32m+ }).save();[m
+[32m+ */[m
+[1mdiff --cc models/item.js[m
+[1mindex 681efb3,cf7d098..0000000[m
+mode 100644,100755..100755[m
+[1m--- a/models/item.js[m
+[1m+++ b/models/item.js[m
+[36m@@@ -14,9 -14,15 +14,21 @@@[m [mmodule.exports = (db) => [m
+      name: {[m
+        type: Sequelize.STRING[m
+      },[m
+[32m+ <<<<<<< HEAD[m
+[32m +    /* 图片 URL */[m
+[32m +    thumb: {[m
+[32m +      type: Sequelize.STRING[m
+[32m++=======[m
+[32m++<<<<<<< HEAD[m
+[32m+     /* 简介 */[m
+[32m+     description: {[m
+[32m+       type: Sequelize.TEXT[m
+[32m+ =======[m
+[32m+     /* 图片 URL */[m
+[32m+     thumb: {[m
+[32m+       type: Sequelize.STRING[m
+[32m+ >>>>>>> ac6e5dd1f1a982cc515dd8e25514bf5dcab79f79[m
+[32m++>>>>>>> c5c82097afa011e1e504412a8426700b540f36ce[m
+      }[m
+    });[m
+  };[m
+[1mdiff --cc models/order.js[m
+[1mindex a1fd8d5,4fba9d3..0000000[m
+mode 100644,100755..100644[m
+[1m--- a/models/order.js[m
+[1m+++ b/models/order.js[m
+[36m@@@ -5,12 -5,17 +5,23 @@@[m [mconst Sequelize = require('sequelize')[m
+  [m
+  module.exports = (db) => {[m
+    return db.define('order', {[m
+[32m+ <<<<<<< HEAD[m
+[32m++=======[m
+[32m++<<<<<<< HEAD[m
+[32m+     /* 订单价格 */[m
+[32m+     totalCost: {[m
+[32m+ =======[m
+[32m++>>>>>>> c5c82097afa011e1e504412a8426700b540f36ce[m
+      /* 商品总数 */[m
+      count: {[m
+        type: Sequelize.INTEGER[m
+      },[m
+      /* 订单价格 */[m
+      cost: {[m
+[32m++<<<<<<< HEAD[m
+[32m++=======[m
+[32m+ >>>>>>> ac6e5dd1f1a982cc515dd8e25514bf5dcab79f79[m
+[32m++>>>>>>> c5c82097afa011e1e504412a8426700b540f36ce[m
+        type: Sequelize.DECIMAL(10, 2)[m
+      },[m
+      /* 状态 */[m
+[36m@@@ -23,6 -28,10 +34,14 @@@[m
+      },[m
+      sellerTransId: {[m
+        type: Sequelize.INTEGER[m
+[32m+ <<<<<<< HEAD[m
+[32m++    }[m
+[32m++=======[m
+[32m++<<<<<<< HEAD[m
+[32m+     },[m
+[32m+ =======[m
+      }[m
+[32m+ >>>>>>> ac6e5dd1f1a982cc515dd8e25514bf5dcab79f79[m
+[32m++>>>>>>> c5c82097afa011e1e504412a8426700b540f36ce[m
+    });[m
+  };[m
+[1mdiff --cc models/orderitem.js[m
+[1mindex a2b945b,1e1302d..0000000[m
+[1m--- a/models/orderitem.js[m
+[1m+++ b/models/orderitem.js[m
+[36m@@@ -10,4 -10,8 +10,12 @@@[m [mmodule.exports = (db) => [m
+        }[m
+      }[m
+    });[m
+[32m+ <<<<<<< HEAD[m
+  };[m
+[32m+ =======[m
+[32m++<<<<<<< HEAD[m
+[32m++};[m
+[32m++=======[m
+[32m+ };[m
+[32m+ >>>>>>> ac6e5dd1f1a982cc515dd8e25514bf5dcab79f79[m
+[32m++>>>>>>> c5c82097afa011e1e504412a8426700b540f36ce[m
+[1mdiff --cc views/index.js[m
+[1mindex d4a93df,eb8433e..0000000[m
+[1m--- a/views/index.js[m
+[1m+++ b/views/index.js[m
+[36m@@@ -19,13 -20,16 +20,26 @@@[m [mimport AccountWelcomePage from './compo[m
+  import AccountInfoPage from './components/AccountInfoPage';[m
+  import AdminIndexPage from './components/AdminIndexPage';[m
+  import NotFoundPage from './components/NotFoundPage';[m
+[32m++<<<<<<< HEAD[m
+[32m +import AdminApp from './components/AdminApp';[m
+[32m +import AdminWelcomePage from './components/AdminWelcomePage';[m
+[32m +import AdminInfoPage from './components/AdminInfoPage';[m
+[32m +import AdminManager from './components/AdminManager';[m
+[32m +import AdminChange from './components/AdminChange';[m
+[32m +import AdminVerify from './components/AdminVerify';[m
+[32m +import AdminVerifyDetail from './components/AdminVerifyDetail';[m
+[32m++=======[m
+[32m+ import AuditorLoginPage from './components/AuditorLoginPage';[m
+[32m+ import AuditPage from './components/AuditPage';[m
+[32m+ import AuditLatestRecordPage from './components/AuditLatestRecordPage'[m
+[32m+ import AuditCheckPage from './components/AuditCheckPage';[m
+[32m+ import AuditSearchPage from './components/AuditSearchPage';[m
+[32m+ import AuditLogPage from './components/AuditLogPage';[m
+[32m+ [m
+[32m+ import { isLoggedIn } from './redux/modules/account/auth';[m
+[32m+ import { AuditorisLoggedIn } from './redux/modules/auditor/auth';[m
+[32m+ [m
+[32m++>>>>>>> c5c82097afa011e1e504412a8426700b540f36ce[m
+  [m
+  const history = syncHistoryWithStore(browserHistory, store);[m
+  [m
+[36m@@@ -32,27 -49,33 +59,40 @@@[m [mconst AuditorcheckLogin = (nextState, r[m
+  const router = ([m
+    <Provider store={store}>[m
+      <Router history={history}>[m
+[31m -      <Route path="/admin">[m
+[32m +      <Route path="/admin" component={AdminApp}>[m
+          <IndexRoute component={AdminIndexPage} />[m
+[32m +        <Route path="/admin/account" component={AdminInfoPage}>[m
+[32m +          <Route path="/admin/account/welcome" component={AdminWelcomePage} />[m
+[32m +          <Route path="/admin/account/manager" component={AdminManager} />[m
+[32m +          <Route path="/admin/account/change" component={AdminChange} />[m
+[32m +          <Route path="/admin/account/verification" component={AdminVerify} />[m
+[32m +          <Route path="/admin/account/verification/detail" component={AdminVerifyDetail} />[m
+[32m +        </Route>[m
+        </Route>[m
+[32m+       <Route path="/auditor" component = {AuditApp}>[m
+[32m+         <IndexRoute component={AuditorLoginPage} />[m
+[32m+         <Route onEnter={AuditorcheckLogin}>[m
+[32m+       <Route path="/audit" component={AuditPage}>[m
+[32m+         <IndexRoute component={AuditLatestRecordPage} />[m
+[32m+         <Route path="/audit/check" component={AuditCheckPage} />[m
+[32m+           <Route path="/audit/search" component={AuditSearchPage} />[m
+[32m+           <Route path="/audit/log" component={AuditLogPage} />[m
+[32m+         </Route>[m
+[32m+       </Route>[m
+[32m+       </Route>[m
+        <Route path="/" component={App}>[m
+          <IndexRoute component={MainPage} />[m
+[31m-         <Route path="/shopping" component={ShoppingPage} />[m
+[31m-         <Route path="/account" component={AccountPage}>[m
+[31m-           <IndexRoute component={AccountWelcomePage} />[m
+[31m-           <Route path="/account/info" component={AccountInfoPage} />[m
+[31m-           <Route path="/account/records" component={AccountRecordPage} />[m
+[31m-           <Route path="/account/security" component={AccountSecurityPage} />[m
+[32m+         <Route onEnter={checkLogin}>[m
+[32m+           <Route path="/shopping" component={ShoppingPage} />[m
+[32m+           <Route path="/account" component={AccountPage} >[m
+[32m+             <IndexRoute component={AccountWelcomePage} />[m
+[32m+             <Route path="/account/info" component={AccountInfoPage} />[m
+[32m+             <Route path="/account/records" component={AccountRecordPage} />[m
+[32m+             <Route path="/account/security" component={AccountSecurityPage} />[m
+[32m+           </Route>[m
+          </Route>[m
+[31m-         <Route path="*" component={NotFoundPage} />[m
+        </Route>[m
+[32m+       <Route path="*" component={NotFoundPage} />[m
+      </Router>[m
+    </Provider>[m
+  );[m

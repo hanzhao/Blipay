@@ -1,0 +1,40 @@
+.form {
+  position: relative;
+  margin: 10px;
+  border: 1px solid #eeeeee;
+  border-radius: 4px;
+}
+
+.formItem {
+  margin-bottom: 2px;
+  padding-bottom: 0;
+  border-top: #eee solid 1px;
+}
+
+.formItem:nth-child(1) {
+  border-top: none;
+}
+
+.input {
+  border: none;
+  font-size: 12px;
+  &:hover {
+    border: none;
+  }
+
+  &:focus {
+    border: none;
+  }
+}
+
+.formIcon {
+  background-color: #eeeeee
+}
+
+.confirm {
+  margin-left: 10px;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  width: 348px;
+  height: 32px;
+}

@@ -1,0 +1,19 @@
+.form {
+  background-color: #fff;
+  width: 400px;
+  border-radius: 7px;
+  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  top: 50%;
+  left: 5%;
+  margin-top: -240px;
+  height: 480px;
+  padding: 100px 50px;
+  text-align: center;
+  :global(.ant-form-item) {
+    margin-bottom: 40px;
+  }
+  .btn {
+    margin-top: 30px;
+  }
+}

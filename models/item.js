@@ -14,15 +14,9 @@ module.exports = (db) => {
     name: {
       type: Sequelize.STRING
     },
-<<<<<<< HEAD
     /* 简介 */
     description: {
       type: Sequelize.TEXT
-=======
-    /* 图片 URL */
-    thumb: {
-      type: Sequelize.STRING
->>>>>>> ac6e5dd1f1a982cc515dd8e25514bf5dcab79f79
     }
   });
 };
