@@ -29,7 +29,7 @@ const checkBalance = (userId) => {
   });
 };
 
-const requestPay = (userId, amount) => {
+const requestPay = (userId, amount, info) => {
   return new Promise((resolve, reject) => {
     if (isNaN(amount)) {
       return reject(new Error('amount is invalid'));
@@ -47,9 +47,10 @@ const requestPay = (userId, amount) => {
       }
       const newTransaction = {
         userId: user.id,
-        amount: amount,
+        amount: -amount,
         type: 3,
-        status: 1
+        status: 1,
+        info: info || `支出 ${amount} 元`
       };
       Transaction.create(newTransaction)
       .then(() => {

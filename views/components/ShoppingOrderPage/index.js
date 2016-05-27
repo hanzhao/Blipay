@@ -1,11 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Modal, Form, Input, InputNumber, message } from 'antd';
+import { Modal, Form, Input, InputNumber, Rate, message } from 'antd';
 import { Button } from 'antd';
 import { Checkbox } from 'antd';
 import { Pagination } from 'antd';
 import pic from './akarin.png'
 import styles from './styles';
+import ShoppingPageHeader from '../ShoppingPageHeader';
 import FormModal from '../FormModal';
 import { Table } from 'antd';
 import ajax from '../../common/ajax';
@@ -23,14 +24,18 @@ let reviews = [];
 
 let userId = 0;
 const pay = async function () {
-  await ajax.post('/api/order/update', {
-    orderId: this.orderId,
-    op: 'pay'
-  });
-  console.log('Pay');
-  message.success('付款成功');
-  contents[this.index].status = 1;
-  this.view.setState({});
+  try {
+    await ajax.post('/api/order/update', {
+      orderId: this.orderId,
+      op: 'pay'
+    });
+    console.log('Pay');
+    message.success('付款成功');
+    contents[this.index].status = 1;
+    this.view.setState({});
+  } catch (e) {
+    message.error('账户余额不足以支付订单')
+  }
 }
 
 const ship = async function () {
@@ -94,6 +99,10 @@ let tableProps =
     }
   };
 let columns = [{
+  title: '订单号',
+  dataIndex: 'id',
+  key: 'id'
+}, {
   title: '宝贝',
   dataIndex: 'name',
   key: 'name',
@@ -111,10 +120,6 @@ let columns = [{
     title: '数量',
     dataIndex: 'count',
     key: 'count'
-  }, {
-    title: '订单编号',
-    dataIndex: 'id',
-    key: 'id'
   }, {
     title: '订单金额',
     dataIndex: 'totalCost',
@@ -196,11 +201,13 @@ class ShoppingReviewModal extends React.Component {
         onCancel={toggleReviewModal}>
         <Form>
           {
-            items.map(e => (
-              <div>
+            items.map((e, i) => (
+              <div key={i}>
                 <span>{e.name}</span>
                 <div>评分</div>
-                <InputNumber id={e.index} size="large" min={1} max={5} step={1} defaultValue={5} onChange={this.onChangeScore} />
+                <span>
+                  <Rate defaultValue={5} onChange={this.onChangeScore} />
+                </span>
                 <div>评价</div>
                 <Input id={e.index} onChange={this.onChangeText}/>
               </div>
@@ -253,6 +260,7 @@ class ShoppingRefundConfirmModal extends React.Component {
     )
   }
 }
+
 
 let BasicDemo = React.createClass(
   {
@@ -329,7 +337,13 @@ class ShoppingOrderPage extends React.Component {
     console.log(user);
     userId = user.id;
     return (
-      <BasicDemo />
+      <div>
+        <ShoppingPageHeader icon="exception" text="订单管理" />
+        <div className={styles.table}>
+          <BasicDemo />
+        </div>
+
+      </div>
     );
   }
 }

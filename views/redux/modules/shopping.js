@@ -16,10 +16,19 @@ const LOAD_ITEMS_SUCCESS = 'Blipay/shopping/LOAD_ITEMS_SUCCESS'
 const LOAD_ITEMS_FAIL = 'Blipay/shopping/LOAD_ITEMS_FAIL'
 // 添加物品进购物车
 const ADD_CART_ITEM = 'Blipay/shopping/ADD_CART_ITEM'
+const DELETE_CART_ITEM = 'Blipay/shopping/DELETE_CART_ITEM'
 // 打开购物车模态框
 const TOGGLE_SHOPPING_CART = 'Blipay/shopping/TOGGLE_SHOPPING_CART'
-// delete all items
+// 购买东西
+const BUY_CART_ITEMS = 'Blipay/shopping/BUY_CART_ITEMS'
+const BUY_CART_ITEMS_SUCCESS = 'Blipay/shopping/BUY_CART_ITEMS_SUCCESS'
+const BUY_CART_ITEMS_FAIL = 'Blipay/shopping/BUY_CART_ITEMS_FAIL'
+// 清空购物车
 const CLEAR_SHOPPING_CART = 'Blipay/shopping/CLEAR_SHOPPING_CART'
+
+const CONFIRM_RECEIVE = 'Blipay/shopping/CONFIRM_RECEIVE'
+const CONFIRM_RECEIVE_SUCCESS = 'Blipay/shopping/CONFIRM_RECEIVE_SUCCESS'
+const CONFIRM_RECEIVE_FAIL = 'Blipay/shopping/CONFIRM_RECEIVE_FAIL'
 
 // Action Creators
 export const addItem = (data) => ({
@@ -45,12 +54,32 @@ export const addCartItem = (item) => ({
   item
 })
 
+export const deleteCartItem = (idx) => ({
+  type: DELETE_CART_ITEM,
+  idx
+})
+
 export const toggleShoppingCart = () => ({
   type: TOGGLE_SHOPPING_CART
 })
 
 export const clearShoppingCart = () => ({
   type: CLEAR_SHOPPING_CART
+})
+
+export const buyCartItems = () => ({
+  types: [BUY_CART_ITEMS, BUY_CART_ITEMS_SUCCESS, BUY_CART_ITEMS_FAIL],
+  promise: (client) => client.post('/api/order/new', {
+    items: store.getState().shopping.cartItems.map(e => e.id)
+  })
+})
+
+export const confirmReceive = (data) => ({
+  types: [CONFIRM_RECEIVE, CONFIRM_RECEIVE_SUCCESS, CONFIRM_RECEIVE_FAIL],
+  promise: (client) => client.post('/api/order/update', {
+    ...data,
+    op: 'confirm'
+  })
 })
 
 const initialState = {
@@ -85,6 +114,17 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         showShoppingCartModal: !state.showShoppingCartModal
+      }
+    case DELETE_CART_ITEM:
+      return {
+        ...state,
+        cartItems: [...state.cartItems.slice(0, action.idx),
+                    ...state.cartItems.slice(action.idx + 1)],
+        showShoppingCartModal: state.cartItems.length > 1
+      }
+    case BUY_CART_ITEMS_SUCCESS:
+      return {
+        ...state
       }
     case CLEAR_SHOPPING_CART:
       return {

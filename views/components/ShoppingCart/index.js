@@ -4,6 +4,7 @@ import { Icon, Button, message } from 'antd';
 import classNames from 'classnames';
 
 import ShoppingCartModal from '../ShoppingCartModal';
+import Container from '../Container';
 import {
   toggleShoppingCart,
   clearShoppingCart
@@ -21,7 +22,8 @@ const getTotalPrice = (items) => (
 
 @connect(
   (state) => ({
-    cartItems: state.shopping.cartItems
+    cartItems: state.shopping.cartItems,
+    showShoppingCartModal: state.shopping.showShoppingCartModal
   }),
   (dispatch) => ({
     toggleShoppingCart: () => dispatch(toggleShoppingCart()),
@@ -29,54 +31,35 @@ const getTotalPrice = (items) => (
   })
 )
 class ShoppingCart extends React.Component {
-  handleSubmit = async function () {
-    console.log(this.cartItems);
-    const items = [];
-    for (let i = 0; i < this.cartItems.length; i++) {
-      let element = this.cartItems[i];
-      items.push({
-        itemId: element.id,
-        count: element.amount
-      });
-    }
-    const res = await ajax.post('/api/order/new', {
-      sellerId: this.cartItems[0].seller.id,
-      count: this.cartItems.length,
-      cost: getTotalPrice(this.cartItems),
-      items: items
-    });
-    if (res)
-      this.clearAction();
-      message.success('成功提交订单');
-  };
   render() {
     const { cartItems } = this.props
     return (
       <div className={classNames({
         [styles.cart]: true,
-        [styles.show]: cartItems.length > 0
+        [styles.show]: cartItems.length > 0 && !this.props.showShoppingCartModal
       }) }>
         <ShoppingCartModal onCancel={this.props.toggleShoppingCart}
           footer={null} />
-        <div className={styles.inner}>
-          <span className={styles.cartIcon}
-            onClick={this.props.toggleShoppingCart}>
-            <Icon type="shopping-cart" />
-            <span className={styles.counter}>
-              { this.props.cartItems.length }
+        <Container>
+          <div className={styles.inner}>
+            {/* <span className={styles.pricer}>
+              { getTotalAmount(cartItems) } 件商品，
+              一共 <span className={styles.price}>
+                { getTotalPrice(cartItems).toFixed(2) }
+              </span> 元
+            </span> */}
+            <span className={styles.cartIcon}
+              onClick={this.props.toggleShoppingCart}>
+              <Icon type="shopping-cart" />
+              <span className={styles.counter}>
+                { this.props.cartItems.length }
+              </span>
+              <span className={styles.viewCart}>
+                查看购物车
+              </span>
             </span>
-          </span>
-          <span className={styles.pricer}>
-            {getTotalAmount(cartItems) } 件商品，
-            总价：
-            <span className={styles.price}>
-              { getTotalPrice(cartItems) }
-            </span>
-          </span>
-          <Button type="primary" cartItems={cartItems} onClick ={this.handleSubmit} clearAction={ this.props.clearShoppingCart }>
-            结算
-          </Button>
-        </div>
+          </div>
+        </Container>
       </div>
     )
   }

@@ -34,7 +34,9 @@ Order.belongsTo(User, { as: 'seller' });
 Order.belongsTo(User, { as: 'buyer' });
 Order.belongsToMany(Item, { through: OrderItem });
 
+Review.belongsTo(User)
 Item.hasMany(Review);
+User.hasMany(Review)
 
 Attachment.belongsTo(User)
 Attachment.belongsToMany(Item, { through: ItemAttachment })

@@ -7,6 +7,7 @@ import { Form, Input, Checkbox } from 'antd';
 import { Pagination } from 'antd';
 import styles from './styles';
 import ShoppingItemManageTable from '../ShoppingItemManageTable'
+import ShoppingPageHeader from '../ShoppingPageHeader';
 import { Card, Col, Row } from 'antd';
 import { Table } from 'antd';
 import { InputNumber } from 'antd';
@@ -36,15 +37,13 @@ let BasicDemo = React.createClass
     render() {
       return (
         <div className={styles.container}>
-          <div className={styles.upperHalf}>
-            <Cascader className={styles.cascader} placeholder="请选择排序类型" options={optionsPrice} onChange={onChange} />
-          </div>
-          <div rclassName={styles.lowerHalf}>
-            {
-              contents.map((e, i) => (
-                <ShoppingItemManageTable key={i} content={e} />
-              ))
-            }
+          <ShoppingPageHeader icon="exception" text="商品管理" />
+          <div className={styles.lowerHalf}>
+          {
+            contents.map((e, i) => (
+              <ShoppingItemManageTable key={i} content={e} />
+            ))
+          }
           </div>
         </div>
       );
