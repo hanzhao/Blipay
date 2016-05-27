@@ -4,7 +4,6 @@
 import React from 'react';
 import { Link } from 'react-router';
 import photo from './2233.png';
-import FormModal from '../FormModal';
 import { Input, Button, Row,Col, Table,Popconfirm,message,Form,Modal} from 'antd';
 import styles from './styles';
 
@@ -55,7 +54,7 @@ const Reject = React.createClass({
             </Button>,
           ]}
 
-          <Input placeholder="请输入拒绝理由" defaultvalue=null/>
+          <Input placeholder="请输入拒绝理由" />
 
         </Modal>
       </div>
