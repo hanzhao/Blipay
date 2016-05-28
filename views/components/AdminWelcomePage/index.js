@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { asyncConnect } from 'redux-connect';
 import { Button } from 'antd';
-import AccountRecordTable from '../managementrecord';
+import AdminRecordTable from '../AdminRecordTable';
 import FormModal from '../managementformmodel';
 import styles from './styles';
 import store from '../../redux/store';
@@ -39,10 +39,6 @@ const getLevelDetail = (level) => {
   }
 }
 
-const tableProps = {
-  pagination: false
-};
-
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState } }) => {
@@ -51,9 +47,7 @@ const tableProps = {
   }],
   (state) => ({
     admin: state.admin.admin,
-    adminLog: state.admin.adminLog
-  }),
-  (dispatch) => ({
+    logs: state.admin.logs
   })
 )
 
@@ -73,7 +67,7 @@ class AccountWelcomePage extends React.Component {
     });
   };
   render() {
-    const { admin, adminLog } = this.props;
+    const { admin, logs } = this.props;
     return (
       <div className={styles.container}>
         <div className={styles.upperHalf}>
@@ -97,7 +91,7 @@ class AccountWelcomePage extends React.Component {
         <div className={styles.lowerHalf}>
           <div className={styles.title}>最近操作记录</div>
           <div className={styles.tableWrapper}>
-            <AccountRecordTable data={adminLog} tableProps={tableProps}/>
+            <AdminRecordTable data={logs} />
           </div>
         </div>
       </div>

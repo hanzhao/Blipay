@@ -97,7 +97,7 @@ export const login = (data) => ({
   promise: (client) => client.post('/api/admin/login', data)
 });
 
-export const getAdminLog = () =>({
+export const getAdminLog = () => ({
     types: [GET_ADMIN_LOG, GET_ADMIN_LOG_SUCCESS, GET_ADMIN_LOG_FAIL],
     promise: (client) => client.get('/api/admin/log')
 });
@@ -240,8 +240,7 @@ export default function reducer(state = initialState, action = {}) {
     case GET_ADMIN_LOG_SUCCESS:
       return{
         ...state,
-        adminLog: action.result.adminLog,
-        message: null
+        logs: action.result.logs
       }
     case USER_SEARCH_SUCCESS:
       return{
@@ -265,26 +264,6 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         verifyingUsers: action.result.verifyingUsers,
       }
-    case ADD_ADMIN:
-      return {
-        ...state,
-        message: null
-      }
-    case DELETE_ADMIN:
-      return {
-        ...state,
-        message: null
-      }
-    case MODIFY_ADMIN:
-      return {
-        ...state,
-        message: null
-      }
-    case MODIFY_USER:
-      return {
-        ...state,
-        message: null
-      }
     case VERIFY_SUCCESS:
       // 更新用户信息
       const updated = action.result.user
@@ -294,11 +273,6 @@ export default function reducer(state = initialState, action = {}) {
         verifyingUsers: [...state.verifyingUsers.slice(0, index),
                          { ...state.verifyingUsers[index], ...updated },
                          ...state.verifyingUsers.slice(index + 1)]
-      }
-    case ARBITRATION_LIST:
-      return {
-        ...state,
-        message: null
       }
     case ADD_ADMIN_SUCCESS:
       return {

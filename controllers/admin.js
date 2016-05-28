@@ -8,7 +8,7 @@ const crypto = require('crypto');
 const router = Router();
 const Identification = require('../models').Identification;
 const Arbitration = require('../models').Arbitration;
-const Log = require('../models').AdminLog;
+const AdminLog = require('../models').AdminLog;
 
 const cookPassword = (key,salt,saltPos) => {
     var hash = crypto.createHash('sha512');
@@ -257,7 +257,7 @@ router.post('/admin/deleteuser',Promise.coroutine(function *(req,res) {
                 userName: user.userName
             }
         })
-        yield Log.create({
+        yield AdminLog.create({
             date: new Date(),
             content: 'delete',
             adminName: req.body.adminName,
@@ -343,13 +343,14 @@ router.get('/admin/admininfo',Promise.coroutine(function *(req,res){
 }));
 
 /*查找所有的管理员操作记录*/
-router.get('/admin/log',Promise.coroutine(function *(req,res){
-    let r = yield Log.findAll({
-    });
-    return res.success({
-        adminLog: r,
-        code: 0
-    })
+router.get('/admin/log', Promise.coroutine(function* (req, res) {
+  if (!req.session.adminId) {
+    return res.status(403).fail()
+  }
+  let logs = yield AdminLog.findAll({
+    include: Admin
+  });
+  return res.success({ logs })
 }));
 
 /*查看所有的未自动认证用户*/
@@ -396,9 +397,13 @@ router.post('/admin/verify', Promise.coroutine(function* (req,res) {
     return res.status(403).fail();
   }
   const user = yield User.findById(req.body.id, {
-    attributes: ['id', 'status']
+    attributes: ['id', 'status', 'userName']
   });
   user.status = req.body.status
+  yield AdminLog.create({
+    adminId: req.session.adminId,
+    content: `${req.body.status == 2 ? '通过' : '拒绝'}了用户 #${user.id} - ${user.userName} 的实名验证`
+  })
   yield user.save()
   res.success({ user })
 }));
