@@ -1,0 +1,55 @@
+.container {
+  position: relative;
+  padding: 0 30px;
+  .infoContainer {
+    .carousel {
+      width: 45%;
+      margin-right: 5%;
+      float: left;
+    }
+    .info {
+      float: left;
+      width: 50%;
+      font-size: 15px;
+      height: 350px;
+      position: relative;
+      & > div {
+        margin-bottom: 20px;
+        line-height: 24px;
+      }
+      .price {
+        font-size: 15px;
+        .priceNumber {
+          color: #c63555;
+          font-size: 20px;
+          &::before {
+            content: '¥';
+          }
+        }
+      }
+      .remain {
+        font-size: 15px;
+      }
+      &::after {
+        clear: both;
+        content: ' ';
+      }
+      .buttonContainer {
+        position: absolute;
+        text-align: center;
+        bottom: 40px;
+        width: 100%;
+      }
+    }
+  }
+}
+
+.title {
+  font-size: 24px;
+  padding-bottom: 10px;
+}
+
+.feedback {
+  position: absolute;
+  top: 450px;
+}

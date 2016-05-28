@@ -1,0 +1,28 @@
+.wrapper {
+ 	 background-color: #eeeeee;
+	.container{
+    position: relative;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    height: 100%;
+    margin: auto;
+    .left {
+      float: left;
+      position: relative;
+      width: 24%;
+      height: 100%;
+      background-color: #ffffff;
+    }
+    .right {
+      float: left;
+      position: relative;
+      width: 74%;
+      margin-left: 2%;
+      height: 100%;
+      background-color: #ffffff;
+    }
+    :global(.ant-input-lg) {
+      font-size: 12px;
+    }
+	}
+}
