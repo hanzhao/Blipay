@@ -43,6 +43,13 @@ import ShoppingItemManage from './components/ShoppingItemManage';
 import BookingPage from './components/BookingPage'
 import BookingInfoPage from './components/BookingInfoPage'
 
+import AuditApp from './components/AuditApp';
+import AuditorLoginPage from './components/AuditorLoginPage';
+import AuditPage from './components/AuditPage';
+import AuditLatestRecordPage from './components/AuditLatestRecordPage'
+import AuditCheckPage from './components/AuditCheckPage';
+import AuditSearchPage from './components/AuditSearchPage';
+import AuditLogPage from './components/AuditLogPage';
 
 const history = syncHistoryWithStore(browserHistory, store);
 
@@ -62,6 +69,18 @@ const router = (
         </Route>
         <Route path="/admin/register" component={AdminRegisterPage} />   //调试使用
       </Route>
+
+       <Route path="/auditor" component = {AuditApp}>
+        <IndexRoute component={AuditorLoginPage} />
+
+      <Route path="/audit" component={AuditPage}>
+        <IndexRoute component={AuditLatestRecordPage} />
+        <Route path="/audit/check" component={AuditCheckPage} />
+          <Route path="/audit/search" component={AuditSearchPage} />
+          <Route path="/audit/log" component={AuditLogPage} />
+      </Route>
+      </Route>
+      
       <Route path="/" component={App} >
         <IndexRoute component={MainPage} />
         <Route path="/account" component={AccountPage} >
