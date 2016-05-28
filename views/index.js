@@ -40,6 +40,10 @@ import ShoppingInfoPage from './components/ShoppingInfoPage';
 import ShoppingAddItemPage from './components/ShoppingAddItemPage';
 import ShoppingItemManage from './components/ShoppingItemManage';
 
+import BookingPage from './components/BookingPage'
+import BookingInfoPage from './components/BookingInfoPage'
+
+
 const history = syncHistoryWithStore(browserHistory, store);
 
 const router = (
@@ -73,6 +77,9 @@ const router = (
           <Route path="/shopping/order" component={ShoppingOrderPage} />
           <Route path="/shopping/add_item" component={ShoppingAddItemPage} />
           <Route path="/shopping/manage_item" component={ShoppingItemManage} />
+        </Route>
+        <Route path="/booking" component={BookingPage}>
+          <IndexRoute component={BookingInfoPage} />
         </Route>
       </Route>
       <Route path="*" component={NotFoundPage} />
