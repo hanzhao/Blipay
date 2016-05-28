@@ -221,7 +221,7 @@ export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
     case LOGIN_SUCCESS:
       setTimeout(() => {
-        store.dispatch(push('/admin/account/welcome'))
+        store.dispatch(push('/admin/panel/welcome'))
       }, 0)
       return {
         ...state,

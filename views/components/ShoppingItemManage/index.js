@@ -29,7 +29,7 @@ let BasicDemo = React.createClass
   (
   {
     componentDidMount: async function () {
-      const res = await ajax.post('/api/item/item_list', { filter: {}, sellerId: 1 });
+      const res = await ajax.post('/api/item/item_list', { filter: {} });
       Object.assign(contents, res.items);
       console.log(res);
       this.setState({});
