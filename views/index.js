@@ -49,8 +49,7 @@ import BookingInfoPage from './components/BookingInfoPage'
 import AuditApp from './components/AuditApp';
 import AuditorLoginPage from './components/AuditorLoginPage';
 import AuditPage from './components/AuditPage';
-import AuditLatestRecordPage from './components/AuditLatestRecordPage'
-import AuditCheckPage from './components/AuditCheckPage';
+import AuditLatestRecordPage from './components/AuditLatestRecordPage';
 import AuditSearchPage from './components/AuditSearchPage';
 import AuditLogPage from './components/AuditLogPage';
 
@@ -82,7 +81,6 @@ const router = (
 
       <Route path="/audit" component={AuditPage}>
         <IndexRoute component={AuditLatestRecordPage} />
-        <Route path="/audit/check" component={AuditCheckPage} />
           <Route path="/audit/search" component={AuditSearchPage} />
           <Route path="/audit/log" component={AuditLogPage} />
       </Route>

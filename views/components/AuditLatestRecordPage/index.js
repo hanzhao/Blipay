@@ -1,66 +1,56 @@
 /*
- * “个人账户”页面中“交易记录”选项对应的右侧方框。
+ * 每日生成最新帳單
  */
 import React from 'react';
 import _ from 'lodash';
 import { asyncConnect } from 'redux-connect';
-import { reduxForm } from 'redux-form';
-import { Form, DatePicker, Button } from 'antd';
-import AccountRecordTable from '../AccountRecordTable';
-import store from '../../redux/store';
+import { Button } from 'antd';
+import AccountRecordTable from '../AuditRecordTable';
+import FormModal from '../FormModal';
 import styles from './styles';
+import ajax from '../../common/ajax';
+import store from '../../redux/store';
+import moment from 'moment';
 import {
+  logout,
   loadTransactions,
-} from '../../redux/modules/account';
-
-const RangePicker = DatePicker.RangePicker;
+} from '../../redux/modules/auditor';
 
 const tableProps = {
-  pagination: {
-    simple: true,
-    /* 一页能显示的交易记录的最大数目 */
-    pageSize: Math.max(1, Math.floor((window.innerHeight - 350) / 50))
-  }
+  pagination: false
 };
 
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState } }) => {
-      return dispatch(loadTransactions())
+      return dispatch(loadTransactions());
     }
   }],
   (state) => ({
-    // 通过 slice 生成新对象，不要改变原对象
-    transactions: _.reverse(_.slice(state.account.transactions))
+    user: state.auditor.user,
+    transactions: _.reverse(_.slice(state.auditor.transactions)),
+    showTopupModal: state.auditor.showTopupModal,
+    showWithdrawModal: state.auditor.showWithdrawModal
+  }),
+  (dispatch) => ({
+    toggleTopup: () => dispatch(toggleTopup()),
+    toggleWithdraw: () => dispatch(toggleWithdraw()),
+    logout: () => dispatch(logout()),
+    handleTopup: (data) => dispatch(topup(data)),
+    handleWithdraw: (data) => dispatch(withdraw(data)),
   })
 )
-class AccountRecordPage extends React.Component {
-  state = {
-    range: [new Date(0), new Date()]
-  }
-  handleChange = (value) => {
-    this.setState({
-      range: [value[0], value[1]]
-    })
-  }
+class AuditLatestRecordPage extends React.Component {
   render() {
-    const transactions = this.props.transactions.filter((e) =>
-      e.createdAt >= this.state.range[0] && e.createdAt <= this.state.range[1]
-    )
+    const { user, transactions } = this.props
     return (
       <div className={styles.container}>
-        <RangePicker className={styles.picker}
-                     showTime
-                     onChange={this.handleChange} />
-        <div className={styles.wrapper}>
-          <AccountRecordTable
-            className={styles.table}
-            data={transactions}
-            tableProps={tableProps} />
-        </div>
+            <AccountRecordTable
+              data={transactions.slice(0, 10)}
+              tableProps={tableProps}/>
       </div>
     );
   }
 }
 
-export default AccountRecordPage;
+export default AuditLatestRecordPage;

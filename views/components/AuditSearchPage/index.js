@@ -13,12 +13,14 @@ function onChange(e) {
 class AuditSearchPage extends React.Component {
   render() {
     return (
- <div style={{ marginTop: 16}}>
+      <div className={styles.wrapper}>
+ <div className={styles.searcher}>
     <RadioGroup onChange={onChange} defaultValue="a">
       <RadioButton value="a">订单编号</RadioButton>
       <RadioButton value="b">买家帐号</RadioButton>
       <RadioButton value="c">卖家帐号</RadioButton>
     </RadioGroup>
+  </div>
   </div>
     );
   }

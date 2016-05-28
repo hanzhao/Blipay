@@ -1,48 +1,75 @@
 import React from 'react';
 import { Table } from 'antd';
+import moment from 'moment'
 
 import styles from './styles';
 
 const columns = [{
-  title: '交易时间',
-  dataIndex: 'date',
-  key: 'date',
-      sorter: (a, b) => a.date - b.date
+  title: '交易流水号',
+  dataIndex: 'orderId',
+  key: 'orderId',
+  sorter: (a, b) => a.orderId < b.iorderId ? -1 : 1
 }, {
-  title: '买方',
-  dataIndex: 'userId',
-  key: 'buyer'
-},{
-  title: '买方支出',
-  dataIndex: 'amount',
-  key: 'buy',
-    sorter: (a, b) => a.amount - b.amount,
+  title: '交易金额',
+  dataIndex: 'totalCost',
+  key: 'totalCost',
+  sorter: (a, b) => a.totalCost < b.totalCost ? -1 : 1
 }, {
-  title: '买方',
-  dataIndex: 'userId',
-  key: 'seller'
-},{
-  title: '卖方收入',
-  dataIndex: 'date',
-  key: 'sell'
+  title: '买家id',
+  dataIndex: 'buyerId',
+  key: 'buyerId'
+}, {
+  title: '买家支出',
+  dataIndex: 'buyerPay',
+  key: 'buyerPay'
+}, {
+  title: '卖家id',
+  dataIndex: 'sellerId',
+  key: 'sellerId'
+}, {
+  title: '卖家收入',
+  dataIndex: 'sellerGet',
+  key: 'sellerGet'
 }, {
   title: '交易状态',
   dataIndex: 'status',
-  key: 'status'
+  key: 'status',
+  render: (text) => (
+    <span>{ text ? '交易完成' : '等待处理' }</span>
+  ),
+  sorter: (a, b) => a.status < b.status ? -1 : 1
+},{
+  title: '错误判断',
+  dataIndex: 'wrongStatus',
+  key: 'wrongStatus',
+  filters: [{
+    text: '错误',
+    value: '1',
+  }, {
+    text: '警告',
+    value: '2',
+  }],
+  filterMultiple: true,
+  onFilter: (value, record) => record.wrongStatus== value,
+  render(text){
+    switch(text)
+    {
+      case 0:
+      return '正确';
+      case 1:
+      return <p><font color="red">错误</font></p>;
+      case 2:
+      return <p><font color="orange">警告</font></p>;
+    } ;
+  },
+  sorter: (a, b) => a.wrongStatus < b.wrongStatus ? -1 : 1
 }];
-
-
-function onChange(pagination, filters, sorter) {
-  // 点击分页、筛选、排序时触发
-  console.log('各类参数是', pagination, filters, sorter);
-}
-
 
 const wrapAmount = (data) => {
   return data.map((d, index) => ({
     ...d,
     key: index,
-    amount: `${d.amount.toFixed(2)}`
+    amount: `${d.totalCost.toFixed(2)}`
   }));
 };
 
@@ -51,8 +78,7 @@ class AuditRecordTable extends React.Component {
     return (
       <div className={styles.table}>
         <Table dataSource={wrapAmount(this.props.data || [])}
-               columns={columns} {...this.props.tableProps } onChange={onChange}/>
-
+               columns={columns} {...this.props.tableProps} />
       </div>
     );
   }

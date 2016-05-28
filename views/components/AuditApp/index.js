@@ -7,7 +7,7 @@ import AuditorLoginBar from '../AuditorLoginBar/';
 
 import './styles';
 
-class App extends React.Component {
+class AuditApp extends React.Component {
   render() {
     return (
       <div>
@@ -18,4 +18,4 @@ class App extends React.Component {
   }
 }
 
-export default App;
+export default AuditApp;

@@ -8,7 +8,6 @@ import { Menu, Icon } from 'antd';
 
 const menus = [
   { to: '/audit', text: '最新帐单', icon: 'star' },
-  { to: '/audit/check', text: '检查错误与警告', icon: 'scan' },
   { to: '/audit/search', text: '检索', icon: 'search' },
   { to: '/audit/log', text: '日誌', icon: 'file-text' },
 ];
