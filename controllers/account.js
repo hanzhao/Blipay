@@ -168,7 +168,7 @@ router.get('/account/check_username', Promise.coroutine(function* (req, res) {
   if (!user) {
     return res.success();
   } else {
-    return res.fail({ type: 'USER_EXIST' });
+    return res.fail({ type: 'USERNAME_EXIST' });
   }
 }));
 

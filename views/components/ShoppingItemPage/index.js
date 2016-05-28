@@ -48,7 +48,8 @@ class ReviewContent extends React.Component {
     }
   }],
   (state) => ({
-    item: state.shopping.item
+    item: state.shopping.item,
+    user: state.account.user
   }),
   (dispatch) => ({
     handleAddCartItem: (item) => dispatch(addCartItem({ ...item, amount: item.amount.now }))
@@ -62,8 +63,7 @@ class ShoppingItemPage extends React.Component {
     this.amount.now = amount
   }
   render() {
-    const { item, handleAddCartItem } = this.props
-    console.log(item);
+    const { user, item, handleAddCartItem } = this.props
     return (
       <div>
         <ShoppingPageHeader icon="smile" text="浏览商品" />
@@ -113,8 +113,12 @@ class ShoppingItemPage extends React.Component {
               </Row>
               <div className={styles.buttonContainer}>
                 <Button size="large" type="primary"
-                        onClick={handleAddCartItem.bind(this, { ...item, amount: this.amount })}>
-                  <Icon type="shopping-cart" /> 放入购物车
+                        onClick={handleAddCartItem.bind(this, { ...item, amount: this.amount })}
+                        disabled={user && user.id === item.seller.id}>
+                  <Icon type="shopping-cart" /> {
+                    user && user.id === item.seller.id
+                    ? '我的商品' : '放入购物车'
+                  }
                 </Button>
               </div>
             </div>

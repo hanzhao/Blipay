@@ -8,7 +8,6 @@ import { reduxForm } from 'redux-form';
 import { asyncConnect } from 'redux-connect';
 import { Button } from 'antd';
 import AdminRecordTable from '../AdminRecordTable';
-import FormModal from '../managementformmodel';
 import styles from './styles';
 import store from '../../redux/store';
 import ajax from '../../common/ajax';
@@ -39,6 +38,16 @@ const getLevelDetail = (level) => {
   }
 }
 
+const getGreeting = () => {
+  const hour = (new Date()).getHours();
+  if (hour >= 5 && hour <= 12)
+    return '上午好';
+  else if (hour > 12 && hour <= 18)
+    return '下午好';
+  else
+    return '晚上好';
+};
+
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState } }) => {
@@ -50,7 +59,6 @@ const getLevelDetail = (level) => {
     logs: state.admin.logs
   })
 )
-
 class AccountWelcomePage extends React.Component {
   state = {
     showTopup: false,
@@ -72,7 +80,7 @@ class AccountWelcomePage extends React.Component {
       <div className={styles.container}>
         <div className={styles.upperHalf}>
           <div className={styles.info}>
-            <div className={styles.greeting}>{admin.realName}，晚上好！</div>
+            <div className={styles.greeting}>{admin.realName || admin.adminName}，{ getGreeting() }！</div>
             <div className={styles.lastLogin}>
               上次登录时间：2016.05.11 12:00
             </div>

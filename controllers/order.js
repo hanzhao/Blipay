@@ -54,6 +54,8 @@ router.post('/item/item_list', Promise.coroutine(function* (req, res) {
     let filter = {};
     if (validate(req.body.sellerId)) {
       filter.sellerId = req.body.sellerId;
+    } else {
+      filter.sellerId = req.session.userId;
     }
     if (validate(req.body.filter)) {
 
@@ -73,9 +75,9 @@ router.post('/item/item_list', Promise.coroutine(function* (req, res) {
     return res.success({
       items: yield Item.findAll({
         where: filter,
-        order: req.body.base + req.body.order,
-        offset: req.body.head,
-        limit: req.body.length,
+        order: (req.body.base + req.body.order) || 'id DESC',
+        offset: req.body.head || 0,
+        limit: req.body.length || 1000,
         include: [{
           model: Attachment,
           through: ItemAttachment,

@@ -1,7 +1,8 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { Form, Input, Row, Col, Button, InputNumber,
-          Upload, Icon, Modal, DatePicker, message } from 'antd';
+          Upload, Icon, Modal, DatePicker, Alert, message } from 'antd';
 
 import Container from '../Container';
 import ShoppingPageHeader from '../ShoppingPageHeader';
@@ -52,6 +53,11 @@ function getValidate(item) {
   }
 }
 
+@connect(
+  (state) => ({
+    status: state.account.user.status
+  })
+)
 @reduxForm({
   form: 'shopping-add-item',
   fields: ['name', 'price', 'remain', 'photo', 'description'],
@@ -83,9 +89,16 @@ class ShoppingAddItemForm extends React.Component {
   }
   render() {
     const { fields: { name, price, remain, description, photo },
-             handleSubmit, resetForm } = this.props;
+             handleSubmit, resetForm, status } = this.props;
     return (
       <Form horizontal onSubmit={handleSubmit}>
+        <div className={styles.alert}>
+          { status !== 2 &&
+            <Alert message="尚未通过实名验证"
+                   description="为了保证平台用户的权益，Blipay 不允许未通过实名验证的用户发布商品。"
+                   type="error" />
+          }
+        </div>
         <Form.Item label="商品名：" hasFeedback
           {...getValidate(name)} {...formItemLayout}>
           <Input placeholder="请输入商品名" {...name} />
@@ -117,7 +130,7 @@ class ShoppingAddItemForm extends React.Component {
         </Form.Item>
         <div className={styles.buttonContainer}>
           <Button className={styles.buttonSummit} type="primary"
-                  htmlType="submit">
+                  htmlType="submit" disabled={status !== 2}>
             确定
           </Button>
           <Button className={styles.buttonReset} type="ghost"

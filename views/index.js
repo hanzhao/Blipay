@@ -21,7 +21,6 @@ import AccountSecurityPage from './components/AccountSecurityPage';
 import AccountWelcomePage from './components/AccountWelcomePage';
 import AccountInfoPage from './components/AccountInfoPage';
 import AdminIndexPage from './components/AdminIndexPage';
-import NotFoundPage from './components/NotFoundPage';
 import AdminApp from './components/AdminApp';
 import AdminWelcomePage from './components/AdminWelcomePage';
 import AdminInfoPage from './components/AdminInfoPage';
@@ -29,9 +28,12 @@ import AdminManager from './components/AdminManager';
 import AdminChange from './components/AdminChange';
 import AdminRegisterPage from './components/AdminRegisterPage';
 import AdminJudgement from './components/AdminJudgement';
-
 import AdminVerify from './components/AdminVerify';
 import AdminVerifyDetail from './components/AdminVerifyDetail';
+import AdminManagePage from './components/AdminManagePage';
+import AdminManageUserPage from './components/AdminManageUserPage';
+import AdminManageAuditorPage from './components/AdminManageAuditorPage';
+import AdminManageAdminPage from './components/AdminManageAdminPage';
 import ShoppingPage from './components/ShoppingPage';
 import ShoppingItemPage from './components/ShoppingItemPage';
 import ShoppingWelcomePage from './components/ShoppingWelcomePage';
@@ -39,6 +41,7 @@ import ShoppingOrderPage from './components/ShoppingOrderPage';
 import ShoppingInfoPage from './components/ShoppingInfoPage';
 import ShoppingAddItemPage from './components/ShoppingAddItemPage';
 import ShoppingItemManage from './components/ShoppingItemManage';
+import NotFoundPage from './components/NotFoundPage';
 
 import BookingPage from './components/BookingPage'
 import BookingInfoPage from './components/BookingInfoPage'
@@ -52,15 +55,19 @@ const router = (
             render={(props) => <ReduxAsyncConnect {...props} />}>
       <Route path="/admin" component={AdminApp}>
         <IndexRoute component={AdminIndexPage} />
-        <Route path="/admin/account" component={AdminInfoPage}>
-          <Route path="/admin/account/welcome" component={AdminWelcomePage} />
-          <Route path="/admin/account/manage" component={AdminManager} />
-          <Route path="/admin/account/change" component={AdminChange} />
-	        <Route path="/admin/account/judgement" component={AdminJudgement} />
-          <Route path="/admin/account/verification" component={AdminVerify} />
-          <Route path="/admin/account/verification/:userId/detail" component={AdminVerifyDetail} />
+        <Route path="/admin/panel" component={AdminInfoPage}>
+          <Route path="/admin/panel/welcome" component={AdminWelcomePage} />
+          <Route path="/admin/panel/manage" component={AdminManagePage}>
+            <Route path="/admin/panel/manage/user" component={AdminManageUserPage} />
+            <Route path="/admin/panel/manage/auditor" component={AdminManageAuditorPage} />
+            <Route path="/admin/panel/manage/admin" component={AdminManageAdminPage} />
+          </Route>
+          <Route path="/admin/panel/change" component={AdminChange} />
+	        <Route path="/admin/panel/judgement" component={AdminJudgement} />
+          <Route path="/admin/panel/verification" component={AdminVerify} />
+          <Route path="/admin/panel/verification/:userId/detail" component={AdminVerifyDetail} />
         </Route>
-        <Route path="/admin/register" component={AdminRegisterPage} />   //调试使用
+        <Route path="/admin/register" component={AdminRegisterPage} />
       </Route>
       <Route path="/" component={App} >
         <IndexRoute component={MainPage} />
