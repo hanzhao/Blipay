@@ -50,11 +50,11 @@ const router = (
         <IndexRoute component={AdminIndexPage} />
         <Route path="/admin/account" component={AdminInfoPage}>
           <Route path="/admin/account/welcome" component={AdminWelcomePage} />
-          <Route path="/admin/account/manager" component={AdminManager} />
+          <Route path="/admin/account/manage" component={AdminManager} />
           <Route path="/admin/account/change" component={AdminChange} />
 	        <Route path="/admin/account/judgement" component={AdminJudgement} />
           <Route path="/admin/account/verification" component={AdminVerify} />
-          <Route path="/admin/account/verification/detail" component={AdminVerifyDetail} />
+          <Route path="/admin/account/verification/:userId/detail" component={AdminVerifyDetail} />
         </Route>
         <Route path="/admin/register" component={AdminRegisterPage} />   //调试使用
       </Route>

@@ -19,37 +19,39 @@ const cookPassword = (key,salt,saltPos) => {
 };
 
 /*管理员登录*/
-router.post('/admin/login',Promise.coroutine(function *(req,res){
+router.post('/admin/login',Promise.coroutine(function* (req,res){
     console.log('in /admin/login');
     console.log(req.body);
 
     let admin = yield Admin.findOne({
-        where:{
-            adminName: req.body.username
-        }
+      where:{ adminName: req.body.username }
     })
     if(!admin){
-        return res.fail({
-            code: -1
-        });
+      return res.fail({
+        code: -1
+      });
     }
     if(cookPassword(req.body.password,
                     admin.loginSalt,
-                    config.loginSaltPos) === admin.loginPass){
-        return res.success({
-            code:0,
-            admin
-        });
+                    config.loginSaltPos) === admin.loginPass) {
+      req.session.adminId = admin.id
+      return res.success({ admin });
     }
-    else{
-        return res.fail({
-           code: -3
-        });
+    else {
+      return res.fail();
     }
 }));
 
+router.get('/admin/info', Promise.coroutine(function* (req, res) {
+  if (!req.session.adminId) {
+    return res.status(403).fail()
+  }
+  const admin = yield Admin.findById(req.session.adminId)
+  return res.success({ admin })
+}))
+
 /*管理员注册账户*/ //仅仅调试使用
-router.post(('/admin/register'),Promise.coroutine(function *(req,res) {
+router.post('/admin/register', Promise.coroutine(function *(req,res) {
     console.log('in /admin/register');
     console.log(req.body);
         const loginSalt=crypto.randomBytes(64).toString('base64');
@@ -154,6 +156,7 @@ router.post('/admin/withdrawal',Promise.coroutine(function *(req,res){
                 code: 0
             });
 }));
+
 
 /*自动实名认证*/
 router.post('/admin/identification',Promise.coroutine(function *(req,res){
@@ -350,17 +353,14 @@ router.get('/admin/log',Promise.coroutine(function *(req,res){
 }));
 
 /*查看所有的未自动认证用户*/
-router.get('/admin/verifylist',Promise.coroutine(function *(req,res){
-    let unVerifiedUser= yield User.findAll({
-        where:{
-            status : false
-        }
-    });
-
-    return res.success({
-        code:0,
-        unverifieduser: unVerifiedUser
-    });
+router.get('/admin/verifyinglist',Promise.coroutine(function* (req,res) {
+  if (!req.session.adminId) {
+    return res.status(403).fail()
+  }
+  const verifyingUsers = yield User.findAll({
+    where: { status: 1 }
+  });
+  return res.success({ verifyingUsers });
 }));
 
 /*获取仲裁信息*/
@@ -391,16 +391,16 @@ router.post('/admin/dealarbitration',Promise.coroutine(function *(req,res){
     });
 }));
 
-router.post('/admin/verify',Promise.coroutine(function* (req,res){
-    yield User.update(
-    {
-        status: 2
-    },{
-        where:{
-            userName: req.body.userName
-        }
-    }
-    );
+router.post('/admin/verify', Promise.coroutine(function* (req,res) {
+  if (!req.session.adminId) {
+    return res.status(403).fail();
+  }
+  const user = yield User.findById(req.body.id, {
+    attributes: ['id', 'status']
+  });
+  user.status = req.body.status
+  yield user.save()
+  res.success({ user })
 }));
 
 /*添加管理员*/

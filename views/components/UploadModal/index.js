@@ -21,10 +21,11 @@ class UploadModal extends React.Component {
 
   render() {
     const uploadProps = {
-      name: 'photo',
-      action: '/api/account/verification',
-      onChange: this.handleChange,
-      onRemove: this.handleMove
+      action: "/api/photo/new",
+      name: "photo",
+      listType: "picture",
+      accept: "image/*",
+      onChange: this.handleChange
     };
     return (
       <div>
@@ -38,7 +39,7 @@ class UploadModal extends React.Component {
               <Icon type="plus"/>
               <div className={styles.hint}>
                 请拖拽或点击上传身份证正反面复印件或照片。
-                <br/>
+                <br />
                 只有最后上传的两张图片将被保存。
               </div>
             </Upload.Dragger>
@@ -49,7 +50,9 @@ class UploadModal extends React.Component {
           </div>
           <Button className={styles.confirm}
                   type="primary"
-                  onClick={this.props.btnCallback}
+                  onClick={this.props.btnCallback.bind(this, {
+                    attachments: this.state.fileList.map(e => e.response && e.response.data.attachmentId)
+                  })}
                   loading={this.props.loading === true}>
             {this.props.btnText}
           </Button>

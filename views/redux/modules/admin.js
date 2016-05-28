@@ -1,6 +1,7 @@
 import store from '../store'
 import { push } from 'react-router-redux'
 import { message } from 'antd';
+import _ from 'lodash';
 
 // Action 表
 // 登陆/登出
@@ -11,7 +12,9 @@ const LOGOUT = 'Blipay/admin/LOGOUT';
 const LOGOUT_SUCCESS = 'Blipay/admin/LOGOUT_SUCCESS';
 const LOGOUT_FAIL = 'Blipay/admin/LOGOUT_FAIL';
 // 查看管理员基本信息
-const ADMIN_INFO = 'Blipau/admin/ADMIN_INFO';
+const LOAD_ADMIN_INFO = 'Blipay/admin/LOAD_ADMIN_INFO';
+const LOAD_ADMIN_INFO_SUCCESS = 'Blipay/admin/LOAD_ADMIN_INFO_SUCCESS';
+const LOAD_ADMIN_INFO_FAIL = 'Blipay/admin/LOAD_ADMIN_INFO_FAIL';
 // 添加/删除/修改管理员
 const ADD_ADMIN = 'Blipay/admin/ADD_ADMIN';
 const ADD_ADMIN_SUCCESS = 'Blipay/admin/ADD_ADMIN_SUCCESS';
@@ -28,10 +31,13 @@ const MODIFY_USER = 'Blipay/admin/MODIFY_USER';
 const MODIFY_USER_SUCCESS = 'Blipay/admin/MODIFY_USER_SUCCESS';
 const MODIFY_USER_FAIL = 'Blipay/admin/MODIFY_USER_FAIL';
 // 实名验证
-const VERIFICATION_LIST = 'Blipay/admin/VERIFICATION_LIST';
-const VERIFICATION = 'Blipay/admin/VERIFICATION';
-const VERIFICATION_SUCCESS = 'Blipay/admin/VERIFICATION_SUCCESS';
-const VERIFICATION_FAIL = 'Blipay/admin/VERIFICATION_FAIL';
+const LOAD_VERIFYING_LIST = 'Blipay/admin/LOAD_VERIFYING_LIST';
+const LOAD_VERIFYING_LIST_SUCCESS = 'Blipay/admin/LOAD_VERIFYING_LIST_SUCCESS';
+const LOAD_VERIFYING_LIST_FAIL = 'Blipay/admin/LOAD_VERIFYING_LIST_FAIL';
+
+const VERIFY = 'Blipay/admin/VERIFY';
+const VERIFY_SUCCESS = 'Blipay/admin/VERIFY_SUCCESS';
+const VERIFY_FAIL = 'Blipay/admin/VERIFY_FAIL';
 // 仲裁
 const ARBITRATION_LIST = 'Blipay/admin/ARBITRATION_LIST';
 const ARBITRATION_LIST_SUCCESS = 'Blipay/admin/ARBITRATION_LIST_SUCCESS';
@@ -78,13 +84,6 @@ const messages = {
 
 // 用户管理模块初始状态
 const initialState = {
-  user: null,
-  message: null,
-  adminInfo: null,
-  userList: null,
-  verificationList: null,
-  arbitrationList: null,
-  adminLog: null
 };
 
 // 注册
@@ -104,9 +103,9 @@ export const getAdminLog = () =>({
 });
 
 //获取管理员信息
-export const adminInfo = () => ({
-  type: ADMIN_INFO,
-  promise: (client) => client.get('/api/admin/admininfo')
+export const loadAdminInfo = () => ({
+  types: [LOAD_ADMIN_INFO, LOAD_ADMIN_INFO_SUCCESS, LOAD_ADMIN_INFO_FAIL],
+  promise: (client) => client.get('/api/admin/info')
 });
 
 /*暂时不用
@@ -123,9 +122,9 @@ export const searchForUserName = (data)=>({
 });
 
 /*获取待认证列表*/
-export const verificationList = () => ({
-  type: VERIFICATION_LIST,
-  promise: (client) => client.get('/api/admin/verifylist')
+export const loadVerifyingList = () => ({
+  types: [LOAD_VERIFYING_LIST, LOAD_VERIFYING_LIST_SUCCESS, LOAD_VERIFYING_LIST_FAIL],
+  promise: (client) => client.get('/api/admin/verifyinglist')
 });
 
 /*获取仲裁信息列表*/
@@ -203,9 +202,9 @@ export const uopdateIdBase = (data) => ({
 /*手动验证*/
 /*传入userName
 */
-export const varification = (data) =>({
-    types: [VERIFICATION,VERIFICATION_SUCCESS, VERIFICATION_FAIL],
-    promise: (client) => client.post('/api/admin/verify',data)
+export const verify = (data) =>({
+  types: [VERIFY, VERIFY_SUCCESS, VERIFY_FAIL],
+  promise: (client) => client.post('/api/admin/verify',data)
 });
 
 // Helper
@@ -250,11 +249,10 @@ export default function reducer(state = initialState, action = {}) {
         user: action.result.user,
         message: null
       }
-    case ADMIN_INFO:
+    case LOAD_ADMIN_INFO_SUCCESS:
       return {
         ...state,
-        adminInfo: action.result.adminInfo,
-        message: null
+        admin: action.result.admin
       }
     case ARBITRATION_LIST_SUCCESS:
       return {
@@ -262,21 +260,11 @@ export default function reducer(state = initialState, action = {}) {
         arbitrationList: action.result.arbitrationList,
         message: null
       }
-    /*case USER_LIST:
+    case LOAD_VERIFYING_LIST_SUCCESS:
       return {
         ...state,
-        userList: true,
-        adminInfo: false,
-        verificationList: false,
-        arbitrationList: false
-      }*/
-    case VERIFICATION_LIST:
-      return {
-        ...state,
-        verificationList: action.result.unVerifiedUser,
-        message: null
+        verifyingUsers: action.result.verifyingUsers,
       }
-
     case ADD_ADMIN:
       return {
         ...state,
@@ -297,10 +285,15 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         message: null
       }
-    case VERIFICATION_SUCCESS:
+    case VERIFY_SUCCESS:
+      // 更新用户信息
+      const updated = action.result.user
+      const index = _.findIndex(state.verifyingUsers, ['id', updated.id])
       return {
         ...state,
-        message :null
+        verifyingUsers: [...state.verifyingUsers.slice(0, index),
+                         { ...state.verifyingUsers[index], ...updated },
+                         ...state.verifyingUsers.slice(index + 1)]
       }
     case ARBITRATION_LIST:
       return {
@@ -327,9 +320,10 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         message: null
       }
-    case VERIFICATION_SUCCESS:
+    case VERIFY_SUCCESS:
       return {
         ...state,
+
         message: null
       }
     case ARBITRATION_SUCCESS:
@@ -347,7 +341,7 @@ export default function reducer(state = initialState, action = {}) {
     case DELETE_ADMIN_FAIL:
     case MODIFY_ADMIN_FAIL:
     case MODIFY_USER_FAIL:
-    case VERIFICATION_FAIL:
+    case VERIFY_FAIL:
     case ARBITRATION_FAIL:
     case ARBITRATION_LIST_FAIL:
     case LOGIN_FAIL:

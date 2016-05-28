@@ -56,6 +56,12 @@ module.exports = (db) => {
     status: {
       type: Sequelize.INTEGER,
       defaultValue: 0
-    }
+    },
+    cardFront: {
+      type: Sequelize.INTEGER
+    },
+    cardBack: {
+      type: Sequelize.INTEGER
+    },
   });
 };

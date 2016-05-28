@@ -3,7 +3,12 @@
 */
 import React from 'react';
 import { Link } from 'react-router';
-import { Input, Button, Col, Table} from 'antd';
+import { Input, Button, Row, Col, Table, Popover, Popconfirm } from 'antd';
+import { asyncConnect } from 'redux-connect';
+
+import store from '../../redux/store';
+import AdminPageHeader from '../AdminPageHeader';
+import { loadVerifyingList, verify } from '../../redux/modules/admin';
 import styles from './styles';
 
 const tableProps = {
@@ -14,117 +19,107 @@ const tableProps = {
   }
 };
 
-/*
-const wrapAmount = (data) => {
-  return data.map((d, index) => ({
-    ...d,
-    key: index,
-    amount: `${d.amount > 0 ? '+' : ''}${d.amount.toFixed(2)}`
-  }));
-};
-*/
+const doVerify = (data) => (
+  store.dispatch(verify(data))
+)
 
 const columns = [{
-  title: '用户名',
-  dataIndex: 'name',
-  key: 'name',
-  sorter: (a, b) => a < b ? -1: 1,
-  render(text) {
-    return <Link to="/admin/account/verification/detail">{text}</Link>;
-  }
-}, {
-  title: '用户ID',
+  title: '用户 ID',
   dataIndex: 'id',
   key: 'id',
-  sorter: (a, b) => a < b ? -1: 1
-},{
-  title: '用户真实姓名',
-  dataIndex: 'realname',
-  key: 'realname'
-/* ,  render(text, record) {
-    return (
-      <Button onClick={() => alert(record.id)}>{ text }</Button>
-    )
-  }
-*/
-}/*,{
-  title: '操作',
-  key: 'operation',
+  sorter: (a, b) => a.id < b.id ? -1: 1
+}, {
+  title: '用户名',
+  dataIndex: 'userName',
+  key: 'userName',
+  sorter: (a, b) => a.userName < b.userName ? -1: 1
+}, {
+  title: '用户身份证号码',
+  dataIndex: 'idNumber',
+  key: 'idNumber',
+  sorter: (a, b) => a.idNumber < b.idNumber ? -1: 1,
   render(text, record) {
     return (
+      <Popover content={
+        <Row>
+          <Col span="12">
+            <h2>正面照片</h2>
+            <div>
+              <img src={`/api/photo/show?id=${record.cardFront}`} />
+            </div>
+          </Col>
+          <Col span="12">
+            <h2>反面照片</h2>
+            <div>
+              <img src={`/api/photo/show?id=${record.cardBack}`} />
+            </div>
+          </Col>
+        </Row>
+      } title="身份证照片" trigger="hover">
+        <Button type="dashed">{ text }</Button>
+      </Popover>
+    )
+  }
+}, {
+  title: '用户真实姓名',
+  dataIndex: 'realName',
+  key: 'realName',
+  sorter: (a, b) => a.realName.localeCompare(b.realName, 'zh-CN')
+}, {
+  title: '操作',
+  dataIndex: 'status',
+  key: 'status',
+  render(status, record) {
+    return (
       <div>
-      <span>
-        <Button className={styles.addBtn}>
-        通过
-        </Button>
-      </span>
-      <span>
-        <Button className={styles.addBtn}>
-        拒绝
-        </Button>
-      </span>
+        { status === 0 && <span>拒绝了实名验证</span> }
+        { status === 1 &&
+          <span className={styles.buttons}>
+          <Popconfirm title="确定通过这个用户的实名验证吗？"
+                      onConfirm={doVerify.bind(this, {
+                        id: record.id,
+                        status: 2
+                      })}>
+            <Button type="primary">通过</Button>
+          </Popconfirm>
+          <Popconfirm title="确定拒绝这个用户的实名验证吗？"
+                      onConfirm={doVerify.bind(this, {
+                        id: record.id,
+                        status: 0
+                      })}>
+            <Button>拒绝</Button>
+          </Popconfirm>
+          </span>
+        }
+        { status === 2 && <span>通过了实名验证</span> }
       </div>
-    );
-  }*/
-];
-
-const data = [{
-  key: '1',
-  name: 'Shirley',
-  id: '3130100668',
-  realname: '陈雪儿'
-}, {
-  key: '2',
-  name: 'Mark',
-  id: '3130100669',
-  realname: '马总'
-}, {
-  key: '3',
-  name: 'Harry',
-  id: '3130100670',
-  realname: '破特'
+    )
+  }
 }];
 
-const datatest = Array(60).fill({
-  name: 'Shirley',
-  id: '3130100668',
-  realname: '陈雪儿'
-});
-
-const datanull=null; //暂无数据这个是哪里写的？antd的Table样式
-
+@asyncConnect(
+  [{
+    promise: ({ store: { dispatch, getState } }) => {
+      return dispatch(loadVerifyingList())
+    }
+  }],
+  (state) => ({
+    verifyingUsers: state.admin.verifyingUsers
+  })
+)
 class AdminVerify extends React.Component {
   render() {
-/*     return (
-      React.createElement('div', { className: styles.container },
-        React.createElement(Table, { text: true, className: styles.table,
-                                     columns: columns, dataSource: datatest,
-                                     pagination: {
-
-                                     } })
-                                   )
-    )
-    ) */
     return (
       <div className={styles.container}>
+        <AdminPageHeader icon="check-circle" text="用户验证" />
         <Table
                className={styles.table}
                columns={columns}
-               dataSource={data}
-               {...tableProps}/>
+               dataSource={this.props.verifyingUsers}
+               {...tableProps} />
       </div>
     );
   }
 }
 
 export default AdminVerify;
-
-//跳转：参考AdminWelcomePage： 在需要跳转的内容那个标签前加<Link to="/admin/account/manager"> </Link>
-
-/*
-const a = [1, 2, 3]
-const b = [...a, 4] // b==[1, 2, 3, 4]
-
-const a = { a: 1, b: 2 }
-const b = { ...a, a: 3 } // b { a:3, b:2 }
-*/

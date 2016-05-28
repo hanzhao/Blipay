@@ -21,37 +21,19 @@
         margin-top: 15px;
       }
     }
-    .balance {
+    .level {
       float: left;
       width: 50%;
       padding: 0 20px;
-      .balanceTitle {
+      .levelTitle {
         margin-top: 5px;
         font-size: 15px;
       }
-      .balanceLower{
+      .levelLower{
         margin-top: 15px;
-        .balanceValue {
-          float: left;
-          width: 40%;
-          .balanceHead {
-            position: relative;
-            bottom: 0;
-            color: #c63655;
-            font-size: 30px
-          }
-          .balanceTail {
-            position: relative;
-            bottom: 0;
-            color: #c63655;
-            font-size: 20px;
-          }
-        }
-        .balanceOperation {
-          padding-top: 10px;
-          .withdrawal {
-            margin-left: 20px;
-          }
+        .levelValue {
+          color: #c63655;
+          font-size: 30px
         }
       }
     }

@@ -28,16 +28,16 @@ const validateCard = (rule, value, callback) => {
   }
 };
 
-
-/* 以下是本页所能显示交易记录的最大数目 */
-const fakeData = Array(Math.floor((window.innerHeight - 450) / 50)).fill({
-  date: '2015.01.01 19:08:32',
-  description: '删除管理员帐号',
-  amount : '梁露',
-  status: '删除帐号: woot'
-});
-
-
+const getLevelDetail = (level) => {
+  switch (level) {
+    case 0:
+      return '超级管理员'
+    case 1:
+      return '普通管理员'
+    default:
+      return '未知权限'
+  }
+}
 
 const tableProps = {
   pagination: false
@@ -46,11 +46,11 @@ const tableProps = {
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState } }) => {
-      return dispatch(getAdminLog());                                                             
+      return dispatch(getAdminLog());
     }
   }],
   (state) => ({
-    adminer: state.admin.adminer,
+    admin: state.admin.admin,
     adminLog: state.admin.adminLog
   }),
   (dispatch) => ({
@@ -73,31 +73,22 @@ class AccountWelcomePage extends React.Component {
     });
   };
   render() {
-    const {adminer,adminLog} = this.props;
+    const { admin, adminLog } = this.props;
     return (
       <div className={styles.container}>
         <div className={styles.upperHalf}>
           <div className={styles.info}>
-            <div className={styles.greeting}>{adminer.realName}，晚上好！</div>
+            <div className={styles.greeting}>{admin.realName}，晚上好！</div>
             <div className={styles.lastLogin}>
               上次登录时间：2016.05.11 12:00
             </div>
           </div>
           <div className={styles.verticalBar}/>
-          <div className={styles.balance}>
-            <div className={styles.balanceTitle}>您的权限等级为{adminer.level}</div>
-            <div className={styles.balanceLower}>
-              <div className={styles.balanceValue}>
-                <span className={styles.balanceHead}>{adminer.level==0?"超级管理员":
-                                                      (adminer.level==1?"订票管理员":
-                                                        (adminer.level==2? "审计员":"高级管理员"))}</span>
-              </div>
-              <div className={styles.balanceOperation}>
-                <Link to="/admin/account/manager">
-                  <Button className={styles.topup}>
-                 编辑管理员
-                 </Button>
-                </Link>
+          <div className={styles.level}>
+            <div className={styles.levelTitle}>您的权限等级为</div>
+            <div className={styles.levelLower}>
+              <div className={styles.levelValue}>
+                { getLevelDetail(admin.level) }
               </div>
             </div>
           </div>

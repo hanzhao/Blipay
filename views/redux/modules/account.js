@@ -130,9 +130,9 @@ export const updateInfo = (data) => ({
   promise: (client) => client.post('/api/account/update_info', data)
 })
 
-export const applyVerification = () => ({
+export const applyVerification = (data) => ({
   types: [APPLY_VERIFICATION, APPLY_VERIFICATION_SUCCESS, APPLY_VERIFICATION_FAIL],
-  promise: (client) => client.post('/api/account/apply_verification')
+  promise: (client) => client.post('/api/account/apply_verification', data)
 });
 
 export const changeLoginpass = (data) => ({

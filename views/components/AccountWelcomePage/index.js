@@ -232,7 +232,28 @@ class AccountWelcomePage extends React.Component {
           </div>
           <div className={styles.verticalBar}/>
           <div className={styles.balance}>
-            <div className={styles.balanceTitle}>账户余额</div>
+            <div className={styles.balanceTitle}>
+              账户余额（实名认证状态：
+              {
+                user.status === 0 &&
+                <span className={styles.statusUnverified}>
+                  未认证
+                </span>
+              }
+              {
+                user.status === 1 &&
+                <span className={styles.statusVerifying}>
+                  审核中
+                </span>
+              }
+              {
+                user.status === 2 &&
+                <span className={styles.statusVerified}>
+                  认证通过
+                </span>
+              }
+              ）
+            </div>
             <div className={styles.balanceLower}>
               <div className={styles.balanceValue}>
                 <span className={styles.balanceHead}>

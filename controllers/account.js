@@ -8,45 +8,10 @@ const Router = require('express').Router;
 const crypto = require('crypto');
 const router = Router();
 const Util = require('util');
-const multer = require('multer');
 const fs = Promise.promisifyAll(require('fs'));
 const uploadPath = require('../config').upload;
 const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport(config.mailConfig);
-
-const storage = multer.diskStorage({
-  destination: (req, file, callback) => {
-    callback(null, `${global.ROOT}/${uploadPath}`);
-  },
-  filename: (req, file, callback) => {
-    fs.mkdirAsync(`${uploadPath}`)
-      .catch((err) => {});
-    fs.readdirAsync(`${uploadPath}`)
-      .then((files) => {
-        files = files.filter(e => e.startsWith(`${req.session.userId}_`));
-        /*
-         * 只保存用户最后上传的两张照片。
-         */
-        if (files.length == 2) {
-          fs.unlinkAsync(`${uploadPath}/${files[0]}`)
-            .then(() => {
-              callback(null, `${req.session.userId}_${file.fieldname}_${Date.now()}`);
-            })
-            .catch((err) => {
-              throw err;
-            });
-        } else {
-          callback(null, `${req.session.userId}_${file.fieldname}_${Date.now()}`);
-        }
-      })
-      .catch((err) => {
-        console.error(
-          `Error occurs during accessing /Blipay/upload.\n${Util.inspect(err)}\n`
-        );
-      });
-  }
-});
-const upload = multer({ storage: storage });
 
 const cookPassword = (key, salt) => {
   var hash = crypto.createHash('sha512');
@@ -63,11 +28,19 @@ const reportError = (path, err) => {
   );
 };
 
-router.post('/account/verification',
-            upload.single('photo'), Promise.coroutine(function *(req, res) {
-    console.log('in /account/verification');
+router.post('/account/apply_verification', Promise.coroutine(function* (req, res) {
+  if (!req.session.userId) {
+    return res.status(403).fail()
+  }
+  const user = yield User.findById(req.session.userId, {
+    attributes: ['id', 'cardFront', 'cardBack', 'status']
   })
-);
+  user.cardFront = req.body.attachments[0]
+  user.cardBack = req.body.attachments[1]
+  user.status = 1
+  yield user.save()
+  return res.success({ user })
+}));
 
 router.post('/account/register', Promise.coroutine(function* (req, res) {
   console.log('in /account/register', req.body);
@@ -76,7 +49,7 @@ router.post('/account/register', Promise.coroutine(function* (req, res) {
     attributes: ['id']
   })
   if (user) {
-    return res.fail({ type: 'USER_EXIST' });
+    return res.fail({ type: 'USERNAME_EXIST' });
   }
   const salt = crypto.randomBytes(64).toString('base64');
   const newUser = {
