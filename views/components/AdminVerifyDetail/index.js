@@ -94,6 +94,7 @@ const columns2 = [{
   key:'identification_front'
   /*,  render(text, record) {
       return (
+<<<<<<< HEAD
         <img alt="example" width="10%" src="photo" />
       )
     }
@@ -128,7 +129,6 @@ const data2 = [{
   key: '1',
   identification_front:'身份证正面',
   identification_back:'身份证反面',
-
 }];
 
 const data3 = [{
@@ -137,7 +137,6 @@ const data3 = [{
 }];
 
 const datanull=null;
-
 class AdminVerifyDetail extends React.Component {
   render() {
     return (
@@ -196,4 +195,3 @@ export default AdminVerifyDetail;
 
 //待商榷：点击通过之后可否再点拒绝
 //说明：点击一次通过或拒绝之后，该条用户验证从用户验证列表中消失
-//待完成：调节页面高度，插入身份证正反面图片，onclick改用redux实现

@@ -30,11 +30,20 @@ import AdminChange from './components/AdminChange';
 import AdminRegisterPage from './components/AdminRegisterPage';
 import AdminJudgement from './components/AdminJudgement';
 
+import AuditApp from './components/AuditApp';
+import AuditorLoginPage from './components/AuditorLoginPage';
+import AuditPage from './components/AuditPage';
+import AuditLatestRecordPage from './components/AuditLatestRecordPage'
+import AuditCheckPage from './components/AuditCheckPage';
+import AuditSearchPage from './components/AuditSearchPage';
+import AuditLogPage from './components/AuditLogPage';
+
 import AdminVerify from './components/AdminVerify';
 import AdminVerifyDetail from './components/AdminVerifyDetail';
 import ShoppingPage from './components/ShoppingPage';
 import ShoppingItemPage from './components/ShoppingItemPage';
 import ShoppingWelcomePage from './components/ShoppingWelcomePage';
+
 import ShoppingOrderPage from './components/ShoppingOrderPage';
 import ShoppingInfoPage from './components/ShoppingInfoPage';
 import ShoppingAddItemPage from './components/ShoppingAddItemPage';
@@ -42,6 +51,7 @@ import ShoppingItemManage from './components/ShoppingItemManage';
 
 import BookingPage from './components/BookingPage'
 import BookingInfoPage from './components/BookingInfoPage'
+
 
 
 const history = syncHistoryWithStore(browserHistory, store);
@@ -61,6 +71,17 @@ const router = (
           <Route path="/admin/account/verification/:userId/detail" component={AdminVerifyDetail} />
         </Route>
         <Route path="/admin/register" component={AdminRegisterPage} />   //调试使用
+      </Route>
+
+      <Route path="/auditor" component = {AuditApp}>
+        <IndexRoute component={AuditorLoginPage} />
+
+      <Route path="/audit" component={AuditPage}>
+        <IndexRoute component={AuditLatestRecordPage} />
+        <Route path="/audit/check" component={AuditCheckPage} />
+          <Route path="/audit/search" component={AuditSearchPage} />
+          <Route path="/audit/log" component={AuditLogPage} />
+      </Route>
       </Route>
       <Route path="/" component={App} >
         <IndexRoute component={MainPage} />

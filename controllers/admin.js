@@ -1,14 +1,18 @@
 'use strict'
+
 const User = require('../models').User;
 const Specialaccount = require('../models').Specialaccount;
 const Admin =  require('../models').Admin;
+
 const config = require('../config/admin');
 const Router = require('express').Router;
 const crypto = require('crypto');
 const router = Router();
+
 const Identification = require('../models').Identification;
 const Arbitration = require('../models').Arbitration;
 const AdminLog = require('../models').AdminLog;
+
 
 const cookPassword = (key,salt,saltPos) => {
     var hash = crypto.createHash('sha512');
@@ -89,6 +93,7 @@ router.post(('/admin/create'),Promise.coroutine(function *(req,res) {
             });
         }
         const loginSalt=crypto.randomBytes(64).toString('base64');
+
         const newSpecialaccount = {
             name: req.body.name,
             //订票员，审计员和系统管理员有不同权限
@@ -187,6 +192,7 @@ router.post('/admin/identification',Promise.coroutine(function *(req,res){
             if(identification.idNumber!=user.idNumber){
                 return res.fail({
                     code: -3
+
                 });
             }
             User.update({
@@ -236,7 +242,9 @@ router.get('/admin/arbitration',Promise.coroutine(function *(req,res){
     });
         return res.success({
             code: 0,
+
             arbitrationList: arbitration
+
         });
 }));
 
@@ -257,8 +265,10 @@ router.post('/admin/deleteuser',Promise.coroutine(function *(req,res) {
                 userName: user.userName
             }
         })
+
         yield AdminLog.create({
             date: new Date(),
+
             content: 'delete',
             adminName: req.body.adminName,
             userName: req.body.userName
@@ -374,6 +384,7 @@ router.get('/admin/getarbitration',Promise.coroutine(function *(req,res){
     return res.success({
         code: 0,
         arbitrationList: abs
+
     });
 }));
 
@@ -493,6 +504,7 @@ router.post('/admin/deleteadmin',Promise.coroutine(function *(req,res){
     });
 }));
 
+
 /*更改管理员权限*/
 router.post('/admin/changelevel',Promise.coroutine(function *(req,res){
     yield Admin.update(
@@ -508,5 +520,6 @@ router.post('/admin/changelevel',Promise.coroutine(function *(req,res){
         code: 0
     });
 }));
+
 
 module.exports = router;

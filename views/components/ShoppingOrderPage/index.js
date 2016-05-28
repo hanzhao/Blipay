@@ -185,6 +185,7 @@ class ShoppingOrderPage extends React.Component {
       title: '订单号',
       dataIndex: 'id',
       key: 'id'
+
     }, {
       title: '宝贝',
       dataIndex: 'name',

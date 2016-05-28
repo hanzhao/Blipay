@@ -22,6 +22,7 @@ const Specialaccount = require('./specialaccount')(db);
 const AdminLog = require('./admin_log')(db);
 const Arbitration = require('./arbitration')(db);
 const Identification = require('./identification')(db);
+
 // 表关联
 const ItemSeller = Item.belongsTo(User, {
   as: 'seller'
@@ -42,12 +43,15 @@ Attachment.belongsTo(User)
 Attachment.belongsToMany(Item, { through: ItemAttachment })
 Item.belongsToMany(Attachment, { through: ItemAttachment })
 AdminLog.belongsTo(Admin)
+
 User.hasMany(Attachment)
 
 const initDatabase = Promise.coroutine(function* () {
   for (let t of [User, Item, Transaction, Order,
+
                  OrderItem, Review, Attachment, ItemAttachment,
                  Admin, AdminLog, Arbitration, Identification, Specialaccount]) {
+
     yield t.sync();
     console.log(`Table ${t.name} synced`);
   }
@@ -59,4 +63,5 @@ module.exports = {
   ItemSeller, ItemAttachment,
   Admin, AdminLog, Arbitration, Identification, Specialaccount,
   db,
+
 };

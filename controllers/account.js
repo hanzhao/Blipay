@@ -8,6 +8,7 @@ const Router = require('express').Router;
 const crypto = require('crypto');
 const router = Router();
 const Util = require('util');
+
 const fs = Promise.promisifyAll(require('fs'));
 const uploadPath = require('../config').upload;
 const nodemailer = require('nodemailer');
@@ -42,6 +43,7 @@ router.post('/account/apply_verification', Promise.coroutine(function* (req, res
   return res.success({ user })
 }));
 
+
 router.post('/account/register', Promise.coroutine(function* (req, res) {
   console.log('in /account/register', req.body);
   let user = yield User.findOne({
@@ -49,7 +51,9 @@ router.post('/account/register', Promise.coroutine(function* (req, res) {
     attributes: ['id']
   })
   if (user) {
+
     return res.fail({ type: 'USERNAME_EXIST' });
+
   }
   const salt = crypto.randomBytes(64).toString('base64');
   const newUser = {
