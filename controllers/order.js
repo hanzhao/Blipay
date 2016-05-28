@@ -5,6 +5,7 @@ const Item = require('../models').Item;
 const Order = require('../models').Order;
 const Attachment = require('../models').Attachment;
 const ItemAttachment = require('../models').ItemAttachment;
+
 const Review = require('../models').Review;
 
 const Router = require('express').Router;
@@ -177,6 +178,7 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
         }
         const payTrans = yield requestPay(order.buyerId, order.totalCost,
           `成功支付订单 #${order.id}`);
+
         yield order.update({
           buyerTransId: payTrans,
           status: 1
@@ -295,6 +297,7 @@ router.post('/order/order_list', Promise.coroutine(function* (req, res) {
         filter.status = req.body.filter.status;
       }
     }
+
     let queryOrder = '';
     if (validate(req.body.base)) {
       queryOrder = req.body.base + ' ' + req.body.order;
@@ -328,7 +331,6 @@ router.post('/item/review', Promise.coroutine(function* (req, res) {
   }
   catch (e) {
     return res.fail('in /item/review   ' + require('util').inspect(e));
-  }
 }));
 
 module.exports = router

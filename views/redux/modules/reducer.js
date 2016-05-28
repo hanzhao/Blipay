@@ -5,6 +5,7 @@ import { reducer as form } from 'redux-form';
 import account from './account';
 import shopping from './shopping';
 import admin from './admin';
+import auditor from './auditor';
 
 export default combineReducers({
   routing,
@@ -12,5 +13,6 @@ export default combineReducers({
   reduxAsyncConnect,
   account,
   shopping,
-  admin
+  admin,
+  auditor
 });

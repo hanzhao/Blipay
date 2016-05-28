@@ -13,7 +13,6 @@ const createItem = Promise.coroutine(function* (sellerId, item) {
   if (item.price < 0) {
     throw new Error('INVALID_PRICE');
   }
-  // TODO
   const newItem = yield Item.create({
     name: item.name,
     price: item.price,
@@ -133,6 +132,7 @@ const handleRefund = Promise.coroutine(
       console.error('Error in service handleRefund:' + e.message);
     }
   });
+
 
 module.exports = {
   createItem,

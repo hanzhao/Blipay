@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+<<<<<<< HEAD
 import { Modal, Table, Button } from 'antd';
 
 import { deleteCartItem, buyCartItems } from '../../redux/modules/shopping';
@@ -20,6 +21,13 @@ const columns = [{
     )
   }
 }, {
+=======
+import { Modal, Table } from 'antd';
+
+import styles from './styles';
+
+const columns = [{
+>>>>>>> master
   title: '商品名',
   dataIndex: 'name',
   key: 'name',
@@ -45,6 +53,7 @@ const columns = [{
       <span>{ (record.amount * record.price).toFixed(2) }</span>
     )
   }
+<<<<<<< HEAD
 }, {
   title: ' ',
   dataIndex: 'id',
@@ -58,6 +67,8 @@ const columns = [{
       </span>
     )
   }
+=======
+>>>>>>> master
 }]
 
 const getTotalPrice = (items) => (
@@ -68,9 +79,12 @@ const getTotalPrice = (items) => (
   (state) => ({
     cartItems: state.shopping.cartItems.map((e, i) => ({ ...e, key: i })),
     showShoppingCartModal: state.shopping.showShoppingCartModal
+<<<<<<< HEAD
   }),
   (dispatch) => ({
     buyCartItems: () => dispatch(buyCartItems())
+=======
+>>>>>>> master
   })
 )
 class ShoppingCartModal extends React.Component {
@@ -78,17 +92,23 @@ class ShoppingCartModal extends React.Component {
     return (
       <Modal title="购物车"
              visible={this.props.showShoppingCartModal}
+<<<<<<< HEAD
              className={styles.modal}
+=======
+>>>>>>> master
              {...this.props}>
         <Table dataSource={this.props.cartItems}
                columns={columns}
                pagination={false} />
         <div className={styles.total}>
           总计：¥{ getTotalPrice(this.props.cartItems).toFixed(2) }
+<<<<<<< HEAD
           <Button type="primary" className={styles.btn}
                   onClick={this.props.buyCartItems}>
             马上结算
           </Button>
+=======
+>>>>>>> master
         </div>
       </Modal>
     )
