@@ -5,6 +5,16 @@ import moment from 'moment'
 import styles from './styles';
 
 const columns = [{
+  title: '交易时间',
+  dataIndex: 'createdAt',
+  key: 'date',
+  render: (text) => (
+    <span>
+      { moment(text).format('LLL') }
+    </span>
+  ),
+  sorter: (a, b) => a.createdAt < b.createdAt ? -1 : 1
+}, {
   title: '交易流水号',
   dataIndex: 'orderId',
   key: 'orderId',
@@ -42,15 +52,6 @@ const columns = [{
   title: '错误判断',
   dataIndex: 'wrongStatus',
   key: 'wrongStatus',
-  filters: [{
-    text: '错误',
-    value: '1',
-  }, {
-    text: '警告',
-    value: '2',
-  }],
-  filterMultiple: true,
-  onFilter: (value, record) => record.wrongStatus== value,
   render(text){
     switch(text)
     {
