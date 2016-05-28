@@ -106,24 +106,25 @@ router.get('/auditor/log', Promise.coroutine(function* (req, res) {
   const logtable = yield Logtable.findAll({
     order: ['id']
   });
-  return res.success({ logtable })
-}));
 
 
 
-/*
-生成每日订单，进行错误判断，生成日志代码，还不确定放在什么路由执行。
-router.post('/auditor/change_loginpass', Promise.coroutine(function *(req, res) {
-  console.log('in /auditor/change_loginpass');
-  if (!req.session.userId) {
-    return res.status(403).fail()
-  }
-  const user = yield User.findById(req.session.userId, {
-    attributes: ['id', 'salt', 'loginPass']
-  });
+//生成每日订单、进行检错、生成错误日志，暂时添加在log路由上
 
- const order = yield Order.findAll();
- const count = yield Order.count();
+ const order = yield Order.findAll({
+    where:{
+      wrongStatus: {'$gt': 0},
+      createdAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`, 
+        `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()+1}`]}
+    }
+   });
+ const count = yield Order.count({
+    where:{
+      wrongStatus: {'$gt': 0},
+      createdAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`, 
+        `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()+1}`]}
+    }
+   });
  for(var i=0;i<count;i++)
  {
     const buy = yield Transaction.findById(order[i].buyerTransId);
@@ -179,9 +180,8 @@ router.post('/auditor/change_loginpass', Promise.coroutine(function *(req, res) 
     }
   };
 
-
   const today = new Date();
-   const count = yield Record.count({
+  count = yield Record.count({
     where:{
       wrongStatus: {'$gt': 0},
       createdAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`, 
@@ -209,11 +209,7 @@ router.post('/auditor/change_loginpass', Promise.coroutine(function *(req, res) 
       };
     const logtable = yield Logtable.create(newLogtable)
   };
-  
-
-  user.loginPass = cookPassword(req.body.loginPass, user.salt)
-  yield user.save();
-  return res.success();
-}));*/
+  return res.success({ logtable })
+}));
 
 module.exports = router;
