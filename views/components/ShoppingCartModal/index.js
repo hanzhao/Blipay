@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Modal, Table, Button } from 'antd';
 
-import { deleteCartItem, buyCartItems } from '../../redux/modules/shopping';
+import { deleteCartItem, buyCartItems, toggleLoginModal } from '../../redux/modules/shopping';
 import store from '../../redux/store';
 import styles from './styles';
 
@@ -67,14 +67,17 @@ const getTotalPrice = (items) => (
 @connect(
   (state) => ({
     cartItems: state.shopping.cartItems.map((e, i) => ({ ...e, key: i })),
-    showShoppingCartModal: state.shopping.showShoppingCartModal
+    showShoppingCartModal: state.shopping.showShoppingCartModal,
+    user: state.account.user
   }),
   (dispatch) => ({
-    buyCartItems: () => dispatch(buyCartItems())
+    buyCartItems: () => dispatch(buyCartItems()),
+    toggleLoginModal: () => dispatch(toggleLoginModal())
   })
 )
 class ShoppingCartModal extends React.Component {
   render() {
+    const { user } = this.props
     return (
       <Modal title="购物车"
              visible={this.props.showShoppingCartModal}
@@ -86,7 +89,7 @@ class ShoppingCartModal extends React.Component {
         <div className={styles.total}>
           总计：¥{ getTotalPrice(this.props.cartItems).toFixed(2) }
           <Button type="primary" className={styles.btn}
-                  onClick={this.props.buyCartItems}>
+                  onClick={user ? this.props.buyCartItems : this.props.toggleLoginModal}>
             马上结算
           </Button>
         </div>

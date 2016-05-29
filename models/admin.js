@@ -26,8 +26,13 @@ module.exports = (db) =>{
     loginSalt:{
       type: Sequelize.STRING, allowNull: false
     },
-    level:{
+    // 0 超级管理 1 管理 2 审计
+    level: {
       type: Sequelize.INTEGER, allowNull:false
-    }
+    },
+    disabled: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0
+    },
   });
 };

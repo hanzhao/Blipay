@@ -19,6 +19,8 @@ const ADD_CART_ITEM = 'Blipay/shopping/ADD_CART_ITEM'
 const DELETE_CART_ITEM = 'Blipay/shopping/DELETE_CART_ITEM'
 // 打开购物车模态框
 const TOGGLE_SHOPPING_CART = 'Blipay/shopping/TOGGLE_SHOPPING_CART'
+// 打开请求登录模态框
+const TOGGLE_SHOPPING_LOGGING = 'Blipay/shopping/TOGGLE_SHOPPING_LOGGING'
 // 购买东西
 const BUY_CART_ITEMS = 'Blipay/shopping/BUY_CART_ITEMS'
 const BUY_CART_ITEMS_SUCCESS = 'Blipay/shopping/BUY_CART_ITEMS_SUCCESS'
@@ -102,6 +104,10 @@ export const deleteCartItem = (idx) => ({
 
 export const toggleShoppingCart = () => ({
   type: TOGGLE_SHOPPING_CART
+})
+
+export const toggleLoginModal = () => ({
+  type: TOGGLE_SHOPPING_LOGGING
 })
 
 export const toggleShoppingReview = (order) => ({
@@ -202,6 +208,12 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         showShoppingCartModal: !state.showShoppingCartModal
+      }
+    case TOGGLE_SHOPPING_LOGGING:
+      return {
+        ...state,
+        showShoppingCartModal: false,
+        showShoppingLoggingModal: !state.showShoppingLoggingModal
       }
     case TOGGLE_SHOPPING_REVIEW:
       return {

@@ -114,14 +114,14 @@ router.get('/auditor/log', Promise.coroutine(function* (req, res) {
  const order = yield Order.findAll({
     where:{
       wrongStatus: {'$gt': 0},
-      createdAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`, 
+      createdAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`,
         `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()+1}`]}
     }
    });
  const count = yield Order.count({
     where:{
       wrongStatus: {'$gt': 0},
-      createdAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`, 
+      createdAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`,
         `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()+1}`]}
     }
    });
@@ -156,7 +156,7 @@ router.get('/auditor/log', Promise.coroutine(function* (req, res) {
           record.update({
             wrongStatus: 0
           })
-        }        
+        }
       }
     }
     if(record.status===1){
@@ -170,7 +170,7 @@ router.get('/auditor/log', Promise.coroutine(function* (req, res) {
           record.update({
             wrongStatus: 0
           })
-        }   
+        }
       }
       else {
         record.update({
@@ -184,14 +184,14 @@ router.get('/auditor/log', Promise.coroutine(function* (req, res) {
   count = yield Record.count({
     where:{
       wrongStatus: {'$gt': 0},
-      createdAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`, 
+      createdAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`,
         `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()+1}`]}
     }
    });
    const record = yield Record.findAll({
     where:{
       wrongStatus: {'$gt': 0},
-      createdAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`, 
+      createdAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`,
         `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()+1}`]}
     }
    });

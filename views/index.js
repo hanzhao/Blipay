@@ -25,7 +25,8 @@ import AdminApp from './components/AdminApp';
 import AdminWelcomePage from './components/AdminWelcomePage';
 import AdminInfoPage from './components/AdminInfoPage';
 import AdminManager from './components/AdminManager';
-import AdminChange from './components/AdminChange';
+import AdminAddAdminPage from './components/AdminAddAdminPage';
+import AdminAddAuditorPage from './components/AdminAddAuditorPage';
 import AdminRegisterPage from './components/AdminRegisterPage';
 import AdminJudgement from './components/AdminJudgement';
 import AdminVerify from './components/AdminVerify';
@@ -65,10 +66,11 @@ const router = (
           <Route path="/admin/panel/welcome" component={AdminWelcomePage} />
           <Route path="/admin/panel/manage" component={AdminManagePage}>
             <Route path="/admin/panel/manage/user" component={AdminManageUserPage} />
-            <Route path="/admin/panel/manage/auditor" component={AdminManageAuditorPage} />
             <Route path="/admin/panel/manage/admin" component={AdminManageAdminPage} />
+            <Route path="/admin/panel/manage/admin/add" component={AdminAddAdminPage} />
+            <Route path="/admin/panel/manage/auditor" component={AdminManageAuditorPage} />
+            <Route path="/admin/panel/manage/auditor/add" component={AdminAddAuditorPage} />
           </Route>
-          <Route path="/admin/panel/change" component={AdminChange} />
 	        <Route path="/admin/panel/judgement" component={AdminJudgement} />
           <Route path="/admin/panel/verification" component={AdminVerify} />
           <Route path="/admin/panel/verification/:userId/detail" component={AdminVerifyDetail} />
@@ -85,7 +87,7 @@ const router = (
           <Route path="/audit/log" component={AuditLogPage} />
       </Route>
       </Route>
-      
+
       <Route path="/" component={App} >
         <IndexRoute component={MainPage} />
         <Route path="/account" component={AccountPage} >

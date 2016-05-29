@@ -76,6 +76,33 @@ const UPDATE_ID='blipay/admin/UPDATE_ID';
 const UPDATE_ID_SUCCESS='blipay/admin/UPDATE_ID_SUCCESS';
 const UPDATE_ID_FAIL='blipay/admin/UPDATE_ID_FAIL';
 
+// 所有用户数据
+const LOAD_USERS_INFO = 'Blipay/admin/LOAD_USERS_INFO'
+const LOAD_USERS_INFO_SUCCESS = 'Blipay/admin/LOAD_USERS_INFO_SUCCESS'
+const LOAD_USERS_INFO_FAIL = 'Blipay/admin/LOAD_USERS_INFO_FAIL'
+// 所有管理员数据
+const LOAD_ADMINS_INFO = 'Blipay/admin/LOAD_ADMINS_INFO'
+const LOAD_ADMINS_INFO_SUCCESS = 'Blipay/admin/LOAD_ADMINS_INFO_SUCCESS'
+const LOAD_ADMINS_INFO_FAIL = 'Blipay/admin/LOAD_ADMINS_INFO_FAIL'
+// 所有审计员数据
+const LOAD_AUDITORS_INFO = 'Blipay/admin/LOAD_AUDITORS_INFO'
+const LOAD_AUDITORS_INFO_SUCCESS = 'Blipay/admin/LOAD_AUDITORS_INFO_SUCCESS'
+const LOAD_AUDITORS_INFO_FAIL = 'Blipay/admin/LOAD_AUDITORS_INFO_FAIL'
+
+const SET_USER_DISABLED = 'Blipay/admin/SET_USER_DISABLED'
+const SET_USER_DISABLED_SUCCESS = 'Blipay/admin/SET_USER_DISABLED_SUCCESS'
+const SET_USER_DISABLED_FAIL = 'Blipay/admin/SET_USER_DISABLED_FAIL'
+const SET_USER_ENABLED = 'Blipay/admin/SET_USER_ENABLED'
+const SET_USER_ENABLED_SUCCESS = 'Blipay/admin/SET_USER_ENABLED_SUCCESS'
+const SET_USER_ENABLED_FAIL = 'Blipay/admin/SET_USER_ENABLED_FAIL'
+
+const SET_ADMIN_DISABLED = 'Blipay/admin/SET_ADMIN_DISABLED'
+const SET_ADMIN_DISABLED_SUCCESS = 'Blipay/admin/SET_ADMIN_DISABLED_SUCCESS'
+const SET_ADMIN_DISABLED_FAIL = 'Blipay/admin/SET_ADMIN_DISABLED_FAIL'
+const SET_ADMIN_ENABLED = 'Blipay/admin/SET_ADMIN_ENABLED'
+const SET_ADMIN_ENABLED_SUCCESS = 'Blipay/admin/SET_ADMIN_ENABLED_SUCCESS'
+const SET_ADMIN_ENABLED_FAIL = 'Blipay/admin/SET_ADMIN_ENABLED_FAIL'
+
 
 const messages = {
   USER_NOT_EXIST: '当前用户名未注册。',
@@ -207,6 +234,36 @@ export const verify = (data) =>({
   promise: (client) => client.post('/api/admin/verify',data)
 });
 
+export const loadUsersInfo = () => ({
+  types: [LOAD_USERS_INFO, LOAD_USERS_INFO_SUCCESS, LOAD_USERS_INFO_FAIL],
+  promise: (client) => client.get('/api/admin/users')
+})
+
+export const setUserDisabled = (id) => ({
+  types: [SET_USER_DISABLED, SET_USER_DISABLED_SUCCESS, SET_USER_DISABLED_FAIL],
+  promise: (client) => client.post('/api/admin/user/disable', id)
+})
+
+export const setUserEnabled = (id) => ({
+  types: [SET_USER_ENABLED, SET_USER_ENABLED_SUCCESS, SET_USER_ENABLED_FAIL],
+  promise: (client) => client.post('/api/admin/user/enable', id)
+})
+
+export const loadAdminsInfo = (data) => ({
+  types: [LOAD_ADMINS_INFO, LOAD_ADMINS_INFO_SUCCESS, LOAD_ADMINS_INFO_FAIL],
+  promise: (client) => client.get('/api/admin/admins', data)
+})
+
+export const setAdminDisabled = (id) => ({
+  types: [SET_ADMIN_DISABLED, SET_ADMIN_DISABLED_SUCCESS, SET_ADMIN_DISABLED_FAIL],
+  promise: (client) => client.post('/api/admin/admin/disable', id)
+})
+
+export const setAdminEnabled = (id) => ({
+  types: [SET_ADMIN_ENABLED, SET_ADMIN_ENABLED_SUCCESS, SET_ADMIN_ENABLED_FAIL],
+  promise: (client) => client.post('/api/admin/admin/enable', id)
+})
+
 // Helper
 /*
 const wrapTransaction = (e) => ({
@@ -218,6 +275,7 @@ const wrapTransaction = (e) => ({
 
 // Reducer
 export default function reducer(state = initialState, action = {}) {
+  let updated, index
   switch (action.type) {
     case LOGIN_SUCCESS:
       setTimeout(() => {
@@ -240,7 +298,7 @@ export default function reducer(state = initialState, action = {}) {
     case GET_ADMIN_LOG_SUCCESS:
       return{
         ...state,
-        logs: action.result.logs
+        logs: action.result.logs.reverse()
       }
     case USER_SEARCH_SUCCESS:
       return{
@@ -266,8 +324,8 @@ export default function reducer(state = initialState, action = {}) {
       }
     case VERIFY_SUCCESS:
       // 更新用户信息
-      const updated = action.result.user
-      const index = _.findIndex(state.verifyingUsers, ['id', updated.id])
+      updated = action.result.user
+      index = _.findIndex(state.verifyingUsers, ['id', updated.id])
       return {
         ...state,
         verifyingUsers: [...state.verifyingUsers.slice(0, index),
@@ -275,9 +333,16 @@ export default function reducer(state = initialState, action = {}) {
                          ...state.verifyingUsers.slice(index + 1)]
       }
     case ADD_ADMIN_SUCCESS:
+      message.success('添加账户成功')
+      setTimeout(() => {
+        if (action.result.admin.level === 1) {
+          store.dispatch(push('/admin/panel/manage/admin'))
+        } else {
+          store.dispatch(push('/admin/panel/manage/auditor'))
+        }
+      }, 0)
       return {
-        ...state,
-        message: null
+        ...state
       }
     case DELETE_ADMIN_SUCCESS:
       return {
@@ -309,6 +374,38 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         message: null
+      }
+    case LOAD_USERS_INFO_SUCCESS:
+      return {
+        ...state,
+        managedUsers: action.result.users
+      }
+    case LOAD_ADMINS_INFO_SUCCESS:
+      return {
+        ...state,
+        managedAdmins: action.result.admins
+      }
+    case SET_USER_ENABLED_SUCCESS:
+    case SET_USER_DISABLED_SUCCESS:
+      message.success('操作成功')
+      updated = action.result.user
+      index = _.findIndex(state.managedUsers, ['id', updated.id])
+      return {
+        ...state,
+        managedUsers: [...state.managedUsers.slice(0, index),
+                         { ...state.managedUsers[index], ...updated },
+                         ...state.managedUsers.slice(index + 1)]
+      }
+    case SET_ADMIN_ENABLED_SUCCESS:
+    case SET_ADMIN_DISABLED_SUCCESS:
+      message.success('操作成功')
+      updated = action.result.admin
+      index = _.findIndex(state.managedAdmins, ['id', updated.id])
+      return {
+        ...state,
+        managedAdmins: [...state.managedAdmins.slice(0, index),
+                         { ...state.managedAdmins[index], ...updated },
+                         ...state.managedAdmins.slice(index + 1)]
       }
     // Errors
     case ADD_ADMIN_FAIL:

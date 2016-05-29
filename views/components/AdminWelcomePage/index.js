@@ -75,7 +75,8 @@ class AccountWelcomePage extends React.Component {
     });
   };
   render() {
-    const { admin, logs } = this.props;
+    const { admin } = this.props;
+    const logs = this.props.logs.map(e => ({ ...e, key: e.id }))
     return (
       <div className={styles.container}>
         <div className={styles.upperHalf}>

@@ -67,10 +67,13 @@ router.post('/account/login', Promise.coroutine(function* (req, res) {
   console.log('in /account/login', req.body);
   let user = yield User.findOne({
     where: { userName: req.body.userName },
-    attributes: ['id', 'loginPass', 'salt', 'lastLogin']
+    attributes: ['id', 'loginPass', 'salt', 'lastLogin', 'disabled']
   });
   if (!user) {
     return res.fail({ type: 'USER_NOT_EXIST' });
+  }
+  if (user.disabled) {
+    return res.fail({ type: 'USER_DISABLED' });
   }
   const password = cookPassword(req.body.loginPass,
                                 user.salt)

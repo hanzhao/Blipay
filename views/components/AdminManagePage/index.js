@@ -4,7 +4,7 @@ import { Menu, Icon } from 'antd';
 
 const menus = [
   { to: '/admin/panel/manage/user', text: '普通用户', icon: 'team'},
-  { to: '/admin/panel/manage/ticketter', text: '票务管理员', icon: 'tag' },
+  // { to: '/admin/panel/manage/ticketter', text: '票务管理员', icon: 'tag' },
   { to: '/admin/panel/manage/auditor', text: '审计员', icon: 'solution' },
   { to: '/admin/panel/manage/admin', text: '管理员', icon: 'user' }
 ];

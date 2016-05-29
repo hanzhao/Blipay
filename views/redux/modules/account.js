@@ -57,7 +57,8 @@ const FIND_PASSWORD_FAIL = 'Blipay/account/FIND_PASSWORD_FAIL';
 
 const messages = {
   USER_NOT_EXIST: '当前用户名未注册。',
-  INVALID_USERNAME_OR_PASSWORD: '用户名或密码错误。'
+  INVALID_USERNAME_OR_PASSWORD: '用户名或密码错误。',
+  USER_DISABLED: '当前账户被禁用'
 }
 
 // 用户管理模块初始状态
@@ -204,6 +205,11 @@ export default function reducer(state = initialState, action = {}) {
         showVerification: !state.showVerification
       };
     case LOAD_ACCOUNT_INFO_SUCCESS:
+      if (action.result.user && location.pathname === '/') {
+        setTimeout(() => {
+          store.dispatch(push('/account'))
+        }, 0)
+      }
       return {
         ...state,
         user: action.result.user,
@@ -281,6 +287,11 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         message: (action.error.type && messages[action.error.type]) || '未知错误'
+      }
+    case '@@router/LOCATION_CHANGE':
+      return {
+        ...state,
+        __SECRET_RERENDER_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: !state.__SECRET_RERENDER_DO_NOT_USE_OR_YOU_WILL_BE_FIRED
       }
     default:
       return state
