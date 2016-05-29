@@ -7,9 +7,8 @@ import { Link } from 'react-router';
 import { Menu, Icon } from 'antd';
 
 const menus = [
-  { to: '/booking/info', text: '浏览宝贝', icon: 'info-circle-o' },
-  { to: '/booking/order', text: '订单管理', icon: 'exception' },
-  { to: '/booking/add_item', text: '商品添加', icon: 'plus-square' },
+  { to: '/booking/flight', text: '航班预订', icon: 'info-circle-o' },
+  { to: '/booking/hotel', text: '酒店预订', icon: 'exception' },
   { to: '/booking/manage_item', text: '商品管理', icon: 'exception' },
 ];
 
