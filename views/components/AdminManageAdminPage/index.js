@@ -35,13 +35,13 @@ const columns = [{
   key: 'realName',
   sorter: (a, b) => a.realName.localeCompare(b.realName, 'zh-CN')
 }, {
-  title: '最后上线时间',
-  dataIndex: 'lastLogin',
-  key: 'lastLogin',
-  sorter: (a, b) => new Date(a.lastLogin) < new Date(b.lastLogin) ? -1 : 1,
+  title: '管理权限',
+  dataIndex: 'level',
+  key: 'level',
+  sorter: (a, b) => new Date(a.level) < new Date(b.level) ? -1 : 1,
   render(text) {
     return (
-      <span>{ moment(text).format('LLL') }</span>
+      <span>{ text ? '普通管理员' : '超级管理员' }</span>
     )
   }
 }, {

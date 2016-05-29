@@ -23,7 +23,7 @@ module.exports = (db) =>{
     phone:{
       type: Sequelize.STRING
     },
-    loginSalt:{
+    salt:{
       type: Sequelize.STRING, allowNull: false
     },
     // 0 超级管理 1 管理 2 审计

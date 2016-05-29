@@ -2,6 +2,7 @@
  * 首页
  */
 import React from 'react';
+import { connect } from 'react-redux';
 
 import Container from '../Container';
 import RegisterOrLoginForm from '../RegisterOrLoginForm';
@@ -10,8 +11,17 @@ import styles from './styles';
 import mascot from './2233.png';
 import dust from './dust.png';
 
+@connect(
+  (state) => ({
+    user: state.account.user
+  })
+)
 class MainPage extends React.Component {
   render() {
+    // 登录后会自动跳转
+    if (this.props.user) {
+      return <span></span>
+    }
     return (
       <div className={styles.wrapper}
         style={{ height: window.innerHeight - 85 }}>

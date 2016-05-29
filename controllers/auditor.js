@@ -2,6 +2,7 @@
 const _ = require('lodash');
 const db = require('../models').db;
 const User = require('../models').User;
+const Admin = require('../models').Admin;
 const Transaction = require('../models').Transaction;
 const Record = require('../models').Record;
 const Logtable = require('../models').Logtable;
@@ -34,9 +35,9 @@ const reportError = (path, err) => {
 
 router.post('/auditor/login', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/login', req.body);
-  let user = yield User.findOne({
-    where: { userName: req.body.userName },
-    attributes: ['id', 'loginPass', 'salt', 'lastLogin']
+  let user = yield Admin.findOne({
+    where: { adminName: req.body.userName, level: 2 },
+    attributes: ['id', 'loginPass', 'salt']
   });
   if (!user) {
     return res.fail({ type: 'USER_NOT_EXIST' });
@@ -53,22 +54,22 @@ router.post('/auditor/login', Promise.coroutine(function* (req, res) {
   delete user.salt
   delete user.loginPass
   // 登录信息
-  req.session.userId = user.id
+  req.session.auditorId = user.id
   return res.success({ user });
 }));
 
 router.get('/auditor/logout', (req, res) => {
   console.log('in /auditor/logout');
-  req.session.userId = null;
+  req.session.auditorId = null;
   return res.success({});
 });
 
 router.get('/auditor/info', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/info');
-  if (!req.session.userId) {
+  if (!req.session.auditorId) {
     return res.success({ })
   }
-  const user = yield User.findById(req.session.userId, {
+  const user = yield User.findById(req.session.auditorId, {
     attributes: ['userName', 'realName', 'balance', 'lastLogin',
                  'email', 'phone', 'idNumber', 'status']
   })
@@ -77,11 +78,14 @@ router.get('/auditor/info', Promise.coroutine(function* (req, res) {
 
 router.get('/auditor/transactions', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/transactions');
-  if (!req.session.userId) {
+  if (!req.session.auditorId) {
     return res.status(403).fail()
   }
-  const transactions = yield Record.findAll({
-    order: ['id']
+  const transactions = yield Transaction.findAll({
+    order: ['id'],
+    include: {
+      model: User
+    }
   });
   return res.success({ transactions })
 }));
@@ -100,7 +104,7 @@ router.get('/auditor/check_username', Promise.coroutine(function* (req, res) {
 
 router.get('/auditor/log', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/log');
-  if (!req.session.userId) {
+  if (!req.session.auditorId) {
     return res.status(403).fail()
   }
   const logtable = yield Logtable.findAll({

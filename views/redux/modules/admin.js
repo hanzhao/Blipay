@@ -106,7 +106,8 @@ const SET_ADMIN_ENABLED_FAIL = 'Blipay/admin/SET_ADMIN_ENABLED_FAIL'
 
 const messages = {
   USER_NOT_EXIST: '当前用户名未注册。',
-  INVALID_USERNAME_OR_PASSWORD: '用户名或密码错误。'
+  INVALID_USERNAME_OR_PASSWORD: '用户名或密码错误。',
+  USER_DISABLED: '账户被禁用'
 }
 
 // 用户管理模块初始状态
