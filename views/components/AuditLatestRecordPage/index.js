@@ -4,8 +4,8 @@
 import React from 'react';
 import _ from 'lodash';
 import { asyncConnect } from 'redux-connect';
-import { Button } from 'antd';
-import AccountRecordTable from '../AuditRecordTable';
+import { Form, DatePicker, Button } from 'antd';
+import AuditRecordTable from '../AuditRecordTable';
 import FormModal from '../FormModal';
 import styles from './styles';
 import ajax from '../../common/ajax';
@@ -16,8 +16,14 @@ import {
   loadTransactions,
 } from '../../redux/modules/auditor';
 
+const RangePicker = DatePicker.RangePicker;
+
 const tableProps = {
-  pagination: false
+  pagination: {
+    simple: true,
+    /* 一页能显示的交易记录的最大数目 */
+    pageSize: Math.max(1, Math.floor((window.innerHeight - 350) / 50))
+  }
 };
 
 @asyncConnect(
@@ -28,27 +34,37 @@ const tableProps = {
   }],
   (state) => ({
     user: state.auditor.user,
-    transactions: _.reverse(_.slice(state.auditor.transactions)),
-    showTopupModal: state.auditor.showTopupModal,
-    showWithdrawModal: state.auditor.showWithdrawModal
+    transactions: _.reverse(_.slice(state.auditor.transactions))
   }),
   (dispatch) => ({
-    toggleTopup: () => dispatch(toggleTopup()),
-    toggleWithdraw: () => dispatch(toggleWithdraw()),
-    logout: () => dispatch(logout()),
-    handleTopup: (data) => dispatch(topup(data)),
-    handleWithdraw: (data) => dispatch(withdraw(data)),
+    logout: () => dispatch(logout())
   })
 )
 class AuditLatestRecordPage extends React.Component {
+  state = {
+    range: [new Date(0), new Date()]
+  }
+  handleChange = (value) => {
+    this.setState({
+      range: [value[0], value[1]]
+    })
+  }
   render() {
-    const { user, transactions } = this.props
+    const transactions = this.props.transactions.filter((e) =>
+      e.createdAt >= this.state.range[0] && e.createdAt <= this.state.range[1]
+    )
     return (
       <div className={styles.container}>
-            <AccountRecordTable
-              data={transactions.slice(0, 10)}
-              tableProps={tableProps}/>
+      <RangePicker className={styles.picker}
+                     showTime
+                     onChange={this.handleChange} />
+      <div className={styles.wrapper}>
+         <AuditRecordTable
+          className={styles.table}
+          data={transactions}
+          tableProps={tableProps} />
       </div>
+    </div>
     );
   }
 }

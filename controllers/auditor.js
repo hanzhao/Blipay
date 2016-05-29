@@ -3,6 +3,9 @@ const _ = require('lodash');
 const db = require('../models').db;
 const User = require('../models').User;
 const Transaction = require('../models').Transaction;
+const Record = require('../models').Record;
+const Logtable = require('../models').Logtable;
+const Order = require('../models').Order;
 const config = require('../config/auditor');
 const Router = require('express').Router;
 const crypto = require('crypto');
@@ -23,6 +26,12 @@ const cookPassword = (key, salt) => {
     .digest('base64');
 };
 
+const reportError = (path, err) => {
+  console.error(
+    `\nERROR occurs in ${path}:\n\n${Util.inspect(err)}\n`
+  );
+};
+
 router.post('/auditor/login', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/login', req.body);
   let user = yield User.findOne({
@@ -38,8 +47,8 @@ router.post('/auditor/login', Promise.coroutine(function* (req, res) {
   if (password !== user.loginPass)
     return res.fail({ type: 'INVALID_USERNAME_OR_PASSWORD' });
   // 更新最后登录时间
-  user.lastLogin = new Date().toString()
-  yield user.save()
+  /*user.lastLogin = new Date().toString()
+  yield user.save()*/
   // 删除密码字段
   delete user.salt
   delete user.loginPass
@@ -54,18 +63,153 @@ router.get('/auditor/logout', (req, res) => {
   return res.success({});
 });
 
-
+router.get('/auditor/info', Promise.coroutine(function* (req, res) {
+  console.log('in /auditor/info');
+  if (!req.session.userId) {
+    return res.success({ })
+  }
+  const user = yield User.findById(req.session.userId, {
+    attributes: ['userName', 'realName', 'balance', 'lastLogin',
+                 'email', 'phone', 'idNumber', 'status']
+  })
+  return res.success({ user })
+}));
 
 router.get('/auditor/transactions', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/transactions');
   if (!req.session.userId) {
     return res.status(403).fail()
   }
-  const user = yield User.findById(req.session.userId)
-  const transactions = yield user.getTransactions({
+  const transactions = yield Record.findAll({
     order: ['id']
   });
   return res.success({ transactions })
+}));
+
+router.get('/auditor/check_username', Promise.coroutine(function* (req, res) {
+  console.log('in check_username', req.query);
+  const user = yield User.findOne({
+    where: { userName: req.query.userName }
+  })
+  if (!user) {
+    return res.success();
+  } else {
+    return res.fail({ type: 'USER_EXIST' });
+  }
+}));
+
+router.get('/auditor/log', Promise.coroutine(function* (req, res) {
+  console.log('in /auditor/log');
+  if (!req.session.userId) {
+    return res.status(403).fail()
+  }
+  const logtable = yield Logtable.findAll({
+    order: ['id']
+  });
+
+
+
+//生成每日订单、进行检错、生成错误日志，暂时添加在log路由上
+
+ const order = yield Order.findAll({
+    where:{
+      wrongStatus: {'$gt': 0},
+      createdAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`,
+        `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()+1}`]}
+    }
+   });
+ const count = yield Order.count({
+    where:{
+      wrongStatus: {'$gt': 0},
+      createdAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`,
+        `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()+1}`]}
+    }
+   });
+ for(var i=0;i<count;i++)
+ {
+    const buy = yield Transaction.findById(order[i].buyerTransId);
+    const sell = yield Transaction.findById(order[i].sellerTransId);
+    const newRecord = {
+      buyerId: order[i].buyerId,
+      sellerId: order[i].sellerId,
+      totalCost: order[i].totalCost,
+      buyerPay: buy.amount,
+      sellerGet: sell.amount,
+      status: order[i].status,
+      orderId: order[i].id
+    };
+    const record = yield Record.create(newRecord);
+
+    if(record.status===0){
+      if(-record.buyerPay===record.sellerGet && record.sellerGet===record.totalCost){
+        record.update({
+          wrongStatus: 1
+        });
+      }
+      else {
+        if(record.totalCost===0 || record.totalCost>=500){
+          record.update({
+            wrongStatus: 2
+          })
+        }
+        else{
+          record.update({
+            wrongStatus: 0
+          })
+        }
+      }
+    }
+    if(record.status===1){
+      if(-record.buyerPay===record.sellerGet && record.sellerGet===record.totalCost){
+        if(record.totalCost===0 || record.totalCost>=500){
+          record.update({
+            wrongStatus: 2
+          })
+        }
+        else{
+          record.update({
+            wrongStatus: 0
+          })
+        }
+      }
+      else {
+        record.update({
+          wrongStatus: 1
+        })
+      }
+    }
+  };
+
+  const today = new Date();
+  count = yield Record.count({
+    where:{
+      wrongStatus: {'$gt': 0},
+      createdAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`,
+        `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()+1}`]}
+    }
+   });
+   const record = yield Record.findAll({
+    where:{
+      wrongStatus: {'$gt': 0},
+      createdAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`,
+        `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()+1}`]}
+    }
+   });
+   for(var i=0;i<count;i++)
+   {
+      const newLogtable = {
+        buyerId: record[i].buyerId,
+        sellerId: record[i].sellerId,
+        totalCost: record[i].totalCost,
+        buyerPay: record[i].buyerPay,
+        sellerGet: record[i].sellerGet,
+        status: record[i].status,
+        orderId: record[i].orderId,
+        wrongStatus: record[i].wrongStatus
+      };
+    const logtable = yield Logtable.create(newLogtable)
+  };
+  return res.success({ logtable })
 }));
 
 module.exports = router;
