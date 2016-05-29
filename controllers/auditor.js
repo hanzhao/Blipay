@@ -14,8 +14,6 @@ const uploadPath = require('../config').upload;
 const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport(config.mailConfig);
 
-
-
 const cookPassword = (key, salt) => {
   var hash = crypto.createHash('sha512');
   const mid = key.length >> 1
@@ -24,10 +22,6 @@ const cookPassword = (key, salt) => {
     .update(key.slice(mid))
     .digest('base64');
 };
-
-
-
-
 
 router.post('/auditor/login', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/login', req.body);
@@ -73,7 +67,5 @@ router.get('/auditor/transactions', Promise.coroutine(function* (req, res) {
   });
   return res.success({ transactions })
 }));
-
-
 
 module.exports = router;

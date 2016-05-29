@@ -7,6 +7,7 @@ import styles from './styles';
 import Container from '../Container';
 import ShoppingMenu from '../ShoppingMenu';
 import ShoppingCart from '../ShoppingCart';
+import ShoppingLoggingModal from '../ShoppingLoggingModal'
 
 class ShoppingPage extends React.Component {
   render() {
@@ -22,6 +23,7 @@ class ShoppingPage extends React.Component {
           </div>
         </Container>
         <ShoppingCart />
+        <ShoppingLoggingModal />
       </div>
     )
   }

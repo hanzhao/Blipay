@@ -20,26 +20,25 @@ const cookPassword = (key,salt,saltPos) => {
 
 /*管理员登录*/
 router.post('/admin/login',Promise.coroutine(function* (req,res){
-    console.log('in /admin/login');
-    console.log(req.body);
-
-    let admin = yield Admin.findOne({
-      where:{ adminName: req.body.username }
-    })
-    if(!admin){
-      return res.fail({
-        code: -1
-      });
-    }
-    if(cookPassword(req.body.password,
-                    admin.loginSalt,
-                    config.loginSaltPos) === admin.loginPass) {
-      req.session.adminId = admin.id
-      return res.success({ admin });
-    }
-    else {
-      return res.fail();
-    }
+  console.log('in /admin/login', req.body);
+  let admin = yield Admin.findOne({
+    where:{ adminName: req.body.username }
+  })
+  if (!admin) {
+    return res.fail({ code: -1 });
+  }
+  if (admin.disabled) {
+    return res.fail({ type: 'USER_DISABLED' })
+  }
+  if (cookPassword(req.body.password,
+                   admin.loginSalt,
+                   config.loginSaltPos) === admin.loginPass) {
+    req.session.adminId = admin.id
+    return res.success({ admin });
+  }
+  else {
+    return res.fail();
+  }
 }));
 
 router.get('/admin/info', Promise.coroutine(function* (req, res) {
@@ -400,43 +399,12 @@ router.post('/admin/verify', Promise.coroutine(function* (req,res) {
     attributes: ['id', 'status', 'userName']
   });
   user.status = req.body.status
+  yield user.save()
   yield AdminLog.create({
     adminId: req.session.adminId,
     content: `${req.body.status == 2 ? '通过' : '拒绝'}了用户 #${user.id} - ${user.userName} 的实名验证`
   })
-  yield user.save()
   res.success({ user })
-}));
-
-/*添加管理员*/
-router.post('/admin/addadmin',Promise.coroutine(function *(req,res){
-    let admin = yield Admin.findOne({
-        where:{
-            name: req.body.name
-        }
-    });
-        if(admin){
-            console.log('account already exist!\n');
-            return res.fail({
-                code: -1
-            });
-        }
-        const loginSalt=crypto.randomBytes(64).toString('base64');
-        const paySalt=crypto.randomBytes(64).toString('base64');
-        const newAdmin = {
-            adminName: req.body.adminName,
-            //订票员，审计员和系统管理员有不同权限
-            level: req.body.level,
-            loginSalt: loginSalt,
-            loginPass: cookPassword(req.body.loginPass,
-                                    loginSalt,
-                                    config.loginSaltPos)
-        };
-        yield Admin.create(newAdmin)
-        return res.success({
-                code: 0
-            });
-
 }));
 
 /*删除管理员*/
@@ -452,33 +420,31 @@ router.post('/admin/deleteadmin',Promise.coroutine(function *(req,res){
 }));
 
 router.post('/admin/addadmin',Promise.coroutine(function *(req,res){
-    let admin = yield Admin.findOne({
-        where:{
-            name: req.body.name
-        }
-    });
-        if(admin){
-            console.log('account already exist!\n');
-            return res.fail({
-                code: -1
-            });
-        }
-        const loginSalt=crypto.randomBytes(64).toString('base64');
-        const paySalt=crypto.randomBytes(64).toString('base64');
-        const newAdmin = {
-            adminName: req.body.adminName,
-            //订票员，审计员和系统管理员有不同权限
-            level: req.body.level,
-            loginSalt: loginSalt,
-            loginPass: cookPassword(req.body.loginPass,
-                                    loginSalt,
-                                    config.loginSaltPos)
-        };
-        yield Admin.create(newAdmin)
-        return res.success({
-                code: 0
-            });
-
+  let admin = yield Admin.findOne({
+    where:{
+      adminName: req.body.name
+    }
+  });
+  if (admin) {
+    return res.fail({ type: 'ADMINNAME_EXIST' })
+  }
+  const loginSalt = crypto.randomBytes(64).toString('base64');
+  const paySalt = crypto.randomBytes(64).toString('base64');
+  const newAdmin = {
+    adminName: req.body.adminName,
+    realName: req.body.realName,
+    level: req.body.level == 2 ? 2 : 1,
+    loginSalt: loginSalt,
+    loginPass: cookPassword(req.body.password,
+                            loginSalt,
+                            config.loginSaltPos)
+    };
+    admin = yield Admin.create(newAdmin)
+    yield AdminLog.create({
+      adminId: req.session.adminId,
+      content: `创建了管理员用户 #${admin.id} - ${admin.adminName}`
+    })
+    return res.success({ admin })
 }));
 
 /*删除管理员*/
@@ -508,5 +474,128 @@ router.post('/admin/changelevel',Promise.coroutine(function *(req,res){
         code: 0
     });
 }));
+
+router.get('/admin/users', Promise.coroutine(function* (req, res) {
+  if (!req.session.adminId) {
+    return res.status(403).fail()
+  }
+  const users = yield User.findAll()
+  res.success({ users })
+}))
+
+router.post('/admin/user/disable', Promise.coroutine(function* (req, res) {
+  if (!req.session.adminId) {
+    return res.status(403).fail()
+  }
+  const user = yield User.findById(req.body.id)
+  user.disabled = 1
+  yield user.save()
+  yield AdminLog.create({
+    adminId: req.session.adminId,
+    content: `禁用了普通用户 #${user.id} - ${user.userName} 的账户`
+  })
+  return res.success({ user })
+}))
+
+router.post('/admin/user/enable', Promise.coroutine(function* (req, res) {
+  if (!req.session.adminId) {
+    return res.status(403).fail()
+  }
+  const user = yield User.findById(req.body.id)
+  user.disabled = 0
+  yield user.save()
+  yield AdminLog.create({
+    adminId: req.session.adminId,
+    content: `启用了普通用户 #${user.id} - ${user.userName} 的账户`
+  })
+  return res.success({ user })
+}))
+
+router.get('/admin/user/:userId', Promise.coroutine(function* (req, res) {
+  if (!req.session.adminId) {
+    return res.status(403).fail()
+  }
+  const user = yield User.findById(req.params.userId)
+  res.success({ user })
+}))
+
+router.get('/admin/admins', Promise.coroutine(function* (req, res) {
+  if (!req.session.adminId) {
+    return res.status(403).fail()
+  }
+  let admins
+  if (req.query.level == 2) {
+    // 审计员
+    admins = yield Admin.findAll({
+      where: { level: 2 }
+    })
+  } else {
+    // 管理员
+    admins = yield Admin.findAll({
+      where: { level: { $lt: 2 } }
+    })
+  }
+  res.success({ admins })
+}))
+
+router.post('/admin/admin/disable', Promise.coroutine(function* (req, res) {
+  if (!req.session.adminId) {
+    return res.status(403).fail()
+  }
+  const admin = yield Admin.findById(req.body.id)
+  const identity = admin.level === 2 ? '审计员' : '管理员'
+  admin.disabled = 1
+  yield admin.save()
+  yield AdminLog.create({
+    adminId: req.session.adminId,
+    content: `禁用了${identity} #${admin.id} - ${admin.adminName} 的账户`
+  })
+  return res.success({ admin })
+}))
+
+router.post('/admin/admin/enable', Promise.coroutine(function* (req, res) {
+  if (!req.session.adminId) {
+    return res.status(403).fail()
+  }
+  const admin = yield Admin.findById(req.body.id)
+  const identity = admin.level === 2 ? '审计员' : '管理员'
+  admin.disabled = 0
+  yield admin.save()
+  yield AdminLog.create({
+    adminId: req.session.adminId,
+    content: `启用了${identity} #${admin.id} - ${admin.adminName} 的账户`
+  })
+  return res.success({ admin })
+}))
+
+/*添加管理员*/
+router.post('/admin/add',Promise.coroutine(function* (req,res) {
+  let admin = yield Admin.findOne({
+    where:{ adminName: req.body.adminName }
+  });
+  if (admin) {
+    return res.fail({ type: 'USERNAME_EXIST' });
+  }
+  const loginSalt = crypto.randomBytes(64).toString('base64');
+  const paySalt = crypto.randomBytes(64).toString('base64');
+  const newAdmin = {
+      adminName: req.body.adminName,
+      level: req.body.level == 2 ? 2 : 1, // 审计员/普通管理员
+      loginSalt: loginSalt,
+      loginPass: cookPassword(req.body.loginPass,
+                              loginSalt,
+                              config.loginSaltPos)
+  };
+  admin = yield Admin.create(newAdmin)
+  return res.success({ admin });
+}));
+
+router.get('/admin/admin/:adminId', Promise.coroutine(function* (req, res) {
+  if (!req.session.adminId) {
+    return res.status(403).fail()
+  }
+  const admin = yield Admin.findById(req.params.adminId)
+  res.success({ admin })
+}))
 
 module.exports = router;
