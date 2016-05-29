@@ -11,8 +11,8 @@
 }
 .ant-menu-horizontal > .ant-menu-item,
 .ant-menu-horizontal > .ant-menu-submenu {
-  padding-left: 0;
-  padding-right: 0;
+  padding-left: 30px;
+  padding-right: 30px;
 }
 .ant-menu-inline > .ant-menu-item {
   height: 82px;

@@ -3,43 +3,54 @@
  */
 
 import React from 'react';
+import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { Form, Input, Icon, Button } from 'antd';
-
+import { login } from '../../redux/modules/account';
+import store from '../../redux/store';
 import styles from './styles';
 
+@connect(
+  (state) => ({
+    message: state.account.message
+  })
+)
 @reduxForm({
   form: 'user-login',
-  fields: ['username', 'password']
+  fields: ['userName', 'loginPass']
 }, undefined, {
-  onSubmit: (data) => console.log(data)
+  onSubmit: (data) => login(data)
 })
 class LoginForm extends React.Component {
   render() {
     const { fields: {
-      username,
-      password
-    }, handleSubmit } = this.props;
+      userName,
+      loginPass
+    }, handleSubmit, message } = this.props;
     return (
       <Form horizontal onSubmit={handleSubmit}>
         <Form.Item>
           <Input size="large"
-                 placeholder="账户"
+                 placeholder="用户名"
                  addonBefore={<Icon type="user" />}
                  autoFocus
                  autoComplete="off"
-                 {...username} />
+                 valida
+                 {...userName} />
         </Form.Item>
         <Form.Item>
           <Input size="large"
                  type="password"
-                 placeholder="密码"
+                 placeholder="登录密码"
                  addonBefore={<Icon type="lock" />}
-                 {...password} />
+                 {...loginPass} />
         </Form.Item>
+        <div className={styles.hint}>
+          { message }
+        </div>
         <Button type="primary" size="large"
                 className={styles.btn}
-                htmlType="submit" >
+                htmlType="submit">
           登录
         </Button>
         <div className={styles.bottomLeft}>

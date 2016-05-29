@@ -29,7 +29,7 @@ const webpackHotMiddleware = require('webpack-hot-middleware');
 
 const env = process.env.NODE_ENV || 'development';
 global.isProduction = (env === 'production');
-const port = process.env.PORT || 0;
+const port = process.env.PORT || 3000;
 const RedisStore = ConnectRedis(session);
 
 const config = require('./config');
@@ -76,7 +76,7 @@ app.use((req, res, next) => {
   res.fail = function(data) {
     return this.json({
       code: -1,
-      data: data
+      error: data
     });
   };
   next();
@@ -85,13 +85,10 @@ app.use((req, res, next) => {
 // models
 require('./models');
 
-// controllers
-glob.sync(`${ROOT}/controllers/*.js`).forEach((controller) => {
-  app.use(require(controller));
-});
+app.use(require('./controllers'))
 
 // 错误处理
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   res.status(500).send(err.stack);
   console.error(err);
 });

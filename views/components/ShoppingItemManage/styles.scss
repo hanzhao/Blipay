@@ -1,0 +1,39 @@
+.container {
+  background-color: #ffffff;
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-bottom: 30px;
+
+  .upperHalf {
+    margin-bottom: 0px;
+    .cascader {
+      padding-left: 10px;
+      width: 150px;
+      padding-right: 10px;
+    }
+    .inputbox {
+      padding-left: 20px;
+      width: 300px;
+    }
+    .button {
+      margin-left: 20px;
+    }
+  }
+
+  .lowerHalf {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    .itemName {
+      width: 300px;
+      font-type: sans-serif;
+    }
+    .itemImage {
+      width: 100px;
+    }
+    .operationButton {
+      margin-top: 10px;
+    }
+  }
+}

@@ -1,0 +1,58 @@
+.container {
+  background-color: #ffffff;
+  padding-left: 30px;
+  padding-top: 30px;
+  padding-right: 30px;
+
+  .upperHalf {
+    .info {
+      padding: 0 20px;
+      margin-bottom: 20px;
+      padding-bottom: 5px;
+      float: left;
+      width: 45%;
+      margin-right: 5%;
+      border-right: solid #aaa 1px;
+      .greeting {
+        font-size: 30px;
+      }
+      .lastLogin {
+        font-size: 15px;
+        margin-top: 15px;
+      }
+    }
+    .level {
+      float: left;
+      width: 50%;
+      padding: 0 20px;
+      .levelTitle {
+        margin-top: 5px;
+        font-size: 15px;
+      }
+      .levelLower{
+        margin-top: 15px;
+        .levelValue {
+          color: #c63655;
+          font-size: 30px
+        }
+      }
+    }
+  }
+  .horizontalBar {
+    clear: both;
+    position: relative;
+    margin-top: 20px;
+    height: 1px;
+    background-color: #aaaaaa;
+  }
+  .lowerHalf {
+    clear: both;
+    padding: 20px 20px;
+    .title {
+      font-size: 20px;
+    }
+    .tableWrapper {
+      margin-top: 15px;
+    }
+  }
+}

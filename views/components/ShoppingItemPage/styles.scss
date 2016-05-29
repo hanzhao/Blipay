@@ -1,0 +1,80 @@
+.container {
+  position: relative;
+  padding: 0 30px;
+  .infoContainer {
+    .carousel {
+      width: 45%;
+      margin-right: 5%;
+      float: left;
+      & > div {
+        width: 300px;
+        margin: 0 auto;
+      }
+    }
+    .info {
+      float: left;
+      width: 50%;
+      font-size: 15px;
+      height: 350px;
+      position: relative;
+      & > div {
+        margin-bottom: 20px;
+        line-height: 24px;
+      }
+      .price {
+        font-size: 15px;
+        .priceNumber {
+          color: #c63555;
+          font-size: 20px;
+          &::before {
+            content: '¥';
+          }
+        }
+      }
+      .remain {
+        font-size: 15px;
+      }
+      &::after {
+        clear: both;
+        content: ' ';
+      }
+      .buttonContainer {
+        position: absolute;
+        text-align: center;
+        width: 100%;
+      }
+    }
+  }
+}
+
+.title {
+  font-size: 24px;
+  padding-bottom: 10px;
+}
+
+.description {
+  font-size: 14px;
+  text-indent: 2em;
+  margin-left: 30px;
+}
+
+.feedback {
+  position: absolute;
+  top: 450px;
+}
+
+.reviews {
+  margin-left: 30px;
+  .review {
+    min-height: 150px;    
+    .line {
+      line-height: 40px;
+      height: 40px;
+      font-size: 14px;
+      .userName {
+        margin-right: 10px;
+      }
+    }
+
+  }
+}

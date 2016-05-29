@@ -1,0 +1,65 @@
+.card {
+  margin: 10px 10px 0px;
+  padding: 10px;
+  cursor: pointer;
+  min-width: 200px;
+  min-height: 300px;
+  & > div > img {
+    width: 200px;
+    height: 200px;
+  }
+  :global(.ant-card-body) {
+    padding: 10px;
+  }
+  &:global(.ant-card):hover {
+    box-shadow: 0 1px 6px rgba(198, 53, 85, 0.2);
+    border-color: #c63555;
+  }
+  .info {
+    .name {
+      width: 200px;
+      min-height: 3em;
+    }
+    .sellerName {
+      line-height: 30px;
+      float: left;
+    }
+    .price {
+      line-height: 30px;
+      float: right;
+      color: #c63555;
+      font-size: 20px;
+      &::before {
+        content: '¥';
+      }
+    }
+  }
+}
+
+.flex {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 70px;
+}
+
+.pagination {
+  margin-top: 50px;
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+}
+
+.input {
+  position: relative;
+  & > div {
+    left: 50%;
+    width: 300px;
+    margin-left: -150px;
+    position: absolute;
+  }
+}
+.position {
+  flex: 1;
+  text-align: center;
+}

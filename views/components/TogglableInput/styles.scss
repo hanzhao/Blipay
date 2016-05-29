@@ -6,20 +6,26 @@
     width: 150px;
   }
 }
-
-.input {
+.form{
+  display: inline;
   width: 150px;
-  height: 30px;
   margin-right: 20px;
-  border: solid 1px #c3c3c3;
-  border-radius: 2px;
-  animation: scale-in .5s;
-  &:hover {
-    border-color: #d25f77;
-  }
-  &:focus {
-    border: solid 1px #c63655;
-    border-radius: 2px;
+  .formItem{
+    width: 150px;
+    .input {
+      width: 150px;
+      height: 30px;
+      border: solid 1px #c3c3c3;
+      border-radius: 2px;
+      animation: scale-in .5s;
+      &:hover {
+        border-color: #d25f77;
+      }
+      &:focus {
+        border: solid 1px #c63655;
+        border-radius: 2px;
+      }
+    }
   }
 }
 .button {

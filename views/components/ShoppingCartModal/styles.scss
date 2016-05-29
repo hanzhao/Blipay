@@ -1,0 +1,23 @@
+.total {
+  color: #c63555;
+  text-align: right;
+  font-size: 16px;
+  line-height: 30px;
+  height: 30px;
+  margin-top: 20px;
+  margin-right: 10px;
+}
+
+.itemAvatar {
+  width: 40px;
+  height: 40px;
+}
+
+.modal:global(.ant-modal) {
+  width: 800px !important;
+}
+
+.btn {
+  font-size: 14px;
+  margin-left: 1em;
+}
