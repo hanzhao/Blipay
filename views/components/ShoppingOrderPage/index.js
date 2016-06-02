@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { asyncConnect } from 'redux-connect';
 import { Link } from 'react-router'
-import { Modal, Form, Input, InputNumber, Rate, message } from 'antd';
+import { Modal, Form, Input, InputNumber, Rate, message, Cascader } from 'antd';
 import { Button } from 'antd';
 import { Checkbox } from 'antd';
 import { Pagination } from 'antd';
@@ -18,6 +18,8 @@ import { reduxForm, addArrayValue } from 'redux-form';
 
 import {
   loadOrders,
+  toggleShoppingPay,
+  toggleShoppingShip,
   toggleShoppingReview,
   toggleShoppingRefund,
   toggleShoppingRefundConfirm,
@@ -29,12 +31,28 @@ import {
 
 const FormItem = Form.Item;
 
-const pay = function (id) {
-  store.dispatch(payOrder(id));
+const pay = function (order) {
+  // store.dispatch(payOrder(order));
+  Modal.confirm({
+    title: '确认支付',
+    content: '共 ' + order.totalCost + ' 元',
+    onOk(){
+      store.dispatch(payOrder(order.id));
+    },
+    onCancel() {},
+  })
 }
 
-const ship = function (id) {
-  store.dispatch(shipOrder(id));
+const ship = function (order) {
+  // store.dispatch(shipOrder(order));
+  Modal.confirm({
+    title: '确认发货',
+    content: '地址:\t'+order.addr,
+    onOk(){
+      store.dispatch(shipOrder(order.id));
+    },
+    onCancel() {},
+  })
 }
 
 const toggleReviewModal = function (order) {
@@ -49,6 +67,36 @@ const toggleRefundConfirmModal = function () {
   store.dispatch(toggleShoppingRefundConfirm());
 }
 
+
+// @connect(
+//   (state) => ({
+//     order: state.shopping.payOrder,
+//     visible: state.shopping.showPayModal
+//   }),
+//   (dispatch) => ({
+//     pay: (orderId) => dispatch(payOrder(orderId))
+//   })
+// )
+// class ShoppingPayModal extends React.Component {
+//   render() {
+    
+//   }
+// }
+
+// @connect(
+//   (state) => ({
+//     order: state.shopping.shipOrder,
+//     visible: state.shopping.showShipModal
+//   }),
+//   (dispatch) => ({
+//     ship: (orderId) => dispatch(shipOrder(orderId))
+//   })
+// )
+// class ShoppingShipModal extends React.Component {
+//   render() {
+    
+//   }
+// }
 
 @connect(
   (state) => ({
@@ -147,25 +195,40 @@ class ShoppingRefundModal extends React.Component {
   }
 }
 
-// let showShoppingRefundConfirmModal = false;
-// class ShoppingRefundConfirmModal extends React.Component {
-//   render() {
-//     return (
-//       <Modal title="退货申请"
-//         visible={confirmVisible[this.props.index]}
-//         view={this.props.view}
-//         index={this.props.index}
-//         orderId={this.props.orderId}
-//         onCancel={toggleRefundConfirmModal}>
-//         <Form>
-//           <FormItem label="退货理由">
-//             <Input type='textarea' disabled={true} />
-//           </FormItem>
-//         </Form>
-//       </Modal>
-//     )
-//   }
-// }
+
+@connect(
+  (state) => ({
+    showRefundConfirmModal: state.shopping.showRefundConfirmModal,
+    orderId: state.shopping.refundOrderId
+  }),
+  (dispatch) => ({
+    refundRequestConfirm: (id, reason) => dispatch(refundReq(id, reason))
+  })
+)
+@reduxForm(
+  {
+    form: 'refund',
+    fields: ['reason']
+  }, undefined, {
+    onSubmit: (data) => { }
+  })
+class ShoppingRefundConfirmModal extends React.Component {
+  render() {
+    return (
+      <Modal title="退货申请"
+        visible={this.props.showRefundConfirmModal}
+        onCancel={toggleRefundConfirmModal}>
+        <Form>
+          <FormItem label="退货理由">
+            <Input type='textarea' disabled={true} />
+          </FormItem>
+        </Form>
+      </Modal>
+    )
+  }
+}
+
+
 
 
 @asyncConnect(
@@ -234,13 +297,13 @@ class ShoppingOrderPage extends React.Component {
         switch (record.status) {
           case 0:
             if (this.props.userId == record.buyerId)
-              return <Button type="ghost" onClick={ pay.bind(this, record.id) }>确认付款</Button>
+              return <Button type="ghost" onClick={ pay.bind(this, record) }>确认付款</Button>
             else if (this.props.userId == record.sellerId)
               return <spin>等待付款</spin>
             break;
           case 1:
             if (this.props.userId == record.sellerId)
-              return <Button type="ghost" onClick={ ship.bind(this, record.id) }>确认发货</Button>
+              return <Button type="ghost" onClick={ ship.bind(this, record) }>确认发货</Button>
             else if (this.props.userId == record.buyerId)
               return <spin>等待发货</spin>
             break;
