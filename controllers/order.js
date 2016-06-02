@@ -135,7 +135,7 @@ router.post('/order/new', Promise.coroutine(function* (req, res) {
   console.log('in /order/new');
   console.log(req.body);
   try {
-    yield createOrder(req.session.userId, req.body.items);
+    yield createOrder(req.session.userId, req.body.items, req.body.addr);
     return res.success('Order created');
   }
   catch (e) {

@@ -17,6 +17,10 @@ module.exports = (db) => {
     status: {
       type: Sequelize.INTEGER
     },
+    /* 地址 */
+    addr: {
+      type: Sequelize.STRING
+    },
     /* 转账交易信息 */
     buyerTransId: {
       type: Sequelize.INTEGER

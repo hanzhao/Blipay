@@ -29,9 +29,14 @@ const BUY_CART_ITEMS_FAIL = 'Blipay/shopping/BUY_CART_ITEMS_FAIL'
 const CLEAR_SHOPPING_CART = 'Blipay/shopping/CLEAR_SHOPPING_CART'
 
 // 订单页面各Modal
+const TOGGLE_SHOPPING_PAY = 'Blipay/shopping/TOGGLE_SHOPPING_PAY'
+const TOGGLE_SHOPPING_SHIP = 'Blipay/shopping/TOGGLE_SHOPPING_SHIP'
 const TOGGLE_SHOPPING_REVIEW = 'Blipay/shopping/TOGGLE_SHOPPING_REVIEW'
 const TOGGLE_SHOPPING_REFUND = 'Blipay/shopping/TOGGLE_SHOPPING_REFUND'
 const TOGGLE_SHOPPING_REFUND_CONFIRM = 'Blipay/shopping/TOGGLE_SHOPPING_REFUND_CONFIRM'
+// 订单地址Modal
+const TOGGLE_SHOPPING_ADDR = 'Blipay/shopping/TOGGLE_SHOPPING_ADDR'
+
 
 // 获取订单信息
 const LOAD_ORDERS = 'Blipay/shopping/LOAD_ORDERS'
@@ -102,6 +107,16 @@ export const deleteCartItem = (idx) => ({
   idx
 })
 
+export const toggleShoppingPay = (order) => ({
+  type: TOGGLE_SHOPPING_PAY,
+  order
+})
+
+export const toggleShoppingShip = (order) => ({
+  type: TOGGLE_SHOPPING_SHIP,
+  order
+})
+
 export const toggleShoppingCart = () => ({
   type: TOGGLE_SHOPPING_CART
 })
@@ -124,17 +139,22 @@ export const toggleShoppingRefundConfirm = () => ({
   type: TOGGLE_SHOPPING_REFUND_CONFIRM
 })
 
+export const toggleShoppingAddr = () => ({
+  type: TOGGLE_SHOPPING_ADDR
+})
+
 export const clearShoppingCart = () => ({
   type: CLEAR_SHOPPING_CART
 })
 
-export const buyCartItems = () => ({
+export const buyCartItems = (addr) => ({
   types: [BUY_CART_ITEMS, BUY_CART_ITEMS_SUCCESS, BUY_CART_ITEMS_FAIL],
   promise: (client) => client.post('/api/order/new', {
     items: store.getState().shopping.cartItems.map(e => ({
       id: e.id,
       amount: e.amount
-    }))
+    })),
+    addr: addr
   })
 })
 
@@ -175,9 +195,12 @@ export const refundReq = (orderId, reason) => ({
 const initialState = {
   cartItems: [],
   reviewItems: [],
+  showPayModal: false,
+  showShipModal: false,
   showReviewModal: false,
   showRefundModal: false,
-  showRefundConfirmModal: false
+  showRefundConfirmModal: false,
+  showAddressModal: false
 }
 
 // Reducer
@@ -215,6 +238,18 @@ export default function reducer(state = initialState, action = {}) {
         showShoppingCartModal: false,
         showShoppingLoggingModal: !state.showShoppingLoggingModal
       }
+    case TOGGLE_SHOPPING_PAY:
+      return {
+        ...state,
+        showPayModal: !state.showPayModal,
+        payOrder: action.order
+      }
+    case TOGGLE_SHOPPING_SHIP:
+      return {
+        ...state,
+        showShipModal: !state.showShipModal,
+        shipOrder: action.order
+      }
     case TOGGLE_SHOPPING_REVIEW:
       return {
         ...state,
@@ -231,6 +266,11 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         showRefundConfirmModal: !state.showRefundConfirmModal
+      }
+    case TOGGLE_SHOPPING_ADDR:
+      return {
+        ...state,
+        showAddressModal: !state.showAddressModal
       }
     case DELETE_CART_ITEM:
       return {
