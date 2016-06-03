@@ -66,6 +66,6 @@ module.exports = (db) => {
     },
     cardBack: {
       type: Sequelize.INTEGER
-    },
+    }
   });
 };

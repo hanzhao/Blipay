@@ -5,7 +5,7 @@ const assert = require('chai').assert;
 
 proxy.use(router);
 
-describe('POST /account/withdraw', () => {
+describe('POST /account/topup', () => {
   
   const data = {
     password: 'paypass1',
@@ -17,11 +17,6 @@ describe('POST /account/withdraw', () => {
     loginPass: 'loginpass1'
   };
 
-  const overmuch_data = {
-    password: 'paypass1',
-    amount: 10000000
-  };
-
   const wrong_pass_data = {
     password: 'paypass2',
     amount: 0
@@ -29,7 +24,7 @@ describe('POST /account/withdraw', () => {
 
   it('returns 403 if the user has not logged in yet', (done) => {
     request(proxy)
-      .post('/account/withdraw')
+      .post('/account/topup')
       .send(data)
       .expect(403, done);
   });
@@ -40,7 +35,7 @@ describe('POST /account/withdraw', () => {
       .send(login_data);
 
     request(proxy)
-      .post('/account/withdraw')
+      .post('/account/topup')
       .send(data)
       .expect(200);
 
@@ -55,7 +50,7 @@ describe('POST /account/withdraw', () => {
       .send(login_data);
 
     request(proxy)
-      .post('/account/withdraw')
+      .post('/account/topup')
       .send(wrong_pass_data)
       .expect((res) => {
         assert.equal(res.body.error.type, 'INCORRECT_PASSWORD');
@@ -66,22 +61,5 @@ describe('POST /account/withdraw', () => {
       .get('/account/logout')
       .expect(200, done);
   });
-
-  it('returns INSUFFICIENT_BALANCE if password is wrong', (done) => {
-    request(proxy)
-      .post('/account/login')
-      .send(login_data);
-
-    request(proxy)
-      .post('/account/withdraw')
-      .send(overmuch_data)
-      .expect((res) => {
-        assert.equal(res.body.error.type, 'INSUFFICIENT_BALANCE');
-      })
-      .expect(200);
-
-    request(proxy)
-      .get('/account/logout')
-      .expect(200, done);
-  });
+  
 });

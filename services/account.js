@@ -1,171 +1,97 @@
 const User = require('../models').User;
+const db = require('../models').db;
 const Transaction = require('../models').Transaction;
 const Promise = require('bluebird');
-// const config = require('../../config/account');
 const crypto = require('crypto');
 
-const cookPassword = (key, salt, saltPos) => {
+const cookPassword = (key, salt) => {
   var hash = crypto.createHash('sha512');
-  return hash.update(key.slice(0, saltPos))
+  const mid = key.length >> 1;
+  return hash.update(key.slice(0, mid))
     .update(salt)
-    .update(key.slice(saltPos))
+    .update(key.slice(mid))
     .digest('base64');
 };
 
-const checkBalance = (userId) => {
-  return new Promise((resolve, reject) => {
-    User.findOne({
-      where: {
-        id: userId
-      }
-    }).then((user) => {
-      if (!user) {
-        throw new Error('userId is invalid.');
-      }
-      return resolve(user.balance);
-    }).catch((err) => {
-      return reject(err);
-    });
-  });
-};
+const checkBalance = Promise.coroutine(function *(userId) {
+  const user = yield User.findById(userId);
+  if (!user) {
+    throw new Error('INVALID_USERID');
+  }
+  return user.balance;
+});
 
-const requestPay = (userId, amount, info) => {
-  return new Promise((resolve, reject) => {
-    if (isNaN(amount)) {
-      return reject(new Error('amount is invalid'));
-    }
-    User.findOne({
-      where: {
-        id: userId
-      }
-    }).then((user) => {
-      if (!user) {
-        throw new Error('userId is invalid.');
-      }
-      if (user.balance < amount) {
-        throw new Error('balance is not enough.');
-      }
-      const newTransaction = {
-        userId: user.id,
-        amount: -amount,
-        type: 3,
-        status: 1,
-        info: info || `支出 ${amount} 元`
-      };
-      Transaction.create(newTransaction)
-      .then(() => {
-        User.update({
-          balance: user.balance - amount
-        }, {
-          where: {
-            id: userId
-          }
-        }).then((res) => {
-          if(res) {
-            return resolve(user.balance - amount);
-          } else {
-            return reject(new Error('error updating database.'));
-          }
-        });
-      });
-    }).catch((err) => {
-      return reject(err);
-    });
+const requestPay = Promise.coroutine(function *(userId, amount, info) {
+  if (isNaN(amount)) {
+    throw new Error('INVALID_AMOUNT');
+  }
+  const user = yield User.findById(userId, {
+    attributes: [ 'balance' ]
   });
-};
+  if (!user) {
+    throw new Error('INVALID_USERID');
+  }
+  if (user.balance < amount) {
+    throw new Error('INSUFFICIENT_AMOUNT');
+  }
+  const newTransaction = {
+    userId: userId,
+    amount: -amount,
+    type: 3,
+    status: 1,
+    info: info || `支出 ${amount} 元`
+  };
+  const transaction = yield Transaction.create(newTransaction);
+  yield User.update({
+    balance: db.literal(`balance - ${amount}`)
+  }, {
+    where: { id: userId }
+  });
+  return transaction.id;
+});
 
-const requestReceive = (userId, amount, info) => {
-  return new Promise((resolve, reject) => {
-    if (isNaN(amount)) {
-      return reject(new Error('amount is invalid'));
-    }
-    User.findOne({
-      where: {
-        id: userId
-      }
-    }).then((user) => {
-      if (!user) {
-        throw new Error('userId is invalid.');
-      }
-      const newTransaction = {
-        userId: user.id,
-        amount: amount,
-        type: 4,
-        status: 1,
-        info: info || `收入 ${amount} 元`
-      };
-      Transaction.create(newTransaction)
-      .then(() => {
-        User.update({
-          balance: user.balance + amount
-        }, {
-          where: {
-            id: userId
-          }
-        }).then((res) => {
-          if(res) {
-            return resolve(user.balance + amount);
-          } else {
-            return reject(new Error('error updating database.'));
-          }
-        });
-      });
-    }).catch((err) => {
-      return reject(err);
-    });
+const requestReceive = Promise.coroutine(function *(userId, amount, info) {
+  if (isNaN(amount)) {
+    throw new Error('INVALID_AMOUNT');
+  }
+  const user = yield User.findById(userId);
+  if (!user) {
+    throw new Error('INVALID_USERID');
+  }
+  const newTransaction = {
+    userId: userId,
+    amount: amount,
+    type: 4,
+    status: 1,
+    info: info || `收入 ${amount} 元`
+  };
+  const transaction = yield Transaction.create(newTransaction);
+  yield User.update({
+    balance: db.literal(`balance + ${amount}`)
+  }, {
+    where: { id: userId }
   });
-};
+  return transaction.id;
+});
 
-const checkPaypass = (userId, payPass) => {
-  return new Promise((resolve, reject) => {
-    User.findOne({
-      where: {
-        id: userId
-      }
-    }).then((user) => {
-      if (!user) {
-        throw new Error('userId is invalid.');
-      }
-      if (cookPassword(
-            payPass,
-            user.paySalt,
-            config.paySaltPos)  === user.payPass) {
-        return resolve(0);
-      }
-      reject(new Error('payPass wrong.'));
-    }).catch((err) => {
-      return reject(err);
-    });
+const checkPaypass = Promise.coroutine(function *(userId, payPass) {
+  const user = yield User.findById(userId, {
+    attributes: ['payPass', 'salt']
   });
-};
-
-const login = (userName, loginPass) => {
-  return new Promise((resolve, reject) => {
-    User.findOne({
-      where: {
-        userName: userName
-      }
-    }).then((user) => {
-      if (!user) {
-        throw new Error('userName does not exist.');
-      }
-      if (cookPassword(
-            loginPass,
-            user.loginSalt,
-            config.loginSaltPos)  === user.loginPass) {
-        return resolve(user.id);
-      }
-      reject(new Error('loginPass wrong.'));
-    }).catch((err) => {
-      return reject(err);
-    });
-  });
-};
+  if (!user) {
+    throw new Error('INVALID_USERID');
+  }
+  if (cookPassword(payPass, user.salt) == user.payPass) {
+    return 0;
+  } else {
+    throw new Error('INCORRECT_PAYPASS');
+  }
+});
 
 module.exports = {
   checkBalance,
   requestPay,
   requestReceive,
   checkPaypass,
-  login
+  cookPassword
 };

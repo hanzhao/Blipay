@@ -42,7 +42,7 @@ const asyncValidate = async (values) => {
     let res = await ajax.get('/api/account/check_username', {
       userName: values.userName
     });
-    return {}
+    return {};
   } catch (err) {
     if (err.type === 'USERNAME_EXIST') {
       return { userName: '该用户名已被注册。' };

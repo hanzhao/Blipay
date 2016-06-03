@@ -1,26 +1,25 @@
 const request = require('supertest');
 const proxy = require('../helper');
 const router = require('../../controllers/account');
+const assert = require('chai').assert;
 
 proxy.use(router);
 
-describe('POST /account/check_paypass', () => {
-
-  const check_data = {
-    userId: 10001,
-    payPass: 'paypass1'
-  };
+describe('GET /account/info', () => {
 
   const login_data = {
     userName: 'user3',
     loginPass: 'loginpass1'
   };
 
-  it('returns 403 if the user has not logged in yet', (done) => {
+  it('returns 200 and empty object if the user \
+    has not logged in yet', (done) => {
     request(proxy)
-      .post('/account/check_paypass')
-      .send(check_data)
-      .expect(403, done);
+      .get('/account/info')
+      .expect((res) => {
+        assert.equal(res.body.data.user, undefined);
+      })
+      .expect(200, done);
   });
 
   it('returns 200 on success', (done) => {
@@ -29,8 +28,11 @@ describe('POST /account/check_paypass', () => {
       .send(login_data);
 
     request(proxy)
-      .post('/account/check_paypass')
-      .send(check_data)
+      .get('/account/info')
+      .expect((res) => {
+        assert.property(res.body, 'userName');
+        assert.property(res.body, 'idNumber');
+      })
       .expect(200);
 
     request(proxy)

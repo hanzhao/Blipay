@@ -4,15 +4,15 @@ const router = require('../../controllers/account');
 
 proxy.use(router);
 
-describe('GET /account/check_username', () => {
+describe('GET /account/check_id', () => {
 
   const check_data = {
-    userName: 'user3'
+    idNumber: '314159265358979'
   };
 
-  it('returns USERNAME_EXIST if userName already exists', (done) => {
+  it('returns ID_EXIST if idNumber already exists', (done) => {
     request(proxy)
-      .get('/account/check_username')
+      .get('/account/check_id')
       .query(check_data)
       .expect((res) => {
         if (res.body.code !== -1)

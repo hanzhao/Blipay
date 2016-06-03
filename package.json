@@ -6,9 +6,12 @@
   "scripts": {
     "start": "node index.js",
     "lint": "eslint . --config ./.eslintrc.node.json --ignore-pattern views/ --ignore-pattern public/ && eslint views/ --config ./.eslintrc.browser.json && sass-lint -c ./.sass-lint.yml -v && echo -e \"\\033[32;49;1mLint Passed.\\033[39;49;0m\"",
+    "lint:node": "eslint . --config ./.eslintrc.node.json --ignore-pattern views/ --ignore-pattern public/ && echo -e \"\\033[32;49;1mLint Passed.\\033[39;49;0m\"",
+    "lint:browser": "eslint views/ --config ./.eslintrc.browser.json && echo -e \"\\033[32;49;1mLint Passed.\\033[39;49;0m\"",
+    "lint:sass": "sass-lint -c ./.sass-lint.yml -v && echo -e \"\\033[32;49;1mLint Passed.\\033[39;49;0m\"",
     "build": "NODE_ENV=production webpack -p --config webpack.config.prod.js",
-    "test:watch": "mocha \"tests/**/*.js\" --watch --colors --growl",
-    "test": "mocha \"tests/**/*.js\" --colors --growl"
+    "test:watch": "mocha \"tests/**/*.js\" -S --watch --colors --growl",
+    "test": "mocha \"tests/**/*.js\" -S --colors --growl"
   },
   "repository": {
     "type": "git",
