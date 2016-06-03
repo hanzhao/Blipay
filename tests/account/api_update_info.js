@@ -4,12 +4,7 @@ const router = require('../../controllers/account');
 
 proxy.use(router);
 
-describe('POST /account/check_paypass', () => {
-
-  const check_data = {
-    userId: 10001,
-    payPass: 'paypass1'
-  };
+describe('POST /account/update_info', () => {
 
   const login_data = {
     userName: 'user3',
@@ -18,8 +13,7 @@ describe('POST /account/check_paypass', () => {
 
   it('returns 403 if the user has not logged in yet', (done) => {
     request(proxy)
-      .post('/account/check_paypass')
-      .send(check_data)
+      .post('/account/update_info')
       .expect(403, done);
   });
 
@@ -29,8 +23,7 @@ describe('POST /account/check_paypass', () => {
       .send(login_data);
 
     request(proxy)
-      .post('/account/check_paypass')
-      .send(check_data)
+      .post('/account/update_info')
       .expect(200);
 
     request(proxy)

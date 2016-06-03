@@ -45,7 +45,7 @@ class UploadModal extends React.Component {
             </Upload.Dragger>
           </div>
           <div className={styles.error}
-               style={{marginTop: this.state.fileList.length * 40 + 20}}>
+               style={{marginTop: this.state.fileList.length * 70 + 20}}>
             {this.props.errorMsg ? this.props.errorMsg : '　'}
           </div>
           <Button className={styles.confirm}

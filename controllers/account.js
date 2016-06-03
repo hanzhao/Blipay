@@ -7,47 +7,31 @@ const config = require('../config/account');
 const Router = require('express').Router;
 const crypto = require('crypto');
 const router = Router();
-const Util = require('util');
-const fs = Promise.promisifyAll(require('fs'));
-const uploadPath = require('../config').upload;
 const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport(config.mailConfig);
+const cookPassword = require('../services/account').cookPassword;
 
-const cookPassword = (key, salt) => {
-  var hash = crypto.createHash('sha512');
-  const mid = key.length >> 1
-  return hash.update(key.slice(0, mid))
-    .update(salt)
-    .update(key.slice(mid))
-    .digest('base64');
-};
-
-const reportError = (path, err) => {
-  console.error(
-    `\nERROR occurs in ${path}:\n\n${Util.inspect(err)}\n`
-  );
-};
-
-router.post('/account/apply_verification', Promise.coroutine(function* (req, res) {
-  if (!req.session.userId) {
-    return res.status(403).fail()
-  }
-  const user = yield User.findById(req.session.userId, {
-    attributes: ['id', 'cardFront', 'cardBack', 'status']
+router.post('/account/apply_verification', 
+  Promise.coroutine(function* (req, res) {
+    if (!req.session.userId) {
+      return res.status(403).fail();
+    }
+    const user = yield User.findById(req.session.userId, {
+      attributes: ['id', 'cardFront', 'cardBack', 'status']
+    });
+    user.cardFront = req.body.attachments[0];
+    user.cardBack = req.body.attachments[1];
+    user.status = 1;
+    yield user.save();
+    return res.success({ user });
   })
-  user.cardFront = req.body.attachments[0]
-  user.cardBack = req.body.attachments[1]
-  user.status = 1
-  yield user.save()
-  return res.success({ user })
-}));
+);
 
 router.post('/account/register', Promise.coroutine(function* (req, res) {
-  console.log('in /account/register', req.body);
   let user = yield User.findOne({
     where: { userName: req.body.userName },
     attributes: ['id']
-  })
+  });
   if (user) {
     return res.fail({ type: 'USERNAME_EXIST' });
   }
@@ -58,13 +42,12 @@ router.post('/account/register', Promise.coroutine(function* (req, res) {
     loginPass: cookPassword(req.body.loginPass, salt),
     payPass: cookPassword(req.body.payPass, salt)
   };
-  user = yield User.create(newUser)
-  req.session.userId = user.id
+  user = yield User.create(newUser);
+  req.session.userId = user.id;
   return res.success({});
 }));
 
 router.post('/account/login', Promise.coroutine(function* (req, res) {
-  console.log('in /account/login', req.body);
   let user = yield User.findOne({
     where: { userName: req.body.userName },
     attributes: ['id', 'loginPass', 'salt', 'lastLogin', 'disabled']
@@ -76,60 +59,56 @@ router.post('/account/login', Promise.coroutine(function* (req, res) {
     return res.fail({ type: 'USER_DISABLED' });
   }
   const password = cookPassword(req.body.loginPass,
-                                user.salt)
+                                user.salt);
   // 密码错误
   if (password !== user.loginPass)
     return res.fail({ type: 'INVALID_USERNAME_OR_PASSWORD' });
   // 更新最后登录时间
-  user.lastLogin = new Date().toString()
-  yield user.save()
+  user.lastLogin = new Date().toString();
+  yield user.save();
   // 删除密码字段
-  delete user.salt
-  delete user.loginPass
+  delete user.salt;
+  delete user.loginPass;
   // 登录信息
-  req.session.userId = user.id
+  req.session.userId = user.id;
   return res.success({ user });
 }));
 
 router.get('/account/logout', (req, res) => {
-  console.log('in /account/logout');
   req.session.userId = null;
   return res.success({});
 });
 
 router.get('/account/info', Promise.coroutine(function* (req, res) {
-  console.log('in /account/info');
   if (!req.session.userId) {
-    return res.success({ })
+    return res.success({ });
   }
   const user = yield User.findById(req.session.userId, {
     attributes: ['userName', 'realName', 'balance', 'lastLogin',
                  'email', 'phone', 'idNumber', 'status', 'id']
-  })
-  return res.success({ user })
+  });
+  return res.success({ user });
 }));
 
 router.get('/account/transactions', Promise.coroutine(function* (req, res) {
-  console.log('in /account/transactions');
   if (!req.session.userId) {
-    return res.status(403).fail()
+    return res.status(403).fail();
   }
-  const user = yield User.findById(req.session.userId)
+  const user = yield User.findById(req.session.userId);
   const transactions = yield user.getTransactions({
     order: ['id']
   });
-  return res.success({ transactions })
+  return res.success({ transactions });
 }));
 
 router.post('/account/check_paypass', Promise.coroutine(function* (req, res) {
-  console.log('in check_paypass', req.body);
   if (!req.session.userId) {
-    return res.status(403).fail()
+    return res.status(403).fail();
   }
   const user = yield User.findById(req.session.userId, {
     attributes: ['salt', 'payPass']
-  })
-  const payPass = cookPassword(req.body.payPass, user.salt)
+  });
+  const payPass = cookPassword(req.body.payPass, user.salt);
   if (payPass === user.payPass) {
     return res.success();
   } else {
@@ -138,7 +117,6 @@ router.post('/account/check_paypass', Promise.coroutine(function* (req, res) {
 }));
 
 router.post('/account/check_loginpass', Promise.coroutine(function *(req, res) {
-  console.log('in check_loginpass');
   if (!req.session.userId) {
     return res.status(403).fail();
   }
@@ -164,10 +142,9 @@ router.get('/account/check_id', Promise.coroutine(function *(req, res) {
 }));
 
 router.get('/account/check_username', Promise.coroutine(function* (req, res) {
-  console.log('in check_username', req.query);
   const user = yield User.findOne({
     where: { userName: req.query.userName }
-  })
+  });
   if (!user) {
     return res.success();
   } else {
@@ -176,58 +153,62 @@ router.get('/account/check_username', Promise.coroutine(function* (req, res) {
 }));
 
 router.post('/account/update_info', Promise.coroutine(function* (req, res) {
-  console.log('in /account/update_info', req.body);
   if (!req.session.userId) {
-    return res.status(403).fail()
+    return res.status(403).fail();
   }
-  const attrs = ['realName', 'idNumber', 'email', 'phone']
+  const attrs = ['realName', 'idNumber', 'email', 'phone'];
   const user = yield User.findById(req.session.userId, {
     // 必须要选出主键，后面才可以保存
     attributes: attrs.concat(['id'])
-  })
+  });
   for (let key in req.body) {
     if (_.includes(attrs, key)) {
-      user[key] = req.body[key]
+      user[key] = req.body[key];
     }
   }
-  yield user.save()
-  res.success({ user })
+  yield user.save();
+  res.success({ user });
 }));
 
 router.post('/account/change_paypass', Promise.coroutine(function *(req, res) {
-  console.log('in /account/change_paypass');
   if (!req.session.userId) {
-    return res.status(403).fail()
+    return res.status(403).fail();
   }
   const user = yield User.findById(req.session.userId, {
     attributes: ['id', 'salt', 'payPass']
   });
-  user.payPass = cookPassword(req.body.payPass, user.salt)
+  user.payPass = cookPassword(req.body.payPass, user.salt);
   yield user.save();
   return res.success();
 }));
 
-router.post('/account/change_loginpass', Promise.coroutine(function *(req, res) {
-  console.log('in /account/change_loginpass');
-  if (!req.session.userId) {
-    return res.status(403).fail()
-  }
-  const user = yield User.findById(req.session.userId, {
-    attributes: ['id', 'salt', 'loginPass']
-  });
-  user.loginPass = cookPassword(req.body.loginPass, user.salt)
-  yield user.save();
-  return res.success();
-}));
+router.post('/account/change_loginpass', 
+  Promise.coroutine(function *(req, res) {
+    if (!req.session.userId) {
+      return res.status(403).fail();
+    }
+    const user = yield User.findById(req.session.userId, {
+      attributes: ['id', 'salt', 'loginPass']
+    });
+    user.loginPass = cookPassword(req.body.loginPass, user.salt);
+    yield user.save();
+    return res.success();
+  })
+);
 
-// TODO: 支付密码验证
 router.post('/account/topup', Promise.coroutine(function* (req, res) {
   if (!req.session.userId) {
-    return res.status(403).fail()
+    return res.status(403).fail();
   }
-  const delta = parseFloat(req.body.amount)
+  const delta = parseFloat(req.body.amount);
   if (isNaN(delta)) {
-    return res.status(400).fail()
+    return res.status(400).fail();
+  }
+  let user = yield User.findById(req.session.userId, {
+    attributes: ['payPass', 'salt']
+  });
+  if (user.payPass !== cookPassword(req.body.password, user.salt)) {
+    return res.fail({ type: 'INCORRECT_PASSWORD' });
   }
   yield User.update({
     balance: db.literal(`balance + ${delta}`)
@@ -241,25 +222,27 @@ router.post('/account/topup', Promise.coroutine(function* (req, res) {
     status: 1,
     info: `充值 ${delta} 元`
   });
-  const user = yield User.findById(req.session.userId, {
+  user = yield User.findById(req.session.userId, {
     attributes: ['balance']
-  })
+  });
   return res.success({ user, transaction });
 }));
 
-// TODO: 支付密码验证
 router.post('/account/withdraw', Promise.coroutine(function* (req, res) {
   if (!req.session.userId) {
-    return res.status(403).fail()
+    return res.status(403).fail();
   }
-  const delta = parseFloat(req.body.amount)
+  const delta = parseFloat(req.body.amount);
   if (isNaN(delta)) {
-    return res.status(400).fail()
+    return res.status(400).fail();
   }
-  let user = yield User.findById(req.session.userId,{
-    attributes: ['balance']
+  let user = yield User.findById(req.session.userId, {
+    attributes: ['balance', 'salt', 'payPass']
   });
-  if (user.balance < delta) {
+  if (user.payPass !== cookPassword(req.body.password, user.salt)) {
+    return res.fail({ type: 'INCORRECT_PASSWORD' });
+  }
+  if (user.payPass < delta) {
     return res.fail({ type: 'INSUFFICIENT_BALANCE' });
   }
   yield User.update({
@@ -267,7 +250,6 @@ router.post('/account/withdraw', Promise.coroutine(function* (req, res) {
   }, {
     where: { id: req.session.userId }
   });
-  console.log(req.session.userId)
   const transaction = yield Transaction.create({
     userId: req.session.userId,
     amount: -delta,
@@ -277,11 +259,12 @@ router.post('/account/withdraw', Promise.coroutine(function* (req, res) {
   });
   user = yield User.findById(req.session.userId, {
     attributes: ['balance']
-  })
+  });
   return res.success({ user, transaction });
 }));
 
-router.post('/account/find_password', Promise.coroutine(function* (req, res) {
+router.post('/account/find_password', 
+  Promise.coroutine(function* (req, res) {
     let user = yield User.findOne({
       where: { userName: req.body.userName },
       attributes: ['email', 'id', 'salt', 'loginPass']
@@ -293,8 +276,8 @@ router.post('/account/find_password', Promise.coroutine(function* (req, res) {
       return res.fail({ type: 'INVALID_EMAIL' });
     }
     let loginPass = crypto.randomBytes(12).toString('base64');
-    user.loginPass = cookPassword(loginPass, user.salt)
-    yield user.save()
+    user.loginPass = cookPassword(loginPass, user.salt);
+    yield user.save();
     yield transporter.sendMail({
       from: config.from,
       to: user.email,
