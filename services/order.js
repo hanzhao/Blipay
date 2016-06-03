@@ -68,7 +68,7 @@ const getItems = Promise.coroutine(function* () {
   return items;
 })
 
-const createOrder = Promise.coroutine(function* (buyerId, items) {
+const createOrder = Promise.coroutine(function* (buyerId, items, addr) {
   console.log('service: createOrder:', items);
   try {
     items = yield Promise.all(items.map(Promise.coroutine(function* (e) {
@@ -91,7 +91,8 @@ const createOrder = Promise.coroutine(function* (buyerId, items) {
     let newOrder = yield Order.create({
       count: count,
       totalCost: cost,
-      status: 0
+      status: 0,
+      addr: addr
     });
     yield newOrder.setSeller(seller);
     yield newOrder.setBuyer(buyer);

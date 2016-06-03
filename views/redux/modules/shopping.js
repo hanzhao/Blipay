@@ -1,6 +1,9 @@
 import store from '../store'
 import { push } from 'react-router-redux'
 import { message } from 'antd'
+import io from 'socket.io-client';
+
+let socket = null;
 
 // Action 表
 // 添加新商品
@@ -65,6 +68,12 @@ const REFUND_REQ = 'Blipay/shopping/REFUND_REQ'
 const REFUND_REQ_SUCCESS = 'Blipay/shopping/REFUND_REQ_SUCCESS'
 const REFUND_REQ_FAIL = 'Blipay/shopping/REFUND_REQ_FAIL'
 
+// ChatModal
+const TOGGLE_SHOPPING_CHAT = 'Blipay/shopping/TOGGLE_SHOPPING_CHAT'
+const START_CHAT = 'Blipay/shopping/START_CHAT'
+const UPDATE_USER_LIST = 'Blipay/shopping/UPDATE_USER_LIST'
+const SEND_MSG = 'Blipay/shopping/SEND_MSG'
+const RECV_MSG = 'Blipay/shopping/RECV_MSG'
 
 const messages = {
   NO_ITEM: '商品不存在',
@@ -143,6 +152,10 @@ export const toggleShoppingAddr = () => ({
   type: TOGGLE_SHOPPING_ADDR
 })
 
+export const toggleShoppingChat = () => ({
+  type: TOGGLE_SHOPPING_CHAT
+})
+
 export const clearShoppingCart = () => ({
   type: CLEAR_SHOPPING_CART
 })
@@ -192,15 +205,61 @@ export const refundReq = (orderId, reason) => ({
   })
 })
 
+
+export const sendMsg = (userId, text) => {
+  socket.emit('send', { userId: userId, text: text })
+  return {
+    type: TOGGLE_SHOPPING_CHAT
+  }
+}
+
+export const updateUserList = (users) => ({
+  type: UPDATE_USER_LIST,
+  users
+})
+
+export const recvMsg = (data) => ({
+  type: RECV_MSG,
+  data
+})
+
+export const startChat = () => {
+
+  if (!socket) {
+    socket = io.connect(`${location.protocol}//${location.host}`);
+    socket.on('connected', () => {
+      socket.emit('reqUserList')
+    })
+
+    socket.on('userList', (data) => {
+      console.log(data.users)
+      store.dispatch(updateUserList(data.users))
+    })
+
+    socket.on('msg', (data) => {
+      console.log('Recv Msg\t' + JSON.stringify(data))
+      store.dispatch(recvMsg(data))
+    })
+  }
+  return {
+    type: START_CHAT
+  }
+}
+
+
+
 const initialState = {
   cartItems: [],
   reviewItems: [],
+  chatUsers: [],
+  chatMsgs: [],
   showPayModal: false,
   showShipModal: false,
   showReviewModal: false,
   showRefundModal: false,
   showRefundConfirmModal: false,
-  showAddressModal: false
+  showAddressModal: false,
+  showChatModal: false
 }
 
 // Reducer
@@ -272,6 +331,11 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         showAddressModal: !state.showAddressModal
       }
+    case TOGGLE_SHOPPING_CHAT:
+      return {
+        ...state,
+        showChatModal: !state.showChatModal
+      }
     case DELETE_CART_ITEM:
       return {
         ...state,
@@ -329,6 +393,32 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         showRefundModal: !state.showRefundModal
+      }
+    case START_CHAT:
+      console.log(socket)
+      return {
+        ...state,
+        socket: action.socket
+      }
+    case SEND_MSG:
+      state.socket.emit('send', { userId: action.userId, text: action.text })
+      return {
+        ...state
+      }
+    case UPDATE_USER_LIST:
+      return {
+        ...state,
+        chatUsers: action.users
+      }
+    case RECV_MSG:
+      let data = action.data
+      let chatMsgs = state.chatMsgs;
+      if (!chatMsgs[data.from])
+        chatMsgs[data.from] = [];
+      chatMsgs[data.from].push(data.text)
+      return {
+        ...state,
+        chatMsgs: chatMsgs
       }
     case ADD_ITEM_FAIL:
     case BUY_CART_ITEMS_FAIL:

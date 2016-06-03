@@ -4,9 +4,11 @@ import { Icon, Button, message } from 'antd';
 import classNames from 'classnames';
 
 import ShoppingCartModal from '../ShoppingCartModal';
+import ChatModal from '../ChatModal';
 import Container from '../Container';
 import {
   toggleShoppingCart,
+  toggleShoppingChat,
   clearShoppingCart
 } from '../../redux/modules/shopping';
 import styles from './styles';
@@ -27,6 +29,7 @@ const getTotalPrice = (items) => (
   }),
   (dispatch) => ({
     toggleShoppingCart: () => dispatch(toggleShoppingCart()),
+    toggleShoppingChat: () => dispatch(toggleShoppingChat()),
     clearShoppingCart: () => dispatch(clearShoppingCart())
   })
 )
@@ -36,8 +39,10 @@ class ShoppingCart extends React.Component {
     return (
       <div className={classNames({
         [styles.cart]: true,
-        [styles.show]: cartItems.length > 0 && !this.props.showShoppingCartModal
+        [styles.show]: true && !this.props.showShoppingCartModal
       }) }>
+        <ChatModal/>
+        <Button onClick={this.props.toggleShoppingChat}/>
         <ShoppingCartModal onCancel={this.props.toggleShoppingCart}
           footer={null} />
         <Container>
