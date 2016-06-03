@@ -46,7 +46,7 @@ class UploadModal extends React.Component {
           </div>
           <div className={styles.error}
                style={{marginTop: this.state.fileList.length * 70 + 20}}>
-            {this.props.errorMsg ? this.props.errorMsg : '忧郁'}
+            {this.props.errorMsg ? this.props.errorMsg : '　'}
           </div>
           <Button className={styles.confirm}
                   type="primary"
