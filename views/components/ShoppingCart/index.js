@@ -44,13 +44,13 @@ class ShoppingCart extends React.Component {
         [styles.show]: !this.props.showShoppingChat && !this.props.showShoppingCartModal 
       }) }>
         <ChatModal onCancel={this.props.toggleShoppingChat} footer={null} />
-        <Button className={this.props.newMsg ? styles.newMsgBtn : null}
-          onClick={this.props.toggleShoppingChat}>
-          消息
-        </Button>
         <ShoppingCartModal onCancel={this.props.toggleShoppingCart}
           footer={null} />
         <Container>
+          <Button className={this.props.newMsg ? styles.newMsgBtn : styles.normalMsgBtn}
+            onClick={this.props.toggleShoppingChat}>
+            消息
+          </Button>
           <div className={styles.inner}>
             {/* <span className={styles.pricer}>
               { getTotalAmount(cartItems) } 件商品，

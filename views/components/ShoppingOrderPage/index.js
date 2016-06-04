@@ -41,6 +41,7 @@ const pay = function (order) {
   // store.dispatch(payOrder(order));
   Modal.confirm({
     title: '确认支付',
+    width: 570,
     content: '共 ' + order.totalCost + ' 元',
     onOk() {
       store.dispatch(payOrder(order.id));
@@ -53,6 +54,7 @@ const ship = function (order) {
   // store.dispatch(shipOrder(order));
   Modal.confirm({
     title: '确认发货',
+    width: 570,
     content: '地址:\t' + order.addr,
     onOk() {
       store.dispatch(shipOrder(order.id));
@@ -73,36 +75,6 @@ const toggleRefundConfirmModal = function (order) {
   store.dispatch(toggleShoppingRefundConfirm(order));
 }
 
-
-// @connect(
-//   (state) => ({
-//     order: state.shopping.payOrder,
-//     visible: state.shopping.showPayModal
-//   }),
-//   (dispatch) => ({
-//     pay: (orderId) => dispatch(payOrder(orderId))
-//   })
-// )
-// class ShoppingPayModal extends React.Component {
-//   render() {
-
-//   }
-// }
-
-// @connect(
-//   (state) => ({
-//     order: state.shopping.shipOrder,
-//     visible: state.shopping.showShipModal
-//   }),
-//   (dispatch) => ({
-//     ship: (orderId) => dispatch(shipOrder(orderId))
-//   })
-// )
-// class ShoppingShipModal extends React.Component {
-//   render() {
-
-//   }
-// }
 
 @connect(
   (state) => ({
@@ -238,9 +210,9 @@ class ShoppingRefundConfirmModal extends React.Component {
         visible={this.props.showRefundConfirmModal}
         onOk={submit}
         onCancel={toggleRefundConfirmModal}>
-        退货理由
-        <span>{buyerReason}</span>
-        <RadioGroup defaultValue={true} onChange={(e) => this.props.setAgree(e.target.value) }>
+        <span>退货理由</span>
+        <div>{buyerReason}</div>
+        <RadioGroup defaultValue={agree} onChange={(e) => this.props.setAgree(e.target.value) }>
           <Radio key={0} value={true}> 同意 </Radio>
           <Radio key={1} value={false}> 拒绝 </Radio>
         </RadioGroup>
