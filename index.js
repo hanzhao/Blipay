@@ -33,7 +33,7 @@ global.isProduction = (env === 'production');
 const port = process.env.PORT || 3000;
 const RedisStore = ConnectRedis(session);
 const config = require('./config');
-const socketIOSession = require("socket.io.session");
+const socketIOSession = require('socket.io.session');
 const sessionStore = new RedisStore(config.redis);
 
 const sessionSettings = {
@@ -43,7 +43,7 @@ const sessionSettings = {
   saveUninitialized: true,
   cookie: { secure: false },
   store: sessionStore
-}
+};
 
 // 创建 app
 const app = express();
@@ -89,7 +89,7 @@ app.use((req, res, next) => {
 // models
 require('./models');
 
-app.use(require('./controllers'))
+app.use(require('./controllers'));
 
 // 错误处理
 app.use((err, req, res, next) => {
@@ -117,25 +117,25 @@ const users = new Array();
 const sockets = new Array();
 
 io.on('connection', function (socket) {
-  console.log('connected!')
+  console.log('connected!');
   if (!socket.session.userId)
     return ;
   let userId = socket.session.userId;
-  let userName = socket.session.userName
+  let userName = socket.session.userName;
   // Welcome message on connection
-  socket.emit('connected', 'Welcome to the chat server '+ userName);
+  socket.emit('connected', 'Welcome to the chat server ' + userName);
 
   users[userId] = { userId: userId, userName: userName };
   sockets[userId] = socket;
-  console.log('User in: ' + userId+ ' ' + userName);
+  console.log('User in: ' + userId + ' ' + userName);
   socket.broadcast.emit('userList', { users: users });
 
-  socket.on('reqUserList', (data) => {
+  socket.on('reqUserList', () => {
     socket.emit('userList', { users: users });
-  })
+  });
 
   socket.on('send', (data) => {
-    console.log('send',data)
+    console.log('send',data);
     const dstSocket = sockets[data.userId];
     if(dstSocket){
       dstSocket.emit('msg', {from: userId, text: data.text});
@@ -143,7 +143,7 @@ io.on('connection', function (socket) {
     else{
       // TODO
     }
-  })
+  });
 
   // Clean up on disconnect
   socket.on('disconnect', () => {

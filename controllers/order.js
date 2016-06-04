@@ -28,7 +28,7 @@ router.get('/item/show', Promise.coroutine(function* (req, res) {
   console.log('in /item/show', req.query);
   const item = yield getItem(req.query.id);
   if (!item) {
-    return res.status(404).fail()
+    return res.status(404).fail();
   }
   return res.success({ item })
 }));
