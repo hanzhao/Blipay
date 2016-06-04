@@ -260,6 +260,7 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
           complained: seller.userName,
           buyerText: order.buyerText,
           sellerText: order.sellerText,
+          orderId: order.id,
           state: 'ing'
         })
         break;
