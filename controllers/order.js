@@ -2,10 +2,12 @@
 
 const Promise = require('bluebird');
 const Item = require('../models').Item;
+const User = require('../models').User;
 const Order = require('../models').Order;
 const Attachment = require('../models').Attachment;
 const ItemAttachment = require('../models').ItemAttachment;
 const Review = require('../models').Review;
+const Arbitration = require('../models').Arbitration;
 
 const Router = require('express').Router;
 const router = Router();
@@ -15,7 +17,6 @@ const getItems = require('../services/order').getItems;
 const createOrder = require('../services/order').createOrder;
 const requestPay = require('../services/account').requestPay;
 const requestReceive = require('../services/account').requestReceive;
-
 router.post('/item/new', Promise.coroutine(function* (req, res) {
   console.log('in /item/new', req.body);
   const item = yield createItem(req.session.userId, req.body);
@@ -251,17 +252,27 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
           sellerText: req.body.refuseReason,
           status: 6
         });
+        const seller = yield User.findOne({where: {id: order.sellerId}})
+        const buyer = yield User.findOne({where: {id: order.buyerId}})
         // TODO: Call B5
+        yield Arbitration.create({
+          userName: buyer.userName,
+          complained: seller.userName,
+          buyerText: order.buyerText,
+          sellerText: order.sellerText
+        })
         break;
       case 'confirmRefund':
         if (order.status != 4) {
           return res.fail({ type: 'INVALID_OP' })
         }
         // TODO:
-        const refundTrans = requestReceive(order.buyerId, order.totalCost);
+        const sellerRefund = yield requestPay(order.sellerId, order.totalCost, `订单 #${order.id} 退款`)
+        const refundTrans = yield requestReceive(order.buyerId, order.totalCost, `订单 #${order.id} 退款`);
         yield order.update({
           status: 5,
-          refundTransId: refundTrans
+          refundTransId: refundTrans,
+          sellerRefundTransId: sellerRefund
         });
         break;
       default:

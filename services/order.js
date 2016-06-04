@@ -6,6 +6,9 @@ const User = require('../models').User;
 const Order = require('../models').Order;
 const Review = require('../models').Review;
 
+const requestPay = require('../services/account').requestPay;
+const requestReceive = require('../services/account').requestReceive;
+
 const createItem = Promise.coroutine(function* (sellerId, item) {
   if (item.remain < 0) {
     throw new Error('INVALID_REMAIN');
@@ -119,16 +122,21 @@ const handleRefund = Promise.coroutine(
       if (!order) {
         throw new Error('Fatal error, from B5 or data failure');
       }
-      yield order.update({
-        buyerRes: buyerRes,
-        sellerRes: sellerRes,
-        status: 7
-      });
-      if (res) {
+      if (res) {// 退款
         // TODO:
+        const sellerRefund = yield requestPay(order.sellerId, order.totalCost, `订单 #${order.id} 退款`)
+        const refundTrans = yield requestReceive(order.buyerId, order.totalCost, `订单 #${order.id} 退款`);
+        yield order.update({
+          status: 7,
+          refundTransId: refundTrans,
+          sellerRefundTransId: sellerRefund
+        });
       }
       else {
         // TODO:
+        yield order.update({
+          status: 8
+        });
       }
     } catch (e) {
       console.error('Error in service handleRefund:' + e.message);

@@ -6,6 +6,9 @@ import { Modal, Form, Input, InputNumber, Rate, message, Cascader } from 'antd';
 import { Button } from 'antd';
 import { Checkbox } from 'antd';
 import { Pagination } from 'antd';
+import { Radio } from 'antd';
+const RadioGroup = Radio.Group;
+
 import pic from './akarin.png'
 import styles from './styles';
 import ShoppingPageHeader from '../ShoppingPageHeader';
@@ -26,7 +29,10 @@ import {
   payOrder,
   shipOrder,
   confirmReceive,
-  refundReq
+  refundReq,
+  refundConfirmSetAgree,
+  refundConfirmAgree,
+  refundConfirmRefuse
 } from '../../redux/modules/shopping';
 
 const FormItem = Form.Item;
@@ -36,10 +42,10 @@ const pay = function (order) {
   Modal.confirm({
     title: '确认支付',
     content: '共 ' + order.totalCost + ' 元',
-    onOk(){
+    onOk() {
       store.dispatch(payOrder(order.id));
     },
-    onCancel() {},
+    onCancel() { },
   })
 }
 
@@ -47,11 +53,11 @@ const ship = function (order) {
   // store.dispatch(shipOrder(order));
   Modal.confirm({
     title: '确认发货',
-    content: '地址:\t'+order.addr,
-    onOk(){
+    content: '地址:\t' + order.addr,
+    onOk() {
       store.dispatch(shipOrder(order.id));
     },
-    onCancel() {},
+    onCancel() { },
   })
 }
 
@@ -63,8 +69,8 @@ const toggleRefundModal = function (orderId) {
   store.dispatch(toggleShoppingRefund(orderId));
 }
 
-const toggleRefundConfirmModal = function () {
-  store.dispatch(toggleShoppingRefundConfirm());
+const toggleRefundConfirmModal = function (order) {
+  store.dispatch(toggleShoppingRefundConfirm(order));
 }
 
 
@@ -79,7 +85,7 @@ const toggleRefundConfirmModal = function () {
 // )
 // class ShoppingPayModal extends React.Component {
 //   render() {
-    
+
 //   }
 // }
 
@@ -94,7 +100,7 @@ const toggleRefundConfirmModal = function () {
 // )
 // class ShoppingShipModal extends React.Component {
 //   render() {
-    
+
 //   }
 // }
 
@@ -199,28 +205,48 @@ class ShoppingRefundModal extends React.Component {
 @connect(
   (state) => ({
     showRefundConfirmModal: state.shopping.showRefundConfirmModal,
-    orderId: state.shopping.refundOrderId
+    order: state.shopping.refundConfirmOrder,
+    agree: state.shopping.refundConfirmAgree
   }),
   (dispatch) => ({
-    refundRequestConfirm: (id, reason) => dispatch(refundReq(id, reason))
+    setAgree: (agree) => dispatch(refundConfirmSetAgree(agree)),
+    agreeRefund: (orderId) => dispatch(refundConfirmAgree(orderId)),
+    refuseRefund: (orderId, reason) => dispatch(refundConfirmRefuse(orderId, reason))
   })
 )
 @reduxForm(
   {
-    form: 'refund',
+    form: 'refundConfirm',
     fields: ['reason']
   }, undefined, {
     onSubmit: (data) => { }
   })
 class ShoppingRefundConfirmModal extends React.Component {
   render() {
+    const {fields: {reason}, order, agree, agreeRefund, refuseRefund} = this.props;
+    let buyerReason = ''
+    if (this.props.order)
+      buyerReason = this.props.order.buyerText
+    const submit = function () {
+      if (agree)
+        agreeRefund(order.id)
+      else
+        refuseRefund(order.id, reason.value)
+    }
     return (
-      <Modal title="退货申请"
+      <Modal title="退货处理"
         visible={this.props.showRefundConfirmModal}
+        onOk={submit}
         onCancel={toggleRefundConfirmModal}>
-        <Form>
-          <FormItem label="退货理由">
-            <Input type='textarea' disabled={true} />
+        退货理由
+        <span>{buyerReason}</span>
+        <RadioGroup defaultValue={true} onChange={(e) => this.props.setAgree(e.target.value) }>
+          <Radio key={0} value={true}> 同意 </Radio>
+          <Radio key={1} value={false}> 拒绝 </Radio>
+        </RadioGroup>
+        <Form className={agree ? styles.inVisible : styles.visible}>
+          <FormItem label="拒绝理由">
+            <Input type='textarea' {...reason}/>
           </FormItem>
         </Form>
       </Modal>
@@ -321,7 +347,16 @@ class ShoppingOrderPage extends React.Component {
             break;
           case 4:
             if (this.props.userId == record.sellerId)
-              return <Button type="ghost" onClick={toggleRefundConfirmModal}>处理退货请求</Button>
+              return <Button type="ghost" onClick={toggleRefundConfirmModal.bind(this, record) }>处理退货请求</Button>
+            return <spin>等待退货</spin>
+          case 5:
+            return <spin>完成退货</spin>
+          case 6:
+            return <spin>等待仲裁</spin>
+          case 7:
+            return <spin>仲裁退款</spin>
+          case 8:
+            return <spin>仲裁不退款</spin>
           default:
         }
       }
@@ -349,6 +384,7 @@ class ShoppingOrderPage extends React.Component {
         </div>
         <ShoppingReviewModal/>
         <ShoppingRefundModal/>
+        <ShoppingRefundConfirmModal />
       </div>
     );
   }

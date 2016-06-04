@@ -76,7 +76,6 @@ class ChatModal extends React.Component {
                     ))
                     :
                     <span>{chatUsers[chaterId].userName} 没有信息</span>
-                  
                   :
                   <span>请选择</span>
               }
