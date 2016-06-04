@@ -259,7 +259,8 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
           userName: buyer.userName,
           complained: seller.userName,
           buyerText: order.buyerText,
-          sellerText: order.sellerText
+          sellerText: order.sellerText,
+          state: 'ing'
         })
         break;
       case 'confirmRefund':
