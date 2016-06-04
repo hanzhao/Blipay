@@ -17,6 +17,10 @@ module.exports = (db) => {
     status: {
       type: Sequelize.INTEGER
     },
+    /* 地址 */
+    addr: {
+      type: Sequelize.STRING
+    },
     /* 转账交易信息 */
     buyerTransId: {
       type: Sequelize.INTEGER
@@ -24,7 +28,12 @@ module.exports = (db) => {
     sellerTransId: {
       type: Sequelize.INTEGER
     },
+    /* 买家退款 需要改命名 */
     refundTransId: {
+      type: Sequelize.INTEGER
+    },
+    /* 卖家退款 */
+    sellerRefundTransId: {
       type: Sequelize.INTEGER
     },
     /* 退款理由等信息 */

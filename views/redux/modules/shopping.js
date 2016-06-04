@@ -1,6 +1,9 @@
 import store from '../store'
 import { push } from 'react-router-redux'
 import { message } from 'antd'
+import io from 'socket.io-client';
+
+let socket = null;
 
 // Action 表
 // 添加新商品
@@ -29,9 +32,14 @@ const BUY_CART_ITEMS_FAIL = 'Blipay/shopping/BUY_CART_ITEMS_FAIL'
 const CLEAR_SHOPPING_CART = 'Blipay/shopping/CLEAR_SHOPPING_CART'
 
 // 订单页面各Modal
+const TOGGLE_SHOPPING_PAY = 'Blipay/shopping/TOGGLE_SHOPPING_PAY'
+const TOGGLE_SHOPPING_SHIP = 'Blipay/shopping/TOGGLE_SHOPPING_SHIP'
 const TOGGLE_SHOPPING_REVIEW = 'Blipay/shopping/TOGGLE_SHOPPING_REVIEW'
 const TOGGLE_SHOPPING_REFUND = 'Blipay/shopping/TOGGLE_SHOPPING_REFUND'
 const TOGGLE_SHOPPING_REFUND_CONFIRM = 'Blipay/shopping/TOGGLE_SHOPPING_REFUND_CONFIRM'
+// 订单地址Modal
+const TOGGLE_SHOPPING_ADDR = 'Blipay/shopping/TOGGLE_SHOPPING_ADDR'
+
 
 // 获取订单信息
 const LOAD_ORDERS = 'Blipay/shopping/LOAD_ORDERS'
@@ -60,6 +68,23 @@ const REFUND_REQ = 'Blipay/shopping/REFUND_REQ'
 const REFUND_REQ_SUCCESS = 'Blipay/shopping/REFUND_REQ_SUCCESS'
 const REFUND_REQ_FAIL = 'Blipay/shopping/REFUND_REQ_FAIL'
 
+// 退货处理
+const REFUND_CONFIRM_SET_AGREE = 'Blipay/shopping/REFUND_CONFIRM_SET_AGREE'
+const REFUND_CONFIRM_AGREE = 'Blipay/shopping/REFUND_CONFIRM_AGREE'
+const REFUND_CONFIRM_AGREE_SUCCESS = 'Blipay/shopping/REFUND_CONFIRM_AGREE_SUCCESS'
+const REFUND_CONFIRM_AGREE_FAIL = 'Blipay/shopping/REFUND_CONFIRM_AGREE_FAIL'
+const REFUND_CONFIRM_REFUSE = '/Blipay/shopping/REFUND_CONFIRM_REFUSE'
+const REFUND_CONFIRM_REFUSE_SUCCESS = '/Blipay/shopping/REFUND_CONFIRM_REFUSE_SUCCESS'
+const REFUND_CONFIRM_REFUSE_FAIL = '/Blipay/shopping/REFUND_CONFIRM_REFUSE_FAIL'
+
+// ChatModal
+const TOGGLE_SHOPPING_CHAT = 'Blipay/shopping/TOGGLE_SHOPPING_CHAT'
+const START_CHAT = 'Blipay/shopping/START_CHAT'
+const UPDATE_USER_LIST = 'Blipay/shopping/UPDATE_USER_LIST'
+const SEND_MSG = 'Blipay/shopping/SEND_MSG'
+const RECV_MSG = 'Blipay/shopping/RECV_MSG'
+const CLEAR_NEW_MSG = 'Blipay/shopping/CLEAR_NEW_MSG'
+const SELECT_CHATER = 'Blipay/shopping/SELECT_CHATER'
 
 const messages = {
   NO_ITEM: '商品不存在',
@@ -102,6 +127,16 @@ export const deleteCartItem = (idx) => ({
   idx
 })
 
+export const toggleShoppingPay = (order) => ({
+  type: TOGGLE_SHOPPING_PAY,
+  order
+})
+
+export const toggleShoppingShip = (order) => ({
+  type: TOGGLE_SHOPPING_SHIP,
+  order
+})
+
 export const toggleShoppingCart = () => ({
   type: TOGGLE_SHOPPING_CART
 })
@@ -120,21 +155,31 @@ export const toggleShoppingRefund = (orderId) => ({
   orderId
 })
 
-export const toggleShoppingRefundConfirm = () => ({
-  type: TOGGLE_SHOPPING_REFUND_CONFIRM
+export const toggleShoppingRefundConfirm = (order) => ({
+  type: TOGGLE_SHOPPING_REFUND_CONFIRM,
+  order
+})
+
+export const toggleShoppingAddr = () => ({
+  type: TOGGLE_SHOPPING_ADDR
+})
+
+export const toggleShoppingChat = () => ({
+  type: TOGGLE_SHOPPING_CHAT
 })
 
 export const clearShoppingCart = () => ({
   type: CLEAR_SHOPPING_CART
 })
 
-export const buyCartItems = () => ({
+export const buyCartItems = (addr) => ({
   types: [BUY_CART_ITEMS, BUY_CART_ITEMS_SUCCESS, BUY_CART_ITEMS_FAIL],
   promise: (client) => client.post('/api/order/new', {
     items: store.getState().shopping.cartItems.map(e => ({
       id: e.id,
       amount: e.amount
-    }))
+    })),
+    addr: addr
   })
 })
 
@@ -172,12 +217,90 @@ export const refundReq = (orderId, reason) => ({
   })
 })
 
+export const refundConfirmSetAgree = (agree) => ({
+  type: REFUND_CONFIRM_SET_AGREE,
+  agree
+})
+
+export const refundConfirmAgree = (orderId) => ({
+  types: [REFUND_CONFIRM_AGREE, REFUND_CONFIRM_AGREE_SUCCESS, REFUND_CONFIRM_AGREE_FAIL],
+  promise: (client) => client.post('/api/order/update', {
+    orderId: orderId,
+    op: 'confirmRefund'
+  })
+})
+
+export const refundConfirmRefuse = (orderId, reason) => ({
+  types: [REFUND_CONFIRM_REFUSE, REFUND_CONFIRM_REFUSE_SUCCESS, REFUND_CONFIRM_AGREE_FAIL],
+  promise: (client) => client.post('/api/order/update', {
+    orderId: orderId,
+    op: 'refuseRefund',
+    refuseReason: reason
+  })
+})
+
+export const sendMsg = (text) => ({
+  type: SEND_MSG,
+  text
+})
+
+export const updateUserList = (users) => ({
+  type: UPDATE_USER_LIST,
+  users
+})
+
+export const recvMsg = (data) => ({
+  type: RECV_MSG,
+  data
+})
+
+export const clearNewMsg = (data) => ({
+  type: CLEAR_NEW_MSG
+})
+
+export const selectChater = (userId) => ({
+  type: SELECT_CHATER,
+  userId
+})
+
+export const startChat = () => {
+
+  if (!socket) {
+    socket = io.connect(`${location.protocol}//${location.host}`);
+    socket.on('connected', () => {
+      socket.emit('reqUserList')
+    })
+
+    socket.on('userList', (data) => {
+      console.log(data.users)
+      store.dispatch(updateUserList(data.users))
+    })
+
+    socket.on('msg', (data) => {
+      console.log('Recv Msg\t' + JSON.stringify(data))
+      store.dispatch(recvMsg(data))
+    })
+  }
+  return {
+    type: START_CHAT
+  }
+}
+
+
+
 const initialState = {
   cartItems: [],
   reviewItems: [],
+  chatUsers: [],
+  chatMsgs: [],
+  showPayModal: false,
+  showShipModal: false,
   showReviewModal: false,
   showRefundModal: false,
-  showRefundConfirmModal: false
+  showRefundConfirmModal: false,
+  showAddressModal: false,
+  showChatModal: false,
+  refundConfirmAgree: true
 }
 
 // Reducer
@@ -215,6 +338,18 @@ export default function reducer(state = initialState, action = {}) {
         showShoppingCartModal: false,
         showShoppingLoggingModal: !state.showShoppingLoggingModal
       }
+    case TOGGLE_SHOPPING_PAY:
+      return {
+        ...state,
+        showPayModal: !state.showPayModal,
+        payOrder: action.order
+      }
+    case TOGGLE_SHOPPING_SHIP:
+      return {
+        ...state,
+        showShipModal: !state.showShipModal,
+        shipOrder: action.order
+      }
     case TOGGLE_SHOPPING_REVIEW:
       return {
         ...state,
@@ -230,7 +365,19 @@ export default function reducer(state = initialState, action = {}) {
     case TOGGLE_SHOPPING_REFUND_CONFIRM:
       return {
         ...state,
-        showRefundConfirmModal: !state.showRefundConfirmModal
+        showRefundConfirmModal: !state.showRefundConfirmModal,
+        refundConfirmOrder: action.order
+      }
+    case TOGGLE_SHOPPING_ADDR:
+      return {
+        ...state,
+        showAddressModal: !state.showAddressModal
+      }
+    case TOGGLE_SHOPPING_CHAT:
+      return {
+        ...state,
+        newMsg: !state.showChatModal && state.newMsg,
+        showChatModal: !state.showChatModal,
       }
     case DELETE_CART_ITEM:
       return {
@@ -286,9 +433,72 @@ export default function reducer(state = initialState, action = {}) {
       }
     case REFUND_REQ_SUCCESS:
       message.success('退货请求成功')
+      setTimeout(() => {
+        store.dispatch(push(`/shopping/order`))
+      }, 0)
       return {
         ...state,
         showRefundModal: !state.showRefundModal
+      }
+    case REFUND_CONFIRM_SET_AGREE:
+      return {
+        ...state,
+        refundConfirmAgree: action.agree
+      }
+    case REFUND_CONFIRM_AGREE_SUCCESS:
+      message.success('退货操作成功，请检查')
+      setTimeout(() => {
+        store.dispatch(push(`/shopping/order`))
+      }, 0)
+      return {
+        ...state,
+        showRefundConfirmModal: false
+      }
+    case REFUND_CONFIRM_REFUSE_SUCCESS:
+      message.success('拒绝退款，提交仲裁')
+      setTimeout(() => {
+        store.dispatch(push(`/shopping/order`))
+      }, 0)
+      return {
+        ...state,
+        showRefundConfirmModal: false
+      }
+    case START_CHAT:
+      console.log(socket)
+      return {
+        ...state,
+        socket: action.socket
+      }
+    case SEND_MSG:
+      socket.emit('send', { userId: state.chaterId, text: action.text })
+      return {
+        ...state
+      }
+    case UPDATE_USER_LIST:
+      return {
+        ...state,
+        chatUsers: action.users
+      }
+    case RECV_MSG:
+      let data = action.data
+      let chatMsgs = state.chatMsgs;
+      if (!chatMsgs[data.from])
+        chatMsgs[data.from] = [];
+      chatMsgs[data.from].push(data.text)
+      return {
+        ...state,
+        chatMsgs: chatMsgs,
+        newMsg: true
+      }
+    case CLEAR_NEW_MSG:
+      return {
+        ...state,
+        newMsg: false
+      }
+    case SELECT_CHATER:
+      return {
+        ...state,
+        chaterId: action.userId
       }
     case ADD_ITEM_FAIL:
     case BUY_CART_ITEMS_FAIL:
@@ -298,6 +508,7 @@ export default function reducer(state = initialState, action = {}) {
     case SHIP_ORDER_FAIL:
     case CONFIRM_RECEIVE_FAIL:
     case REFUND_REQ_FAIL:
+    case REFUND_CONFIRM_AGREE_FAIL:
       message.error((action.error.type && messages[action.error.type]) || '未知错误')
       return {
         ...state

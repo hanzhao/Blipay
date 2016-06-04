@@ -13,7 +13,7 @@ apiRouter.use(orderRouter);
 apiRouter.use(attachmentRouter);
 apiRouter.use(adminRouter);
 apiRouter.use(auditorRouter);
-apiRouter.all('*', (req, res) => res.status(404).send('Not Found'))
+apiRouter.all('*', (req, res) => res.status(404).send('Not Found'));
 
 const router = Router();
 router.use('/api', apiRouter);

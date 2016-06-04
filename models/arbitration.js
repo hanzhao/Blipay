@@ -13,6 +13,16 @@ module.exports=(db)=>{
         },
         state:{
             type: Sequelize.STRING, isIn: [['ing','accept','deny']]
+        },
+        /* 退款理由等信息 */
+        orderId: {
+            type: Sequelize.INTEGER
+        },
+        buyerText: {
+            type: Sequelize.TEXT
+        },
+        sellerText: {
+            type: Sequelize.TEXT
         }
     });
 };

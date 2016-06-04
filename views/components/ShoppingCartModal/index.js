@@ -2,10 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Modal, Table, Button } from 'antd';
 
-import { deleteCartItem, buyCartItems, toggleLoginModal } from '../../redux/modules/shopping';
+import { deleteCartItem, buyCartItems, toggleLoginModal, toggleShoppingAddr } from '../../redux/modules/shopping';
 import store from '../../redux/store';
 import styles from './styles';
-
+import ShoppingAddrModal from '../ShoppingAddrModal'
 const deleteItem = (id) => {
   store.dispatch(deleteCartItem(id))
 }
@@ -71,7 +71,7 @@ const getTotalPrice = (items) => (
     user: state.account.user
   }),
   (dispatch) => ({
-    buyCartItems: () => dispatch(buyCartItems()),
+    buyCartItems: () => dispatch(toggleShoppingAddr()),
     toggleLoginModal: () => dispatch(toggleLoginModal())
   })
 )
@@ -79,21 +79,24 @@ class ShoppingCartModal extends React.Component {
   render() {
     const { user } = this.props
     return (
-      <Modal title="购物车"
-             visible={this.props.showShoppingCartModal}
-             className={styles.modal}
-             {...this.props}>
-        <Table dataSource={this.props.cartItems}
-               columns={columns}
-               pagination={false} />
-        <div className={styles.total}>
-          总计：¥{ getTotalPrice(this.props.cartItems).toFixed(2) }
-          <Button type="primary" className={styles.btn}
-                  onClick={user ? this.props.buyCartItems : this.props.toggleLoginModal}>
-            马上结算
-          </Button>
-        </div>
-      </Modal>
+      <div>
+        <Modal title="购物车"
+              visible={this.props.showShoppingCartModal}
+              className={styles.modal}
+              {...this.props}>
+          <Table dataSource={this.props.cartItems}
+                columns={columns}
+                pagination={false} />
+          <div className={styles.total}>
+            总计：¥{ getTotalPrice(this.props.cartItems).toFixed(2) }
+            <Button type="primary" className={styles.btn}
+                    onClick={user ? this.props.buyCartItems : this.props.toggleLoginModal}>
+              马上结算
+            </Button>
+          </div>
+        </Modal>
+        <ShoppingAddrModal/>
+      </div>
     )
   }
 }

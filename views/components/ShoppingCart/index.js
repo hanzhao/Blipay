@@ -4,9 +4,11 @@ import { Icon, Button, message } from 'antd';
 import classNames from 'classnames';
 
 import ShoppingCartModal from '../ShoppingCartModal';
+import ChatModal from '../ChatModal';
 import Container from '../Container';
 import {
   toggleShoppingCart,
+  toggleShoppingChat,
   clearShoppingCart
 } from '../../redux/modules/shopping';
 import styles from './styles';
@@ -23,10 +25,13 @@ const getTotalPrice = (items) => (
 @connect(
   (state) => ({
     cartItems: state.shopping.cartItems,
-    showShoppingCartModal: state.shopping.showShoppingCartModal
+    newMsg: state.shopping.newMsg,
+    showShoppingCartModal: state.shopping.showShoppingCartModal,
+    showShoppingChat: state.shopping.showChatModal
   }),
   (dispatch) => ({
     toggleShoppingCart: () => dispatch(toggleShoppingCart()),
+    toggleShoppingChat: () => dispatch(toggleShoppingChat()),
     clearShoppingCart: () => dispatch(clearShoppingCart())
   })
 )
@@ -36,8 +41,13 @@ class ShoppingCart extends React.Component {
     return (
       <div className={classNames({
         [styles.cart]: true,
-        [styles.show]: cartItems.length > 0 && !this.props.showShoppingCartModal
+        [styles.show]: !this.props.showShoppingChat && !this.props.showShoppingCartModal 
       }) }>
+        <ChatModal onCancel={this.props.toggleShoppingChat} footer={null} />
+        <Button className={this.props.newMsg ? styles.newMsgBtn : null}
+          onClick={this.props.toggleShoppingChat}>
+          消息
+        </Button>
         <ShoppingCartModal onCancel={this.props.toggleShoppingCart}
           footer={null} />
         <Container>

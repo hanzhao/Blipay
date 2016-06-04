@@ -20,6 +20,7 @@ const favicon = require('serve-favicon');
 // 使用 Redis 提供 Session 存储
 const ConnectRedis = require('connect-redis');
 
+
 // webpack 构建
 const webpack = require('webpack');
 // webpack 实时编译
@@ -31,8 +32,18 @@ const env = process.env.NODE_ENV || 'development';
 global.isProduction = (env === 'production');
 const port = process.env.PORT || 3000;
 const RedisStore = ConnectRedis(session);
-
 const config = require('./config');
+const socketIOSession = require('socket.io.session');
+const sessionStore = new RedisStore(config.redis);
+
+const sessionSettings = {
+  name: 'blipay.sid',
+  secret: config.cookie.secret,
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false },
+  store: sessionStore
+};
 
 // 创建 app
 const app = express();
@@ -44,14 +55,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser(config.cookie.secret));
-app.use(session({
-  name: 'blipay.sid',
-  secret: config.cookie.secret,
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false },
-  store: new RedisStore(config.redis)
-}));
+app.use(session(sessionSettings));
 app.use(favicon(`${ROOT}/public/favicon.ico`));
 
 /* 静态资源 */
@@ -73,7 +77,7 @@ app.use((req, res, next) => {
       data: data
     });
   };
-  res.fail = function(data) {
+  res.fail = function (data) {
     return this.json({
       code: -1,
       error: data
@@ -85,7 +89,7 @@ app.use((req, res, next) => {
 // models
 require('./models');
 
-app.use(require('./controllers'))
+app.use(require('./controllers'));
 
 // 错误处理
 app.use((err, req, res, next) => {
@@ -98,4 +102,52 @@ const server = http.createServer(app);
 // 开始监听
 server.listen(port, () => {
   console.log(`App is listening on port ${server.address().port}`);
+});
+
+// Chat
+
+// Socket.io
+const io = require('socket.io')(server);
+
+const socketSession = socketIOSession(sessionSettings);
+
+
+io.use(socketSession.parser);
+const users = new Array();
+const sockets = new Array();
+
+io.on('connection', function (socket) {
+  console.log('connected!');
+  if (!socket.session.userId)
+    return ;
+  let userId = socket.session.userId;
+  let userName = socket.session.userName;
+  // Welcome message on connection
+  socket.emit('connected', 'Welcome to the chat server ' + userName);
+
+  users[userId] = { userId: userId, userName: userName };
+  sockets[userId] = socket;
+  console.log('User in: ' + userId + ' ' + userName);
+  socket.broadcast.emit('userList', { users: users });
+
+  socket.on('reqUserList', () => {
+    socket.emit('userList', { users: users });
+  });
+
+  socket.on('send', (data) => {
+    console.log('send',data);
+    const dstSocket = sockets[data.userId];
+    if(dstSocket){
+      dstSocket.emit('msg', {from: userId, text: data.text});
+    }
+    else{
+      // TODO
+    }
+  });
+
+  // Clean up on disconnect
+  socket.on('disconnect', () => {
+    socket.broadcast.emit('userOut', { userId: userId });
+    delete users[userId];
+  });
 });

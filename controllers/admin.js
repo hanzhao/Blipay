@@ -10,6 +10,8 @@ const Identification = require('../models').Identification;
 const Arbitration = require('../models').Arbitration;
 const AdminLog = require('../models').AdminLog;
 
+const handleRefund = require('../services/order').handleRefund
+
 const cookPassword = (key, salt) => {
   var hash = crypto.createHash('sha512');
   const mid = key.length >> 1
@@ -379,6 +381,8 @@ router.post('/admin/dealarbitration',Promise.coroutine(function *(req,res){
             id: req.body.id
         }
     });
+    const arb = yield Arbitration.findOne({where: {id: req.body.id}});
+    yield handleRefund(arb.orderId, req.body.op == 'accept', '', '');
     return res.success({
         op: req.body.op,
         code :0
