@@ -74,6 +74,8 @@ const START_CHAT = 'Blipay/shopping/START_CHAT'
 const UPDATE_USER_LIST = 'Blipay/shopping/UPDATE_USER_LIST'
 const SEND_MSG = 'Blipay/shopping/SEND_MSG'
 const RECV_MSG = 'Blipay/shopping/RECV_MSG'
+const CLEAR_NEW_MSG = 'Blipay/shopping/CLEAR_NEW_MSG'
+const SELECT_CHATER = 'Blipay/shopping/SELECT_CHATER'
 
 const messages = {
   NO_ITEM: '商品不存在',
@@ -206,12 +208,10 @@ export const refundReq = (orderId, reason) => ({
 })
 
 
-export const sendMsg = (userId, text) => {
-  socket.emit('send', { userId: userId, text: text })
-  return {
-    type: TOGGLE_SHOPPING_CHAT
-  }
-}
+export const sendMsg = (text) => ({
+  type: SEND_MSG,
+  text
+})
 
 export const updateUserList = (users) => ({
   type: UPDATE_USER_LIST,
@@ -221,6 +221,15 @@ export const updateUserList = (users) => ({
 export const recvMsg = (data) => ({
   type: RECV_MSG,
   data
+})
+
+export const clearNewMsg = (data) => ({
+  type: CLEAR_NEW_MSG 
+})
+
+export const selectChater = (userId) => ({
+  type: SELECT_CHATER,
+  userId
 })
 
 export const startChat = () => {
@@ -334,7 +343,8 @@ export default function reducer(state = initialState, action = {}) {
     case TOGGLE_SHOPPING_CHAT:
       return {
         ...state,
-        showChatModal: !state.showChatModal
+        newMsg: !state.showChatModal&&state.newMsg,
+        showChatModal: !state.showChatModal,
       }
     case DELETE_CART_ITEM:
       return {
@@ -401,7 +411,7 @@ export default function reducer(state = initialState, action = {}) {
         socket: action.socket
       }
     case SEND_MSG:
-      state.socket.emit('send', { userId: action.userId, text: action.text })
+      socket.emit('send', { userId: state.chaterId, text: action.text })
       return {
         ...state
       }
@@ -418,7 +428,18 @@ export default function reducer(state = initialState, action = {}) {
       chatMsgs[data.from].push(data.text)
       return {
         ...state,
-        chatMsgs: chatMsgs
+        chatMsgs: chatMsgs,
+        newMsg: true
+      }
+    case CLEAR_NEW_MSG:
+      return {
+        ...state,
+        newMsg: false
+      }
+    case SELECT_CHATER:
+      return {
+        ...state,
+        chaterId: action.userId
       }
     case ADD_ITEM_FAIL:
     case BUY_CART_ITEMS_FAIL:

@@ -25,7 +25,9 @@ const getTotalPrice = (items) => (
 @connect(
   (state) => ({
     cartItems: state.shopping.cartItems,
-    showShoppingCartModal: state.shopping.showShoppingCartModal
+    newMsg: state.shopping.newMsg,
+    showShoppingCartModal: state.shopping.showShoppingCartModal,
+    showShoppingChat: state.shopping.showChatModal
   }),
   (dispatch) => ({
     toggleShoppingCart: () => dispatch(toggleShoppingCart()),
@@ -39,10 +41,13 @@ class ShoppingCart extends React.Component {
     return (
       <div className={classNames({
         [styles.cart]: true,
-        [styles.show]: true && !this.props.showShoppingCartModal
+        [styles.show]: !this.props.showShoppingChat && !this.props.showShoppingCartModal 
       }) }>
-        <ChatModal/>
-        <Button onClick={this.props.toggleShoppingChat}/>
+        <ChatModal onCancel={this.props.toggleShoppingChat} footer={null} />
+        <Button className={this.props.newMsg ? styles.newMsgBtn : null}
+          onClick={this.props.toggleShoppingChat}>
+          消息
+        </Button>
         <ShoppingCartModal onCancel={this.props.toggleShoppingCart}
           footer={null} />
         <Container>

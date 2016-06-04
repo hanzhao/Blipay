@@ -1,13 +1,18 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Modal, Input } from 'antd';
+import { Modal, Input, Button } from 'antd';
+import { Row, Col } from 'antd';
+
 import { reduxForm, addArrayValue } from 'redux-form';
+import styles from './styles';
 
 import io from 'socket.io-client';
 import {
   toggleShoppingChat,
   startChat,
-  sendMsg
+  sendMsg,
+  clearNewMsg,
+  selectChater
 } from '../../redux/modules/shopping';
 
 @reduxForm(
@@ -20,58 +25,70 @@ import {
   (state) => ({
     showChatModal: state.shopping.showChatModal,
     chatUsers: state.shopping.chatUsers,
-    chatMsgs: state.shopping.chatMsgs
+    chatMsgs: state.shopping.chatMsgs,
+    chaterId: state.shopping.chaterId
   }),
   (dispatch) => ({
     toggleShoppingChat: () => dispatch(toggleShoppingChat()),
     startChat: () => dispatch(startChat()),
-    sendMessage: (userId, text) => dispatch(sendMsg(userId, text))
+    sendMessage: (text) => dispatch(sendMsg(text)),
+    clearNewMsg: () => dispatch(clearNewMsg()),
+    selectChater: (userId) => dispatch(selectChater(userId))
   })
 )
 class ChatModal extends React.Component {
   render() {
-    const { showChatModal, sendMessage, chatUsers, chatMsgs, fields: { text } } = this.props;
+    const { showChatModal, sendMessage, chatUsers, chatMsgs, clearNewMsg, selectChater, chaterId, fields: { text } } = this.props;
     const sendMsg = () => {
-      console.log(text.value)
-      sendMessage(1, text.value)
+      sendMessage(text.value)
     }
     console.log(chatMsgs)
     return (
       <Modal
+        title="消息"
+        className={styles.modal}
         visible = {showChatModal}
-        onOk={ sendMsg }
+        onOk={ this.props.toggleShoppingChat }
         onCancel={this.props.toggleShoppingChat}>
-        <div>
-          Users
-          {
+        <Row>
+          <Col className= {styles.users}>
+            Users
+            {
 
-            chatUsers ? chatUsers.map((e, i) => (
-              e ? (
-                <div key={e.userId}>
-                  {e.userName}
-                </div>
-              ) : null
-            )) : null
-          }
-        </div>
-        <div>
-          Messgaes
-          {
-            chatMsgs ? chatMsgs.map((e, i) => (
-              <div>{
-                e ? e.map((ee, ii) => (
-                  <span>
-                    {ee}
-                  </span>
-                )) : null
+              chatUsers ? chatUsers.map((e, i) => (
+                e ? (
+                  <div key={e.userId} className={styles.userEntry}   onClick={selectChater.bind(this, e.userId) }>
+                    <span className={styles.userEntryText}>{e.userName}</span>
+                  </div>
+                ) : null
+              )) : null
+            }
+          </Col>
+          <Col className={styles.msgs}>
+            <div>
+              {
+                this.props.chaterId ?
+                  this.props.chatMsgs[chaterId] ?
+                    this.props.chatMsgs[chaterId].map((e, i) => (
+                      <div key={i}>
+                        {e}
+                      </div>
+                    ))
+                    :
+                    <span>{chatUsers[chaterId].userName} 没有信息</span>
+                  
+                  :
+                  <span>请选择</span>
               }
-              </div>
-            )) : null
-          }
-        </div>
-        <div>
-          <Input type='textarea' {...text } />
-        </div>
+            </div>
+            <div>
+              <Input className={styles.input} type='textarea' {...text } />
+              <Button onClick={sendMsg}>
+                发送
+              </Button>
+            </div>
+          </Col>
+        </Row>
       </Modal>
     )
   }

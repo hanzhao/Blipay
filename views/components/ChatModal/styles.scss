@@ -1,0 +1,23 @@
+.modal:global(.ant-modal) {
+  .users {
+    .userEntry {
+      .userEntryText{
+        margin-top: 10px;
+        cursor: pointer;
+      }
+    }
+    float: left;
+    margin-right: 30px;
+    height: 300px;
+  }
+  .msgs {
+    .input{
+      position:relative; 
+      bottom:0;
+    }
+    margin-left: 50px;
+    float: left;
+  }
+  width: 800px !important;
+}
+
