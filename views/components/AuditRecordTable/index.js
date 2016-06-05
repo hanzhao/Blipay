@@ -67,7 +67,13 @@ const columns = [{
 }, {
   title: '备注',
   dataIndex: 'info',
-  key: 'info'
+  key: 'info',
+  render(text){
+    if(text.length>15)
+    { return <abbr title={text}>鼠标移到此处</abbr>;}
+  else
+    return <span>{text}</span>;
+  }
 }];
 
 const wrapAmount = (data) => {
