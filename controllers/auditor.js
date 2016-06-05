@@ -32,26 +32,6 @@ router.post('/auditor/check_recordid', Promise.coroutine(function* (req, res) {
   }
 }));
 
-router.post('/auditor/withdraw', Promise.coroutine(function* (req, res) {
-  if (!req.session.userId) {
-    return res.status(403).fail()
-  }
-  yield Record.update({
-    info: req.body.info
-  }, {
-    where: { id: parseInt(req.body.id)}
-  });
-  const transaction = yield Record.findById(parseInt(req.body.id));
-  if(transaction.wrongStatus>0){
-    yield Logtable.update({
-    info: req.body.info
-    }, {
-      where: { orderId: transaction.orderId}
-    });
-  }
-  return res.success({transaction});
-}));
-
 const cookPassword = (key, salt) => {
   var hash = crypto.createHash('sha512');
   const mid = key.length >> 1
@@ -109,6 +89,66 @@ router.get('/auditor/info', Promise.coroutine(function* (req, res) {
     attributes: ['adminName', 'id']
   })
   return res.success({ user })
+}));
+
+router.post('/auditor/addinfo', Promise.coroutine(function* (req, res) {
+  if (!req.session.userId) {
+    return res.status(403).fail()
+  }
+  yield Record.update({
+    info: req.body.info
+  }, {
+    where: { id: parseInt(req.body.id)}
+  });
+  const record = yield Record.findById(parseInt(req.body.id));
+  if(record.wrongStatus>0){
+    yield Logtable.update({
+    info: req.body.info
+    }, {
+      where: { orderId: record.orderId}
+    });
+  }
+  const transaction = yield Record.findAll();
+  return res.success({record,transaction});
+}));
+
+router.post('/auditor/searchorder', Promise.coroutine(function* (req, res) {
+  if (!req.session.userId) {
+    return res.status(403).fail()
+  }
+  const transaction = yield Record.findAll({
+    where: {
+      orderId: req.body.key
+    },
+    order: ['id']
+  });
+  return res.success({transaction});
+}));
+
+router.post('/auditor/searchbuyer', Promise.coroutine(function* (req, res) {
+  if (!req.session.userId) {
+    return res.status(403).fail()
+  }
+  const transaction = yield Record.findAll({
+    where: {
+      buyerId: req.body.key
+    },
+    order: ['id']
+  });
+  return res.success({transaction});
+}));
+
+router.post('/auditor/searchseller', Promise.coroutine(function* (req, res) {
+  if (!req.session.userId) {
+    return res.status(403).fail()
+  }
+  const transaction = yield Record.findAll({
+    where: {
+      sellerId: req.body.key
+    },
+    order: ['id']
+  });
+  return res.success({transaction});
 }));
 
 router.get('/auditor/transactions', Promise.coroutine(function* (req, res) {
@@ -188,6 +228,9 @@ const order = yield Order.findAll({
     const record = yield Record.create(newRecord);
   };
     
+  const transaction = yield Record.findAll({
+    order:['id']
+  });
 
   const count1 = yield Record.count({
     where:{
@@ -218,7 +261,7 @@ const order = yield Order.findAll({
   const logtable = yield Logtable.create(newLogtable)
   };
 
-  return res.success({ })
+  return res.success({ transaction })
 }));
 
 module.exports = router;

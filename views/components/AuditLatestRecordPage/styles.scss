@@ -3,16 +3,15 @@
   padding-left: 30px;
   padding-top: 30px;
   padding-right: 30px;
-  
-  .mypicker {
-  float:left;
+
+  .mypicker{
+    float:left;
   }
-  .info_button {
-  .withdrawal{
-    border-radius:10px;
+  .mybutton{
+    text-align:right;
+    .withdrawal{
+      border-radius:10px;
+      margin-left:10px;
+    }
   }
-  text-align: right;
-  margin-right: 30px;
-  }
-  
 }

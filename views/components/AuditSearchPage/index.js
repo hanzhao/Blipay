@@ -13,8 +13,12 @@ import {
   logout,
   loadTransactions,
   insertData,
-  toggleWithdraw,
-  withdraw
+  toggleSearch,
+  toggleSearchBuyer,
+  toggleSearchSeller,
+  searchOrder,
+  searchBuyer,
+  searchSeller
 } from '../../redux/modules/auditor';
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
@@ -34,30 +38,6 @@ const tableProps = {
   }
 };
 
-const validateId = async (rule, value, callback) => {
-  try {
-    await ajax.post('/api/auditor/check_recordid', {
-      //payPass: value
-      id:value
-    });
-    callback();
-  } catch (err) {
-    callback(new Error('不存在该订单记录。'));
-  }
-};
-
-const validateInfo = (rule, value, callback) => {
-  if (!value) {
-    callback();
-  } else {
-    if (value.length < 30) {
-      callback();
-    } else {
-      callback(new Error('备注过长。'));
-    }
-  }
-};
-
 const orderPropsArray = [
   {
     input: {
@@ -66,9 +46,41 @@ const orderPropsArray = [
       autoComplete: 'off'
     },
     field: [
-      'id', {
+      'key', {
         validateTrigger: 'onBlur',
-        rules: [{ required: true }, { validator: validateId }]
+        rules: [{ required: true }, { validator: null }]
+      }
+    ]
+  }
+];
+
+const buyerPropsArray = [
+  {
+    input: {
+      placeholder: '请输入买家id',
+      type: 'text',
+      autoComplete: 'off'
+    },
+    field: [
+      'key', {
+        validateTrigger: 'onBlur',
+        rules: [{ required: true }, { validator: null }]
+      }
+    ]
+  }
+];
+
+const sellerPropsArray = [
+  {
+    input: {
+      placeholder: '请输入卖家id',
+      type: 'text',
+      autoComplete: 'off'
+    },
+    field: [
+      'key', {
+        validateTrigger: 'onBlur',
+        rules: [{ required: true }, { validator: null }]
       }
     ]
   }
@@ -83,12 +95,18 @@ const orderPropsArray = [
   (state) => ({
     user: state.auditor.user,
     transactions: _.reverse(_.slice(state.auditor.transactions)),
-    showWithdrawModal: state.account.showWithdrawModal
+    showSearchModal: state.auditor.showSearchModal,
+    showBuyerModal: state.auditor.showBuyerModal,
+    showSellerModal: state.auditor.showSellerModal
   }),
   (dispatch) => ({
     logout: () => dispatch(logout()),
-    toggleWithdraw: () => dispatch(toggleWithdraw()),
-    handleWithdraw: (data) => dispatch(withdraw(data))
+    toggleSearchOrder: () => dispatch(toggleSearch()),
+    toggleSearchBuyer: () => dispatch(toggleSearchBuyer()),
+    toggleSearchSeller: () => dispatch(toggleSearchSeller()),
+    handleSearchOrder: (data) => dispatch(searchOrder(data)),
+    handleSearchBuyer: (data) => dispatch(searchBuyer(data)),
+    handleSearchSeller: (data) => dispatch(searchSeller(data))
   })
 )
 class AuditSearchPage extends React.Component {
@@ -106,14 +124,27 @@ class AuditSearchPage extends React.Component {
     )
     return (
       <div className={styles.container}>
-      <RangePicker className={styles.picker}
+        <div className={styles.mypicker}>
+        <RangePicker className={styles.picker}
                      showTime
                      onChange={this.handleChange} />
-        <div>
+        </div>
+        <div className={styles.mybutton}>
+
                  <Button className={styles.withdrawal}
-                        onClick={this.props.toggleWithdraw}>
-                  订单
+                        onClick={this.props.toggleSearchOrder}>
+                  订单搜索
                 </Button>
+                <Button className={styles.withdrawal}
+                        onClick={this.props.toggleSearchBuyer}>
+                  买家搜索
+                </Button>
+                <Button className={styles.withdrawal}
+                        onClick={this.props.toggleSearchSeller}>
+                  卖家搜索
+                </Button>
+
+               
 
         </div>
       <div className={styles.wrapper}>
@@ -122,13 +153,27 @@ class AuditSearchPage extends React.Component {
           data={transactions}
           tableProps={tableProps} />
       </div>
-      <FormModal title="添加备注"
-                   visible={this.props.showWithdrawModal}
+      <FormModal title="搜索订单"
+                   visible={this.props.showSearchModal}
                    num={1}
                    btnText="确认"
                    propsArray={orderPropsArray}
-                   btnCallback={this.props.handleWithdraw}
-                   toggleModal={this.props.toggleWithdraw} />
+                   btnCallback={this.props.handleSearchOrder}
+                   toggleModal={this.props.toggleSearchOrder} />
+      <FormModal title="搜索买家"
+                   visible={this.props.showBuyerModal}
+                   num={1}
+                   btnText="确认"
+                   propsArray={buyerPropsArray}
+                   btnCallback={this.props.handleSearchBuyer}
+                   toggleModal={this.props.toggleSearchBuyer} />
+      <FormModal title="搜索卖家"
+                   visible={this.props.showSellerModal}
+                   num={1}
+                   btnText="确认"
+                   propsArray={sellerPropsArray}
+                   btnCallback={this.props.handleSearchSeller}
+                   toggleModal={this.props.toggleSearchSeller} />                       
     </div>
     
     );

@@ -53,7 +53,6 @@ import AuditPage from './components/AuditPage';
 import AuditLatestRecordPage from './components/AuditLatestRecordPage';
 import AuditSearchPage from './components/AuditSearchPage';
 import AuditLogPage from './components/AuditLogPage';
-import AuditCheckPage from './components/AuditLogPage';
 
 const history = syncHistoryWithStore(browserHistory, store);
 
@@ -84,7 +83,6 @@ const router = (
 
       <Route path="/audit" component={AuditPage}>
         <IndexRoute component={AuditLatestRecordPage} />
-        <Route path="/audit/check" component={AuditCheckPage} />
           <Route path="/audit/search" component={AuditSearchPage} />
           <Route path="/audit/log" component={AuditLogPage} />
       </Route>

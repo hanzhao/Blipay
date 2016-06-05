@@ -15,8 +15,8 @@ import {
   logout,
   loadTransactions,
   insertData,
-  toggleWithdraw,
-  withdraw
+  toggleAddinfo,
+  addinfo
 } from '../../redux/modules/auditor';
 
 const RangePicker = DatePicker.RangePicker;
@@ -53,7 +53,7 @@ const validateInfo = (rule, value, callback) => {
   }
 };
 
-const withdrawalPropsArray = [
+const addinfoPropsArray = [
   {
     input: {
       placeholder: '请输入订单流水号',
@@ -90,12 +90,13 @@ const withdrawalPropsArray = [
   (state) => ({
     user: state.auditor.user,
     transactions: _.reverse(_.slice(state.auditor.transactions)),
-    showWithdrawModal: state.auditor.showWithdrawModal
+    showAddinfoModal: state.auditor.showAddinfoModal
   }),
   (dispatch) => ({
     logout: () => dispatch(logout()),
-    toggleWithdraw: () => dispatch(toggleWithdraw()),
-    handleWithdraw: (data) => dispatch(withdraw(data))
+    toggleAddinfo: () => dispatch(toggleAddinfo()),
+    handleAddinfo: (data) => dispatch(addinfo(data)),
+    insertData: () => dispatch(insertData())
   })
 )
 class AuditLatestRecordPage extends React.Component {
@@ -118,27 +119,31 @@ class AuditLatestRecordPage extends React.Component {
                      showTime
                      onChange={this.handleChange} />
         </div>
-        <div className={styles.info_button}>
+        <div className={styles.mybutton}>
                  <Button className={styles.withdrawal}
-                        onClick={this.props.toggleWithdraw}>
+                        onClick={this.props.toggleAddinfo}>
                   添加备注
+                </Button>
+                <Button className={styles.withdrawal}
+                        onClick={this.props.insertData}>
+                  插入
                 </Button>
 
         </div>
-        <div className={styles.wrapper}>
+      <div className={styles.wrapper}>
          <AuditRecordTable
           className={styles.table}
           data={transactions}
           tableProps={tableProps} />
-        </div>
-        <FormModal title="添加备注"
-                   visible={this.props.showWithdrawModal}
+      </div>
+      <FormModal title="添加备注"
+                   visible={this.props.showAddinfoModal}
                    num={2}
                    btnText="确认"
-                   propsArray={withdrawalPropsArray}
-                   btnCallback={this.props.handleWithdraw}
-                   toggleModal={this.props.toggleWithdraw} />
-      </div>
+                   propsArray={addinfoPropsArray}
+                   btnCallback={this.props.handleAddinfo}
+                   toggleModal={this.props.toggleAddinfo} />
+    </div>
     
     );
   }
