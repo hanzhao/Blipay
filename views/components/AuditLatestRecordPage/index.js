@@ -113,30 +113,32 @@ class AuditLatestRecordPage extends React.Component {
     )
     return (
       <div className={styles.container}>
-      <RangePicker className={styles.picker}
+        <div className={styles.mypicker}>
+          <RangePicker className={styles.picker}
                      showTime
                      onChange={this.handleChange} />
-        <div>
+        </div>
+        <div className={styles.info_button}>
                  <Button className={styles.withdrawal}
                         onClick={this.props.toggleWithdraw}>
-                  备注
+                  添加备注
                 </Button>
 
         </div>
-      <div className={styles.wrapper}>
+        <div className={styles.wrapper}>
          <AuditRecordTable
           className={styles.table}
           data={transactions}
           tableProps={tableProps} />
-      </div>
-      <FormModal title="添加备注"
+        </div>
+        <FormModal title="添加备注"
                    visible={this.props.showWithdrawModal}
                    num={2}
                    btnText="确认"
                    propsArray={withdrawalPropsArray}
                    btnCallback={this.props.handleWithdraw}
                    toggleModal={this.props.toggleWithdraw} />
-    </div>
+      </div>
     
     );
   }
