@@ -64,6 +64,10 @@ const columns = [{
     } ;
   },
   sorter: (a, b) => a.wrongStatus < b.wrongStatus ? -1 : 1
+}, {
+  title: '备注',
+  dataIndex: 'info',
+  key: 'info'
 }];
 
 const wrapAmount = (data) => {

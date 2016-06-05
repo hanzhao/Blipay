@@ -1,0 +1,83 @@
+.container {
+  background-color: #ffffff;
+  padding-left: 30px;
+  padding-top: 30px;
+  padding-right: 30px;
+
+  .upperHalf {
+    .info {
+      padding: 0 20px;
+      margin-bottom: 20px;
+      padding-bottom: 5px;
+      float: left;
+      width: 45%;
+      margin-right: 5%;
+      border-right: solid #aaa 1px;
+      .greeting {
+        font-size: 30px;
+      }
+      .lastLogin {
+        display: inline-block;
+        font-size: 15px;
+        margin-top: 15px;
+      }
+      .logout {
+        margin-left: 20px;
+        font-size: 15px;
+      }
+    }
+    .balance {
+      float: left;
+      width: 50%;
+      padding: 0 20px;
+      .balanceTitle {
+        margin-top: 5px;
+        font-size: 15px;
+      }
+      .balanceLower{
+        margin-top: 15px;
+        .balanceValue {
+          float: left;
+
+          .balanceHead {
+            position: relative;
+            bottom: 0;
+            color: #c63655;
+            font-size: 30px
+          }
+          .balanceTail {
+            position: relative;
+            bottom: 0;
+            color: #c63655;
+            font-size: 20px;
+          }
+        }
+        .balanceOperation {
+          float: left;
+          margin-left: 20px;
+          padding-top: 10px;
+          .withdrawal {
+            margin-left: 20px;
+          }
+        }
+      }
+    }
+  }
+  .horizontalBar {
+    clear: both;
+    position: relative;
+    margin-top: 20px;
+    height: 1px;
+    background-color: #aaaaaa;
+  }
+  .lowerHalf {
+    clear: both;
+    padding: 20px 20px;
+    .title {
+      font-size: 20px;
+    }
+    .tableWrapper {
+      margin-top: 15px;
+    }
+  }
+}

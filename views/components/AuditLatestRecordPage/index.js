@@ -14,6 +14,9 @@ import moment from 'moment';
 import {
   logout,
   loadTransactions,
+  insertData,
+  toggleWithdraw,
+  withdraw
 } from '../../redux/modules/auditor';
 
 const RangePicker = DatePicker.RangePicker;
@@ -26,6 +29,58 @@ const tableProps = {
   }
 };
 
+const validateId = async (rule, value, callback) => {
+  try {
+    await ajax.post('/api/auditor/check_recordid', {
+      //payPass: value
+      id:value
+    });
+    callback();
+  } catch (err) {
+    callback(new Error('不存在该订单记录。'));
+  }
+};
+
+const validateInfo = (rule, value, callback) => {
+  if (!value) {
+    callback();
+  } else {
+    if (value.length < 30) {
+      callback();
+    } else {
+      callback(new Error('备注过长。'));
+    }
+  }
+};
+
+const withdrawalPropsArray = [
+  {
+    input: {
+      placeholder: '请输入订单流水号',
+      type: 'text',
+      autoComplete: 'off'
+    },
+    field: [
+      'id', {
+        validateTrigger: 'onBlur',
+        rules: [{ required: true }, { validator: validateId }]
+      }
+    ]
+  },
+  {
+    input: {
+      placeholder: '请输入备注 ',
+      type: 'text',
+      autoComplete: 'off'
+    },
+    field: [
+      'info', {
+        rules: [{ required: true }, { validator: validateInfo }]
+      }
+    ]
+  }
+];
+
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState } }) => {
@@ -34,10 +89,13 @@ const tableProps = {
   }],
   (state) => ({
     user: state.auditor.user,
-    transactions: _.reverse(_.slice(state.auditor.transactions))
+    transactions: _.reverse(_.slice(state.auditor.transactions)),
+    showWithdrawModal: state.auditor.showWithdrawModal
   }),
   (dispatch) => ({
-    logout: () => dispatch(logout())
+    logout: () => dispatch(logout()),
+    toggleWithdraw: () => dispatch(toggleWithdraw()),
+    handleWithdraw: (data) => dispatch(withdraw(data))
   })
 )
 class AuditLatestRecordPage extends React.Component {
@@ -58,13 +116,28 @@ class AuditLatestRecordPage extends React.Component {
       <RangePicker className={styles.picker}
                      showTime
                      onChange={this.handleChange} />
+        <div>
+                 <Button className={styles.withdrawal}
+                        onClick={this.props.toggleWithdraw}>
+                  备注
+                </Button>
+
+        </div>
       <div className={styles.wrapper}>
          <AuditRecordTable
           className={styles.table}
           data={transactions}
           tableProps={tableProps} />
       </div>
+      <FormModal title="添加备注"
+                   visible={this.props.showWithdrawModal}
+                   num={2}
+                   btnText="确认"
+                   propsArray={withdrawalPropsArray}
+                   btnCallback={this.props.handleWithdraw}
+                   toggleModal={this.props.toggleWithdraw} />
     </div>
+    
     );
   }
 }
