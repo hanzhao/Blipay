@@ -1,22 +1,49 @@
 .modal:global(.ant-modal) {
-  .users {
-    .userEntry {
-      .userEntryText{
-        margin-top: 10px;
-        cursor: pointer;
+  .chatUsers {
+    width: 200px;
+    display: inline-block;
+    float: left;
+    .newMsg{
+      background-color: orangered;
+    }
+    div {
+      cursor: pointer;
+      padding: 8px 20px;
+    }
+  }
+  .chatMain {
+    width: 400px;
+    display: inline-block;
+    float: right;
+    .chatDisplay {
+      width: 400px;
+      height: 360px;
+      border-left: 1px solid gray;
+      overflow-x: auto;
+      overflow-y: scroll;
+      word-wrap: break-word;
+      padding-left: 0px;
+      position: relative;
+      text-align: left;
+      .chatItemOther {
+        padding: 8px 20px;
+        float: left;
+        clear: both;
+      }
+      .chatItemUser {
+        padding: 8px 20px;
+        float: right;
+        clear: both;
       }
     }
-    float: left;
-    margin-right: 30px;
-    height: 300px;
-  }
-  .msgs {
-    .input{
-      position:relative; 
-      bottom:0;
+    .chatInput {
+      .chatSubmit {
+        float: right;
+        margin-right: 20px;
+      }
     }
-    margin-left: 50px;
-    float: left;
   }
+	height: 480px;
+  font-size: 16px;
   width: 800px !important;
 }

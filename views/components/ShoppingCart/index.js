@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Icon, Button, message } from 'antd';
+import { Icon, Button, message, Badge } from 'antd';
 import classNames from 'classnames';
 
 import ShoppingCartModal from '../ShoppingCartModal';
@@ -41,16 +41,17 @@ class ShoppingCart extends React.Component {
     return (
       <div className={classNames({
         [styles.cart]: true,
-        [styles.show]: !this.props.showShoppingChat && !this.props.showShoppingCartModal 
+        [styles.show]: !this.props.showShoppingChat && !this.props.showShoppingCartModal
       }) }>
         <ChatModal onCancel={this.props.toggleShoppingChat} footer={null} />
         <ShoppingCartModal onCancel={this.props.toggleShoppingCart}
           footer={null} />
         <Container>
-          <Button className={this.props.newMsg ? styles.newMsgBtn : styles.normalMsgBtn}
-            onClick={this.props.toggleShoppingChat}>
-            消息
-          </Button>
+          <Badge count={this.props.newMsg}
+            onClick={this.props.toggleShoppingChat}
+            >
+            <span className={styles.chatText}>GiliGili</span>
+          </Badge>
           <div className={styles.inner}>
             {/* <span className={styles.pricer}>
               { getTotalAmount(cartItems) } 件商品，

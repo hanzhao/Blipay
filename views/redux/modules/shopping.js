@@ -83,8 +83,11 @@ const START_CHAT = 'Blipay/shopping/START_CHAT'
 const UPDATE_USER_LIST = 'Blipay/shopping/UPDATE_USER_LIST'
 const SEND_MSG = 'Blipay/shopping/SEND_MSG'
 const RECV_MSG = 'Blipay/shopping/RECV_MSG'
+const SELF_MSG = 'Blipay/shopping/SELF_MSG'
 const CLEAR_NEW_MSG = 'Blipay/shopping/CLEAR_NEW_MSG'
 const SELECT_CHATER = 'Blipay/shopping/SELECT_CHATER'
+const TOGGLE_SHOPPING_SELLER = 'Blipay/shopping/TOGGLE_SHOPPING_SELLER'
+
 
 const messages = {
   NO_ITEM: '商品不存在',
@@ -254,12 +257,22 @@ export const recvMsg = (data) => ({
   data
 })
 
+export const selfMsg = (data) => ({
+  type: SELF_MSG,
+  data
+})
+
 export const clearNewMsg = (data) => ({
   type: CLEAR_NEW_MSG
 })
 
 export const selectChater = (userId) => ({
   type: SELECT_CHATER,
+  userId
+})
+
+export const toggleSeller = (userId) => ({
+  type: TOGGLE_SHOPPING_SELLER,
   userId
 })
 
@@ -292,7 +305,7 @@ const initialState = {
   cartItems: [],
   reviewItems: [],
   chatUsers: [],
-  chatMsgs: [],
+  chatMsgs: new Object(),
   showPayModal: false,
   showShipModal: false,
   showReviewModal: false,
@@ -300,7 +313,20 @@ const initialState = {
   showRefundConfirmModal: false,
   showAddressModal: false,
   showChatModal: false,
-  refundConfirmAgree: true
+  refundConfirmAgree: true,
+  newMsg: 0
+}
+
+function clone(myObj) {
+  if (typeof (myObj) != 'object') return myObj;
+  if (myObj == null) return myObj;
+
+  var myNewObj = new Object();
+
+  for (var i in myObj)
+    myNewObj[i] = myObj[i];
+
+  return myNewObj;
 }
 
 // Reducer
@@ -376,8 +402,8 @@ export default function reducer(state = initialState, action = {}) {
     case TOGGLE_SHOPPING_CHAT:
       return {
         ...state,
-        newMsg: !state.showChatModal && state.newMsg,
         showChatModal: !state.showChatModal,
+        newMsg: state.showChatModal?state.newMsg:0
       }
     case DELETE_CART_ITEM:
       return {
@@ -480,25 +506,50 @@ export default function reducer(state = initialState, action = {}) {
         chatUsers: action.users
       }
     case RECV_MSG:
-      let data = action.data
-      let chatMsgs = state.chatMsgs;
-      if (!chatMsgs[data.from])
-        chatMsgs[data.from] = [];
-      chatMsgs[data.from].push(data.text)
+      let recv_data = action.data
+      let recv_chatMsgs = clone(state.chatMsgs)
+      if (!recv_chatMsgs[recv_data.from])
+        recv_chatMsgs[recv_data.from] = new Array();
+      recv_chatMsgs[recv_data.from].push(recv_data);
+      state.chatUsers[recv_data.from].newMsg = true;
       return {
         ...state,
-        chatMsgs: chatMsgs,
-        newMsg: true
+        chatMsgs: recv_chatMsgs,
+        newMsg: state.newMsg + 1
+      }
+    case SELF_MSG:
+      let self_data = action.data;
+      let self_chatMsgs = clone(state.chatMsgs);
+      if (!self_chatMsgs[self_data.to])
+        self_chatMsgs[self_data.to] = new Array();
+      self_chatMsgs[self_data.to].push(self_data)
+      return {
+        ...state,
+        chatMsgs: self_chatMsgs
       }
     case CLEAR_NEW_MSG:
       return {
         ...state,
-        newMsg: false
+        newMsg: 0
       }
     case SELECT_CHATER:
+      state.chatUsers[action.userId].newMsg = false;
       return {
         ...state,
         chaterId: action.userId
+      }
+    case TOGGLE_SHOPPING_SELLER:
+      const sellerId = action.userId
+      if(!state.chatUsers[sellerId]){
+        message.error('该卖家未上线')
+        return {
+          ...state
+        }
+      }
+      return {
+       ...state,
+       chaterId: sellerId,
+       showChatModal: true
       }
     case ADD_ITEM_FAIL:
     case BUY_CART_ITEMS_FAIL:

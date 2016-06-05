@@ -135,12 +135,12 @@ io.on('connection', function (socket) {
   });
 
   socket.on('send', (data) => {
-    console.log('send',data);
+    console.log('send', data);
     const dstSocket = sockets[data.userId];
-    if(dstSocket){
-      dstSocket.emit('msg', {from: userId, text: data.text});
+    if (dstSocket) {
+      dstSocket.emit('msg', { from: userId, text: data.text });
     }
-    else{
+    else {
       // TODO
     }
   });

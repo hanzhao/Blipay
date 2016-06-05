@@ -1,10 +1,10 @@
 .card {
   margin: 10px 10px 0px;
   padding: 10px;
-  cursor: pointer;
   min-width: 200px;
   min-height: 300px;
   & > div > img {
+    cursor: pointer;
     width: 200px;
     height: 200px;
   }
@@ -17,12 +17,17 @@
   }
   .info {
     .name {
+      cursor: pointer;
       width: 200px;
       min-height: 3em;
     }
     .sellerName {
+      cursor: pointer;
       line-height: 30px;
       float: left;
+      .online {
+        color: dodgerblue
+      }
     }
     .price {
       line-height: 30px;
