@@ -26,7 +26,7 @@ module.exports = (db) =>{
     salt:{
       type: Sequelize.STRING, allowNull: false
     },
-    // 0 超级管理 1 管理 2 审计
+    // 0超级管理 1管理 2审计 4系统
     level: {
       type: Sequelize.INTEGER, allowNull:false
     },

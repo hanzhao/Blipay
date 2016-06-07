@@ -1,6 +1,6 @@
 import React from 'react'
 import { asyncConnect } from 'redux-connect'
-import { Table, Popconfirm, Input } from 'antd'
+import { Table, Popconfirm, Input,Icon } from 'antd'
 import moment from 'moment'
 
 import { loadUsersInfo,
@@ -120,7 +120,7 @@ class AdminManageUserPage extends React.Component {
     return (
       <div>
         <div className={styles.input}>
-          <Input value={this.state.filter} onChange={this.handleFilter}
+          <Input addonBefore={<Icon type="search" />} value={this.state.filter} onChange={this.handleFilter}
                  placeholder="输入用户名开始搜索" />
         </div>
         <Table dataSource={users}

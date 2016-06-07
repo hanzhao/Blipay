@@ -22,9 +22,9 @@ function addKey(data){
 }
 
 //弹窗显示细节
-function showDetail(content){
+function showDetail(title,content){
   Modal.info({
-    title: '仲裁细节',
+    title,
     content: (
       <div>
         <p>{content}</p>
@@ -51,20 +51,33 @@ const columns = [{
   dataIndex: 'complained',
   key: 'complained'
 },{
-  title: '投诉细节',
-  dataIndex: 'content',
-  key: 'content',
+  title: '投诉方理由',
+  dataIndex: 'buyerText',
+  key: 'buyerText',
   render(text){
     return(
       <div>
-        <Button className={styles.addBtn} onClick={showDetail.bind(this,text)}>
-        细节
+        <Button className={styles.addBtn} onClick={showDetail.bind(this,'投诉方理由',text)}>
+        点击查看
         </Button>
       </div>
     );
   }
 },{
-  title: ' ',
+  title: '被投诉方理由',
+  dataIndex: 'sellerText',
+  key: 'sellerText',
+  render(text){
+    return(
+      <div>
+        <Button className={styles.addBtn} onClick={showDetail.bind(this,'投诉方理由',text)}>
+        点击查看
+        </Button>
+      </div>
+    );
+  }
+},{
+  title: '操作',
   dataIndex: 'id',
   key: 'id',
   render(text){

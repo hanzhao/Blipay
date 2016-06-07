@@ -284,7 +284,7 @@ export default function reducer(state = initialState, action = {}) {
       }, 0)
       return {
         ...state,
-        adminer: action.result.admin,
+        admin: action.result.admin,
         message: null
       }
     case LOGOUT_SUCCESS:
