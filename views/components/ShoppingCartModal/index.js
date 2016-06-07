@@ -2,7 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Modal, Table, Button } from 'antd';
 
-import { deleteCartItem, buyCartItems, toggleLoginModal, toggleShoppingAddr } from '../../redux/modules/shopping';
+import { setRedir } from '../../redux/modules/account'
+import { deleteCartItem, buyCartItems, toggleLoginModal, toggleShoppingAddr, toggleShoppingCart } from '../../redux/modules/shopping';
 import store from '../../redux/store';
 import styles from './styles';
 import ShoppingAddrModal from '../ShoppingAddrModal'
@@ -72,7 +73,10 @@ const getTotalPrice = (items) => (
   }),
   (dispatch) => ({
     buyCartItems: () => dispatch(toggleShoppingAddr()),
-    toggleLoginModal: () => dispatch(toggleLoginModal())
+    toggleLoginModal: () => {
+      dispatch(setRedir());
+      dispatch(toggleLoginModal());
+    }
   })
 )
 class ShoppingCartModal extends React.Component {

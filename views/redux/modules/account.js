@@ -54,6 +54,8 @@ const CHANGE_PAYPASS_FAIL = 'Blipay/account/CHANGE_PAYPASS_FAIL';
 const FIND_PASSWORD = 'Blipay/account/FIND_PASSWORD';
 const FIND_PASSWORD_SUCCESS = 'Blipay/account/FIND_PASSWORD_SUCCESS';
 const FIND_PASSWORD_FAIL = 'Blipay/account/FIND_PASSWORD_FAIL';
+// 重定向到商品
+const SET_REDIR = 'Blipay/account/SET_REDIR'
 
 const messages = {
   USER_NOT_EXIST: '当前用户名未注册。',
@@ -151,6 +153,10 @@ export const findPassword = (data) => ({
   promise: (client) => client.post('/api/account/find_password', data)
 });
 
+export const setRedir = () => ({
+  type: SET_REDIR
+})
+
 // Helper
 const wrapTransaction = (e) => ({
   ...e,
@@ -164,7 +170,7 @@ export default function reducer(state = initialState, action = {}) {
     case REGISTER_SUCCESS:
     case LOGIN_SUCCESS:
       setTimeout(() => {
-        store.dispatch(push('/account'))
+        store.dispatch(push(state.redir?'/shopping':'/account'))
       }, 0)
       return {
         ...state,
@@ -276,6 +282,11 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         findRes: '用户名或邮箱输入有误。'
+      }
+    case SET_REDIR:
+      return {
+        ...state,
+        redir: true
       }
     // Errors
     case CHANGE_PAYPASS_FAIL:

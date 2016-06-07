@@ -374,7 +374,7 @@ export default function reducer(state = initialState, action = {}) {
     case TOGGLE_SHOPPING_LOGGING:
       return {
         ...state,
-        showShoppingCartModal: false,
+        showShoppingCartModal: true,
         showShoppingLoggingModal: !state.showShoppingLoggingModal
       }
     case TOGGLE_SHOPPING_PAY:
@@ -537,7 +537,7 @@ export default function reducer(state = initialState, action = {}) {
       /* Refresh state */
       recvListUsers[recv_data.from] = state.chatUsers[recv_data.from]
       let newMsg = state.newMsg
-      /* Increase Badget number */
+      /* Increase Badge number */
       if(!state.showChatModal)
         newMsg++
       return {

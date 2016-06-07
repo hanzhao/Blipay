@@ -27,7 +27,8 @@ const getTotalPrice = (items) => (
     cartItems: state.shopping.cartItems,
     newMsg: state.shopping.newMsg,
     showShoppingCartModal: state.shopping.showShoppingCartModal,
-    showShoppingChat: state.shopping.showChatModal
+    showShoppingChat: state.shopping.showChatModal,
+    user: state.account.user
   }),
   (dispatch) => ({
     toggleShoppingCart: () => dispatch(toggleShoppingCart()),
@@ -46,11 +47,13 @@ class ShoppingCart extends React.Component {
         <ChatModal onCancel={this.props.toggleShoppingChat} footer={null} />
         <ShoppingCartModal onCancel={this.props.toggleShoppingCart}
           footer={null} />
-        <Badge count={this.props.newMsg}
+        {
+          this.props.user?<Badge count={this.props.newMsg}
           onClick={this.props.toggleShoppingChat}
           >
           <span className={styles.chatText}>GiliGili</span>
-        </Badge>
+        </Badge>:null
+        }
         <Container>
           <div className={styles.inner}>
             {/* <span className={styles.pricer}>

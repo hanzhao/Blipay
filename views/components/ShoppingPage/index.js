@@ -16,7 +16,7 @@ import {
 
 @connect(
   (state) => ({
-    userId: state.account.user.id,
+    user: state.account.user,
   }),
   (dispatch) => ({
     startChat: () => dispatch(startChat())
@@ -26,7 +26,7 @@ class ShoppingPage extends React.Component {
 
   render() {
     console.log(this.props.userId)
-    if(this.props.userId)
+    if(this.props.user)
       startChat()
     return(
       <div className={styles.wrapper}

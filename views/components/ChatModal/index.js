@@ -16,7 +16,7 @@ import {
   selfMsg
 } from '../../redux/modules/shopping';
 
-function scrollButtom(){
+function scrollButtom() {
   // TODO 还是不会写滚屏
 }
 
@@ -28,7 +28,7 @@ function scrollButtom(){
   })
 @connect(
   (state) => ({
-    userId: state.account.user.id,
+    user: state.account.user,
     showChatModal: state.shopping.showChatModal,
     chatUsers: state.shopping.chatUsers,
     listUsers: state.shopping.listUsers,
@@ -46,66 +46,71 @@ function scrollButtom(){
 )
 class ChatModal extends React.Component {
   render() {
-    const { userId, listUsers, showChatModal, sendMessage, chatUsers, chatMsgs, clearNewMsg, selectChater, chaterId, selfMsg, fields: { text } } = this.props;
+    const { user, listUsers, showChatModal, sendMessage, chatUsers, chatMsgs, clearNewMsg, selectChater, chaterId, selfMsg, fields: { text } } = this.props;
     const sendMsg = () => {
       sendMessage(text.value)
       selfMsg({ to: chaterId, text: text.value })
     }
     console.log(chatMsgs)
-    return (
-      <Modal
-        title="消息"
-        wrapClassName="vertical-center-modal"
-        className={styles.modal}
-        visible = {showChatModal}
-        onOk={ this.props.toggleShoppingChat }
-        onCancel={this.props.toggleShoppingChat}>
-        <Row type="flex" justify="start">
-          <Col className= {styles.chatUsers}>
-            用户列表
-            {
-
-              listUsers ? listUsers.map((e, i) => (
-                e ? (
-                  <div key={e.userId} className={e.newMsg ? styles.newMsg : null}   onClick={selectChater.bind(this, e.userId) }>
-                    <span>{e.userName}</span>
-                  </div>
-                ) : null
-              )) : null
-            }
-          </Col>
-          <Col className={styles.chatMain}>
-            <Row className={styles.chatDisplay}>
+    if (user)
+      return (
+        <Modal
+          title="消息"
+          wrapClassName="vertical-center-modal"
+          className={styles.modal}
+          visible = {showChatModal}
+          onOk={ this.props.toggleShoppingChat }
+          onCancel={this.props.toggleShoppingChat}>
+          <Row type="flex" justify="start">
+            <Col className= {styles.chatUsers}>
+              用户列表
               {
-                chaterId ?
-                  chatMsgs[chaterId] ?
-                    chatMsgs[chaterId].map((e, i) => (
-                      <div key={i} className={e.to ? styles.chatItemUser : styles.chatItemOther}>
-                        <div>
-                          {e.from ? chatUsers[e.from].userName : null}
-                        </div>
-                        {e.text}
-                      </div>
-                    ))
-                    :
-                    <span>用户 {chatUsers[chaterId].userName} 没有信息</span>
-                  :
-                  <span>请选择用户</span>
+
+                listUsers ? listUsers.map((e, i) => (
+                  e ? (
+                    <div key={e.userId} className={e.newMsg ? styles.newMsg : null}   onClick={selectChater.bind(this, e.userId) }>
+                      <span>{e.userName}</span>
+                    </div>
+                  ) : null
+                )) : null
               }
-            </Row>
-            { chaterId ?
-              <Row>
-                <Input type='textarea' className={styles.chatTextarea} {...text } />
-                <Button onClick={sendMsg}>
-                  发送
-                </Button>
+            </Col>
+            <Col className={styles.chatMain}>
+              <Row className={styles.chatDisplay}>
+                {
+                  chaterId ?
+                    chatMsgs[chaterId] ?
+                      chatMsgs[chaterId].map((e, i) => (
+                        <div key={i} className={e.to ? styles.chatItemUser : styles.chatItemOther}>
+                          <div>
+                            {e.from ? chatUsers[e.from].userName : null}
+                          </div>
+                          {e.text}
+                        </div>
+                      ))
+                      :
+                      <span>用户 {chatUsers[chaterId].userName} 没有信息</span>
+                    :
+                    <span>请选择用户</span>
+                }
               </Row>
-              :
-              null
-            }
-          </Col>
-        </Row>
-      </Modal>
+              { chaterId ?
+                <Row>
+                  <Input type='textarea' className={styles.chatTextarea} {...text } />
+                  <Button onClick={sendMsg}>
+                    发送
+                  </Button>
+                </Row>
+                :
+                null
+              }
+            </Col>
+          </Row>
+        </Modal>
+      )
+    else
+    return(
+      null
     )
   }
 }
