@@ -536,7 +536,7 @@ export default function reducer(state = initialState, action = {}) {
       const recvListUsers = cloneArray(state.listUsers)
       /* Refresh state */
       recvListUsers[recv_data.from] = state.chatUsers[recv_data.from]
-      const newMsg = state.newMsg
+      let newMsg = state.newMsg
       /* Increase Badget number */
       if(!state.showChatModal)
         newMsg++
