@@ -90,6 +90,7 @@ class ShoppingCartModal extends React.Component {
           <div className={styles.total}>
             总计：¥{ getTotalPrice(this.props.cartItems).toFixed(2) }
             <Button type="primary" className={styles.btn}
+                    disabled={this.props.cartItems.length==0}
                     onClick={user ? this.props.buyCartItems : this.props.toggleLoginModal}>
               马上结算
             </Button>

@@ -12,17 +12,15 @@
     }
   }
   .chatMain {
+    height: 300px;
     width: 400px;
     display: inline-block;
-    float: right;
     .chatDisplay {
-      width: 400px;
-      height: 360px;
       border-left: 1px solid gray;
       overflow-x: auto;
-      overflow-y: scroll;
+      overflow-y: auto;
+      height: 80%;
       word-wrap: break-word;
-      padding-left: 0px;
       position: relative;
       text-align: left;
       .chatItemOther {
@@ -43,7 +41,7 @@
       }
     }
   }
-	height: 480px;
+  max-height: 460px;
   font-size: 16px;
   width: 800px !important;
 }

@@ -46,12 +46,12 @@ class ShoppingCart extends React.Component {
         <ChatModal onCancel={this.props.toggleShoppingChat} footer={null} />
         <ShoppingCartModal onCancel={this.props.toggleShoppingCart}
           footer={null} />
+        <Badge count={this.props.newMsg}
+          onClick={this.props.toggleShoppingChat}
+          >
+          <span className={styles.chatText}>GiliGili</span>
+        </Badge>
         <Container>
-          <Badge count={this.props.newMsg}
-            onClick={this.props.toggleShoppingChat}
-            >
-            <span className={styles.chatText}>GiliGili</span>
-          </Badge>
           <div className={styles.inner}>
             {/* <span className={styles.pricer}>
               { getTotalAmount(cartItems) } 件商品，

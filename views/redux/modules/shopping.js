@@ -305,6 +305,7 @@ const initialState = {
   cartItems: [],
   reviewItems: [],
   chatUsers: [],
+  listUsers: [],
   chatMsgs: new Object(),
   showPayModal: false,
   showShipModal: false,
@@ -322,6 +323,18 @@ function clone(myObj) {
   if (myObj == null) return myObj;
 
   var myNewObj = new Object();
+
+  for (var i in myObj)
+    myNewObj[i] = myObj[i];
+
+  return myNewObj;
+}
+
+function cloneArray(myObj) {
+  if (typeof (myObj) != 'object') return myObj;
+  if (myObj == null) return myObj;
+
+  var myNewObj = new Array();
 
   for (var i in myObj)
     myNewObj[i] = myObj[i];
@@ -403,7 +416,7 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         showChatModal: !state.showChatModal,
-        newMsg: state.showChatModal?state.newMsg:0
+        newMsg: state.showChatModal ? state.newMsg : 0
       }
     case DELETE_CART_ITEM:
       return {
@@ -489,39 +502,58 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         showRefundConfirmModal: false
       }
+    /* Start Chat Conn after User login */
     case START_CHAT:
       console.log(socket)
       return {
         ...state,
         socket: action.socket
       }
+    /* Send message to server with target user */
     case SEND_MSG:
       socket.emit('send', { userId: state.chaterId, text: action.text })
       return {
         ...state
       }
+    /* Update User list from server */
     case UPDATE_USER_LIST:
       return {
         ...state,
         chatUsers: action.users
       }
+    /* Recieved message from server */
     case RECV_MSG:
       let recv_data = action.data
       let recv_chatMsgs = clone(state.chatMsgs)
+      /* First time recieve */
       if (!recv_chatMsgs[recv_data.from])
         recv_chatMsgs[recv_data.from] = new Array();
+      /* push message */
       recv_chatMsgs[recv_data.from].push(recv_data);
-      state.chatUsers[recv_data.from].newMsg = true;
+      /* Set user new message flag */
+      if (state.chaterId != recv_data.from)
+        state.chatUsers[recv_data.from].newMsg = true;
+      const recvListUsers = cloneArray(state.listUsers)
+      /* Refresh state */
+      recvListUsers[recv_data.from] = state.chatUsers[recv_data.from]
+      const newMsg = state.newMsg
+      /* Increase Badget number */
+      if(!state.showChatModal)
+        newMsg++
       return {
         ...state,
         chatMsgs: recv_chatMsgs,
-        newMsg: state.newMsg + 1
+        listUsers: recvListUsers,
+        newMsg: newMsg
       }
+    /* triggered when send messages */
     case SELF_MSG:
       let self_data = action.data;
       let self_chatMsgs = clone(state.chatMsgs);
+      /* First time? */
       if (!self_chatMsgs[self_data.to])
         self_chatMsgs[self_data.to] = new Array();
+      /* use 'to' to mark as sender( different style ) */
       self_chatMsgs[self_data.to].push(self_data)
       return {
         ...state,
@@ -532,24 +564,32 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         newMsg: 0
       }
+    /* Click on user list */
     case SELECT_CHATER:
-      state.chatUsers[action.userId].newMsg = false;
+      const newChatUsers = cloneArray(state.chatUsers);
+      /* clear new message flag on user */
+      newChatUsers[action.userId].newMsg = false;
       return {
         ...state,
+        chatUsers: newChatUsers,
         chaterId: action.userId
       }
+    /* Click Seller */
     case TOGGLE_SHOPPING_SELLER:
       const sellerId = action.userId
-      if(!state.chatUsers[sellerId]){
+      if (!state.chatUsers[sellerId]) {
         message.error('该卖家未上线')
         return {
           ...state
         }
       }
+      const newListUsers = cloneArray(state.listUsers)
+      newListUsers[sellerId] = state.chatUsers[sellerId]
       return {
        ...state,
-       chaterId: sellerId,
-       showChatModal: true
+        chaterId: sellerId,
+        listUsers: newListUsers,
+        showChatModal: true
       }
     case ADD_ITEM_FAIL:
     case BUY_CART_ITEMS_FAIL:

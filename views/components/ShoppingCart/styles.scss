@@ -25,17 +25,18 @@
     background-color: rgba(0, 0, 0, 0.6);
   }
   .ant-badge {
-    height: 30px;
-    width: 100px;
-    margin-top: 20px;
-    float: left;
     background-color: #f50;
+    margin-right: 10px;
+    display: inline-block;
+    position: absolute;
+    left: 100px;
   }
   .chatText {
     color: #f50;
     font-size: 18px;
-    height: 30px;
-    width: 100px;
+    width: 70px;
+    height: 20px;
+    text-align: center;
     &:hover {
       background-color: #f50;
       color: white;
@@ -45,6 +46,7 @@
   .inner {
     color: #f50;
     position: absolute;
+    top: 0px;
     height: 50px;
     right: 100px;
     padding-right: 20px;

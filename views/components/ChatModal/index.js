@@ -16,6 +16,10 @@ import {
   selfMsg
 } from '../../redux/modules/shopping';
 
+function scrollButtom(){
+  // TODO 还是不会写滚屏
+}
+
 @reduxForm(
   {
     form: 'Chat',
@@ -27,6 +31,7 @@ import {
     userId: state.account.user.id,
     showChatModal: state.shopping.showChatModal,
     chatUsers: state.shopping.chatUsers,
+    listUsers: state.shopping.listUsers,
     chatMsgs: state.shopping.chatMsgs,
     chaterId: state.shopping.chaterId
   }),
@@ -41,7 +46,7 @@ import {
 )
 class ChatModal extends React.Component {
   render() {
-    const { userId, showChatModal, sendMessage, chatUsers, chatMsgs, clearNewMsg, selectChater, chaterId, selfMsg, fields: { text } } = this.props;
+    const { userId, listUsers, showChatModal, sendMessage, chatUsers, chatMsgs, clearNewMsg, selectChater, chaterId, selfMsg, fields: { text } } = this.props;
     const sendMsg = () => {
       sendMessage(text.value)
       selfMsg({ to: chaterId, text: text.value })
@@ -50,18 +55,19 @@ class ChatModal extends React.Component {
     return (
       <Modal
         title="消息"
+        wrapClassName="vertical-center-modal"
         className={styles.modal}
         visible = {showChatModal}
         onOk={ this.props.toggleShoppingChat }
         onCancel={this.props.toggleShoppingChat}>
         <Row type="flex" justify="start">
           <Col className= {styles.chatUsers}>
-            在线用户
+            用户列表
             {
 
-              chatUsers ? chatUsers.map((e, i) => (
+              listUsers ? listUsers.map((e, i) => (
                 e ? (
-                  <div key={e.userId} className={e.newMsg?styles.newMsg:null}   onClick={selectChater.bind(this, e.userId) }>
+                  <div key={e.userId} className={e.newMsg ? styles.newMsg : null}   onClick={selectChater.bind(this, e.userId) }>
                     <span>{e.userName}</span>
                   </div>
                 ) : null
@@ -76,7 +82,7 @@ class ChatModal extends React.Component {
                     chatMsgs[chaterId].map((e, i) => (
                       <div key={i} className={e.to ? styles.chatItemUser : styles.chatItemOther}>
                         <div>
-                          {e.from?chatUsers[e.from].userName:null}
+                          {e.from ? chatUsers[e.from].userName : null}
                         </div>
                         {e.text}
                       </div>
