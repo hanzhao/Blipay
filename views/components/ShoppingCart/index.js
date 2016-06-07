@@ -42,7 +42,7 @@ class ShoppingCart extends React.Component {
     return (
       <div className={classNames({
         [styles.cart]: true,
-        [styles.show]: !this.props.showShoppingChat && !this.props.showShoppingCartModal
+        [styles.show]: (this.props.user||this.props.cartItems.length>0) && !this.props.showShoppingChat && !this.props.showShoppingCartModal
       }) }>
         <ChatModal onCancel={this.props.toggleShoppingChat} footer={null} />
         <ShoppingCartModal onCancel={this.props.toggleShoppingCart}

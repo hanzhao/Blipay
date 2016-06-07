@@ -1,7 +1,7 @@
 import React from 'react';
 import { push } from 'react-router-redux';
 import { asyncConnect } from 'redux-connect';
-import { Card, Icon, Pagination, Input, Form, Select, Button } from 'antd';
+import { Card, Icon, Pagination, Input, Form, Select, Button, Tooltip } from 'antd';
 import QueueAnim from 'rc-queue-anim';
 import jsonp from 'jsonp';
 import querystring from 'querystring';
@@ -178,9 +178,13 @@ class ShoppingInfoPage extends React.Component {
                       <span className={styles.sellerName}>
                         {
                           chatUsers[e.seller.id] ?
-                            <Icon type="aliwangwang" className={styles.online} onClick={toggleSeller.bind(this, e.seller.id) }/>
+                            <Tooltip title="点击与卖家聊天">
+                              <Icon type="aliwangwang" className={styles.online} onClick={toggleSeller.bind(this, e.seller.id) }/>
+                            </Tooltip>
                             :
-                            <Icon type="aliwangwang-o" />
+                            <Tooltip title="卖家未上线">
+                              <Icon type="aliwangwang-o" />
+                            </Tooltip>
                         }
                         { e.seller.realName }
                       </span>
