@@ -59,9 +59,9 @@ class RegisterForm extends React.Component {
                  addonBefore={<Icon type="lock" />}
                  {...password} />
         </Form.Item>
-        <Form.Item>等级(0超级管理员，1订票管理员，2审计员，3系统管理员)
+        <Form.Item>等级(0超级管理员，1订票管理员，2审计员，4系统管理员)
           <Input size="large"
-                 placeholder="等级(0超级管理员，1订票管理员，2审计员，3系统管理员)"
+                 placeholder="等级(0超级管理员，1订票管理员，2审计员，4系统管理员)"
                  addonBefore={<Icon type="lock" />}
                  {...level} />
         </Form.Item>
