@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Icon, Button, message } from 'antd';
+import { Icon, Button, message, Badge } from 'antd';
 import classNames from 'classnames';
 
 import ShoppingCartModal from '../ShoppingCartModal';
@@ -27,7 +27,8 @@ const getTotalPrice = (items) => (
     cartItems: state.shopping.cartItems,
     newMsg: state.shopping.newMsg,
     showShoppingCartModal: state.shopping.showShoppingCartModal,
-    showShoppingChat: state.shopping.showChatModal
+    showShoppingChat: state.shopping.showChatModal,
+    user: state.account.user
   }),
   (dispatch) => ({
     toggleShoppingCart: () => dispatch(toggleShoppingCart()),
@@ -41,15 +42,18 @@ class ShoppingCart extends React.Component {
     return (
       <div className={classNames({
         [styles.cart]: true,
-        [styles.show]: !this.props.showShoppingChat && !this.props.showShoppingCartModal 
+        [styles.show]: (this.props.user||this.props.cartItems.length>0) && !this.props.showShoppingChat && !this.props.showShoppingCartModal
       }) }>
         <ChatModal onCancel={this.props.toggleShoppingChat} footer={null} />
-        <Button className={this.props.newMsg ? styles.newMsgBtn : null}
-          onClick={this.props.toggleShoppingChat}>
-          消息
-        </Button>
         <ShoppingCartModal onCancel={this.props.toggleShoppingCart}
           footer={null} />
+        {
+          this.props.user?<Badge count={this.props.newMsg}
+          onClick={this.props.toggleShoppingChat}
+          >
+          <span className={styles.chatText}>GiliGili</span>
+        </Badge>:null
+        }
         <Container>
           <div className={styles.inner}>
             {/* <span className={styles.pricer}>

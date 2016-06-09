@@ -83,8 +83,11 @@ const START_CHAT = 'Blipay/shopping/START_CHAT'
 const UPDATE_USER_LIST = 'Blipay/shopping/UPDATE_USER_LIST'
 const SEND_MSG = 'Blipay/shopping/SEND_MSG'
 const RECV_MSG = 'Blipay/shopping/RECV_MSG'
+const SELF_MSG = 'Blipay/shopping/SELF_MSG'
 const CLEAR_NEW_MSG = 'Blipay/shopping/CLEAR_NEW_MSG'
 const SELECT_CHATER = 'Blipay/shopping/SELECT_CHATER'
+const TOGGLE_SHOPPING_SELLER = 'Blipay/shopping/TOGGLE_SHOPPING_SELLER'
+
 
 const messages = {
   NO_ITEM: '商品不存在',
@@ -254,12 +257,22 @@ export const recvMsg = (data) => ({
   data
 })
 
+export const selfMsg = (data) => ({
+  type: SELF_MSG,
+  data
+})
+
 export const clearNewMsg = (data) => ({
   type: CLEAR_NEW_MSG
 })
 
 export const selectChater = (userId) => ({
   type: SELECT_CHATER,
+  userId
+})
+
+export const toggleSeller = (userId) => ({
+  type: TOGGLE_SHOPPING_SELLER,
   userId
 })
 
@@ -292,7 +305,8 @@ const initialState = {
   cartItems: [],
   reviewItems: [],
   chatUsers: [],
-  chatMsgs: [],
+  listUsers: [],
+  chatMsgs: new Object(),
   showPayModal: false,
   showShipModal: false,
   showReviewModal: false,
@@ -300,7 +314,32 @@ const initialState = {
   showRefundConfirmModal: false,
   showAddressModal: false,
   showChatModal: false,
-  refundConfirmAgree: true
+  refundConfirmAgree: true,
+  newMsg: 0
+}
+
+function clone(myObj) {
+  if (typeof (myObj) != 'object') return myObj;
+  if (myObj == null) return myObj;
+
+  var myNewObj = new Object();
+
+  for (var i in myObj)
+    myNewObj[i] = myObj[i];
+
+  return myNewObj;
+}
+
+function cloneArray(myObj) {
+  if (typeof (myObj) != 'object') return myObj;
+  if (myObj == null) return myObj;
+
+  var myNewObj = new Array();
+
+  for (var i in myObj)
+    myNewObj[i] = myObj[i];
+
+  return myNewObj;
 }
 
 // Reducer
@@ -335,7 +374,7 @@ export default function reducer(state = initialState, action = {}) {
     case TOGGLE_SHOPPING_LOGGING:
       return {
         ...state,
-        showShoppingCartModal: false,
+        showShoppingCartModal: true,
         showShoppingLoggingModal: !state.showShoppingLoggingModal
       }
     case TOGGLE_SHOPPING_PAY:
@@ -376,8 +415,8 @@ export default function reducer(state = initialState, action = {}) {
     case TOGGLE_SHOPPING_CHAT:
       return {
         ...state,
-        newMsg: !state.showChatModal && state.newMsg,
         showChatModal: !state.showChatModal,
+        newMsg: state.showChatModal ? state.newMsg : 0
       }
     case DELETE_CART_ITEM:
       return {
@@ -463,42 +502,94 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         showRefundConfirmModal: false
       }
+    /* Start Chat Conn after User login */
     case START_CHAT:
       console.log(socket)
       return {
         ...state,
         socket: action.socket
       }
+    /* Send message to server with target user */
     case SEND_MSG:
       socket.emit('send', { userId: state.chaterId, text: action.text })
       return {
         ...state
       }
+    /* Update User list from server */
     case UPDATE_USER_LIST:
       return {
         ...state,
         chatUsers: action.users
       }
+    /* Recieved message from server */
     case RECV_MSG:
-      let data = action.data
-      let chatMsgs = state.chatMsgs;
-      if (!chatMsgs[data.from])
-        chatMsgs[data.from] = [];
-      chatMsgs[data.from].push(data.text)
+      let recv_data = action.data
+      let recv_chatMsgs = clone(state.chatMsgs)
+      /* First time recieve */
+      if (!recv_chatMsgs[recv_data.from])
+        recv_chatMsgs[recv_data.from] = new Array();
+      /* push message */
+      recv_chatMsgs[recv_data.from].push(recv_data);
+      /* Set user new message flag */
+      if (state.chaterId != recv_data.from)
+        state.chatUsers[recv_data.from].newMsg = true;
+      const recvListUsers = cloneArray(state.listUsers)
+      /* Refresh state */
+      recvListUsers[recv_data.from] = state.chatUsers[recv_data.from]
+      let newMsg = state.newMsg
+      /* Increase Badge number */
+      if(!state.showChatModal)
+        newMsg++
       return {
         ...state,
-        chatMsgs: chatMsgs,
-        newMsg: true
+        chatMsgs: recv_chatMsgs,
+        listUsers: recvListUsers,
+        newMsg: newMsg
+      }
+    /* triggered when send messages */
+    case SELF_MSG:
+      let self_data = action.data;
+      let self_chatMsgs = clone(state.chatMsgs);
+      /* First time? */
+      if (!self_chatMsgs[self_data.to])
+        self_chatMsgs[self_data.to] = new Array();
+      /* use 'to' to mark as sender( different style ) */
+      self_chatMsgs[self_data.to].push(self_data)
+      return {
+        ...state,
+        chatMsgs: self_chatMsgs
       }
     case CLEAR_NEW_MSG:
       return {
         ...state,
-        newMsg: false
+        newMsg: 0
       }
+    /* Click on user list */
     case SELECT_CHATER:
+      const newChatUsers = cloneArray(state.chatUsers);
+      /* clear new message flag on user */
+      newChatUsers[action.userId].newMsg = false;
       return {
         ...state,
+        chatUsers: newChatUsers,
         chaterId: action.userId
+      }
+    /* Click Seller */
+    case TOGGLE_SHOPPING_SELLER:
+      const sellerId = action.userId
+      if (!state.chatUsers[sellerId]) {
+        message.error('该卖家未上线')
+        return {
+          ...state
+        }
+      }
+      const newListUsers = cloneArray(state.listUsers)
+      newListUsers[sellerId] = state.chatUsers[sellerId]
+      return {
+       ...state,
+        chaterId: sellerId,
+        listUsers: newListUsers,
+        showChatModal: true
       }
     case ADD_ITEM_FAIL:
     case BUY_CART_ITEMS_FAIL:

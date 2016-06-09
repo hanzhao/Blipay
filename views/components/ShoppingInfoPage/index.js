@@ -1,7 +1,7 @@
 import React from 'react';
 import { push } from 'react-router-redux';
 import { asyncConnect } from 'redux-connect';
-import { Card, Icon, Pagination, Input, Form, Select, Button } from 'antd';
+import { Card, Icon, Pagination, Input, Form, Select, Button, Tooltip } from 'antd';
 import QueueAnim from 'rc-queue-anim';
 import jsonp from 'jsonp';
 import querystring from 'querystring';
@@ -10,7 +10,8 @@ import classNames from 'classnames';
 import store from '../../redux/store';
 import ShoppingPageHeader from '../ShoppingPageHeader';
 import {
-  loadItems
+  loadItems,
+  toggleSeller
 } from '../../redux/modules/shopping';
 
 import show from './show.jpg';
@@ -115,7 +116,11 @@ const SearchInput = React.createClass({
     }
   }],
   (state) => ({
-    items: state.shopping.items
+    items: state.shopping.items,
+    chatUsers: state.shopping.chatUsers
+  }),
+  (dispatch) => ({
+    toggleSeller: (userId) => dispatch(toggleSeller(userId))
   })
 )
 class ShoppingInfoPage extends React.Component {
@@ -145,7 +150,7 @@ class ShoppingInfoPage extends React.Component {
     }
   }
   render() {
-    let { items } = this.props
+    let { items, chatUsers, toggleSeller } = this.props
     items = items.filter(e => e.name.indexOf(this.state.filter) !== -1)
     const pageSize = this.getPageSize()
     const { current } = this.state
@@ -154,39 +159,49 @@ class ShoppingInfoPage extends React.Component {
         <ShoppingPageHeader icon="info-circle-o" text="浏览宝贝" />
         <div className={styles.input}>
           <SearchInput placeholder="输入关键词点击搜索"
-                       handleSubmit={this.handleFilter} />
+            handleSubmit={this.handleFilter} />
         </div>
         <QueueAnim type={['bottom', 'right']} delay={500}>
           <div className={styles.flex}>
-          {
-            items.slice(pageSize * (current - 1), pageSize * current).map(e => (
-              <div key={e.id}>
-                <Card className={styles.card}
-                      onClick={this.handleClick.bind(this, e.id)}>
-                  {
-                    e.attachments[0]
-                    ? <img src={`/api/photo/show?id=${e.attachments[0].id}`} />
-                    : <img src={show} />
-                  }
-                  <div className={styles.info}>
-                    <div className={styles.name}>{ e.name }</div>
-                    <span className={styles.sellerName}>
-                      <Icon type="aliwangwang" /> { e.seller.realName }
-                    </span>
-                    <span className={styles.price}>{ e.price.toFixed(2) }</span>
-                  </div>
-                </Card>
-              </div>
-            ))
-          }
+            {
+              items.slice(pageSize * (current - 1), pageSize * current).map(e => (
+                <div key={e.id}>
+                  <Card className={styles.card}
+                    >
+                    {
+                      e.attachments[0]
+                        ? <img onClick={this.handleClick.bind(this, e.id) } src={`/api/photo/show?id=${e.attachments[0].id}`} />
+                        : <img onClick={this.handleClick.bind(this, e.id) } src={show} />
+                    }
+                    <div className={styles.info}>
+                      <div onClick={this.handleClick.bind(this, e.id) } className={styles.name}>{ e.name }</div>
+                      <span className={styles.sellerName}>
+                        {
+                          chatUsers[e.seller.id] ?
+                            <Tooltip title="点击与卖家聊天">
+                              <Icon type="aliwangwang" className={styles.online} onClick={toggleSeller.bind(this, e.seller.id) }/>
+                            </Tooltip>
+                            :
+                            <Tooltip title="卖家未上线">
+                              <Icon type="aliwangwang-o" />
+                            </Tooltip>
+                        }
+                        { e.seller.realName }
+                      </span>
+                      <span className={styles.price}>{ e.price.toFixed(2) }</span>
+                    </div>
+                  </Card>
+                </div>
+              ))
+            }
           </div>
         </QueueAnim>
         <Pagination className={styles.pagination}
-                    current={this.state.current}
-                    total={items.length}
-                    showTotal={total => `共 ${total} 个商品`}
-                    pageSize={pageSize}
-                    onChange={this.handlePagination} />
+          current={this.state.current}
+          total={items.length}
+          showTotal={total => `共 ${total} 个商品`}
+          pageSize={pageSize}
+          onChange={this.handlePagination} />
       </div>
     );
   }
