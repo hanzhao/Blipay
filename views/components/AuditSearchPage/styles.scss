@@ -1,13 +1,24 @@
-.button{
+.container {
+  background-color: #ffffff;
+  padding-left: 30px;
+  padding-top: 30px;
+  padding-right: 30px;
 
-}
+  .mypicker{
+    float:left;
+  }
+  .mysearch{
+  	float:left;
+  	text-align:right;
+  	padding-right:10px;
+  	font-size:18px;
+  }
 
-.wrapper{
-	width:100%;
-	height:auto;
-	text-align:center;
-}
-
-.searcher{
-	margin:16px auto;
+  .mybutton{
+    text-align:right;
+    .withdrawal{
+      border-radius:10px;
+      margin-left:10px;
+    }
+  }
 }

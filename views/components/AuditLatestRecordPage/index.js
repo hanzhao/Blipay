@@ -14,6 +14,9 @@ import moment from 'moment';
 import {
   logout,
   loadTransactions,
+  insertData,
+  toggleAddinfo,
+  addinfo
 } from '../../redux/modules/auditor';
 
 const RangePicker = DatePicker.RangePicker;
@@ -26,6 +29,58 @@ const tableProps = {
   }
 };
 
+const validateId = async (rule, value, callback) => {
+  try {
+    await ajax.post('/api/auditor/check_recordid', {
+      //payPass: value
+      id:value
+    });
+    callback();
+  } catch (err) {
+    callback(new Error('不存在该订单记录。'));
+  }
+};
+
+const validateInfo = (rule, value, callback) => {
+  if (!value) {
+    callback();
+  } else {
+    if (value.length < 30) {
+      callback();
+    } else {
+      callback(new Error('备注过长。'));
+    }
+  }
+};
+
+const addinfoPropsArray = [
+  {
+    input: {
+      placeholder: '请输入订单流水号',
+      type: 'text',
+      autoComplete: 'off'
+    },
+    field: [
+      'id', {
+        validateTrigger: 'onBlur',
+        rules: [{ required: true }, { validator: validateId }]
+      }
+    ]
+  },
+  {
+    input: {
+      placeholder: '请输入备注 ',
+      type: 'text',
+      autoComplete: 'off'
+    },
+    field: [
+      'info', {
+        rules: [{ required: true }, { validator: validateInfo }]
+      }
+    ]
+  }
+];
+
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState } }) => {
@@ -34,10 +89,14 @@ const tableProps = {
   }],
   (state) => ({
     user: state.auditor.user,
-    transactions: _.reverse(_.slice(state.auditor.transactions))
+    transactions: _.reverse(_.slice(state.auditor.transactions)),
+    showAddinfoModal: state.auditor.showAddinfoModal
   }),
   (dispatch) => ({
-    logout: () => dispatch(logout())
+    logout: () => dispatch(logout()),
+    toggleAddinfo: () => dispatch(toggleAddinfo()),
+    handleAddinfo: (data) => dispatch(addinfo(data)),
+    insertData: () => dispatch(insertData())
   })
 )
 class AuditLatestRecordPage extends React.Component {
@@ -55,16 +114,37 @@ class AuditLatestRecordPage extends React.Component {
     )
     return (
       <div className={styles.container}>
-      <RangePicker className={styles.picker}
+        <div className={styles.mypicker}>
+          <RangePicker className={styles.picker}
                      showTime
                      onChange={this.handleChange} />
+        </div>
+        <div className={styles.mybutton}>
+                 <Button className={styles.withdrawal}
+                        onClick={this.props.toggleAddinfo}>
+                  添加备注
+                </Button>
+                <Button className={styles.withdrawal}
+                        onClick={this.props.insertData}>
+                  插入
+                </Button>
+
+        </div>
       <div className={styles.wrapper}>
          <AuditRecordTable
           className={styles.table}
           data={transactions}
           tableProps={tableProps} />
       </div>
+      <FormModal title="添加备注"
+                   visible={this.props.showAddinfoModal}
+                   num={2}
+                   btnText="确认"
+                   propsArray={addinfoPropsArray}
+                   btnCallback={this.props.handleAddinfo}
+                   toggleModal={this.props.toggleAddinfo} />
     </div>
+    
     );
   }
 }
