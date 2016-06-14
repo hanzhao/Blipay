@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport(config.mailConfig);
 
 router.post('/auditor/check_recordid', Promise.coroutine(function* (req, res) {
   console.log('in check_recordid', req.body);
-  if (!req.session.userId) {
+  if (!req.session.auditorId) {
     return res.status(403).fail()
   }
   const record = yield Record.findById(parseInt(req.body.id), {
@@ -50,7 +50,7 @@ const reportError = (path, err) => {
 router.post('/auditor/login', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/login', req.body);
   let user = yield User.findOne({
-    where: { 
+    where: {
       adminName: req.body.userName,
       level: 2 },
     attributes: ['id', 'loginPass', 'salt']
@@ -70,29 +70,29 @@ router.post('/auditor/login', Promise.coroutine(function* (req, res) {
   delete user.salt
   delete user.loginPass
   // 登录信息
-  req.session.userId = user.id 
+  req.session.auditorId = user.id 
   return res.success({ user });
 }));
 
 router.get('/auditor/logout', (req, res) => {
   console.log('in /auditor/logout');
-  req.session.userId = null;
+  req.session.auditorId = null;
   return res.success({});
 });
 
 router.get('/auditor/info', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/info');
-  if (!req.session.userId) {
+  if (!req.session.auditorId) {
     return res.success({ })
   }
-  const user = yield User.findById(req.session.userId, {
+  const user = yield User.findById(req.session.auditorId, {
     attributes: ['adminName', 'id']
   })
   return res.success({ user })
 }));
 
 router.post('/auditor/addinfo', Promise.coroutine(function* (req, res) {
-  if (!req.session.userId) {
+  if (!req.session.auditorId) {
     return res.status(403).fail()
   }
   yield Record.update({
@@ -113,7 +113,7 @@ router.post('/auditor/addinfo', Promise.coroutine(function* (req, res) {
 }));
 
 router.post('/auditor/searchorder', Promise.coroutine(function* (req, res) {
-  if (!req.session.userId) {
+  if (!req.session.auditorId) {
     return res.status(403).fail()
   }
   const transaction = yield Record.findAll({
@@ -126,7 +126,7 @@ router.post('/auditor/searchorder', Promise.coroutine(function* (req, res) {
 }));
 
 router.post('/auditor/searchbuyer', Promise.coroutine(function* (req, res) {
-  if (!req.session.userId) {
+  if (!req.session.auditorId) {
     return res.status(403).fail()
   }
   const transaction = yield Record.findAll({
@@ -139,7 +139,7 @@ router.post('/auditor/searchbuyer', Promise.coroutine(function* (req, res) {
 }));
 
 router.post('/auditor/searchseller', Promise.coroutine(function* (req, res) {
-  if (!req.session.userId) {
+  if (!req.session.auditorId) {
     return res.status(403).fail()
   }
   const transaction = yield Record.findAll({
@@ -153,7 +153,7 @@ router.post('/auditor/searchseller', Promise.coroutine(function* (req, res) {
 
 router.get('/auditor/transactions', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/transactions');
-  if (!req.session.userId) {
+  if (!req.session.auditorId) {
     return res.status(403).fail()
   }
   const transactions = yield Record.findAll({
@@ -164,7 +164,7 @@ router.get('/auditor/transactions', Promise.coroutine(function* (req, res) {
 
 router.get('/auditor/log', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/log');
-  if (!req.session.userId) {
+  if (!req.session.auditorId) {
     return res.status(403).fail()
   }
 
@@ -176,21 +176,21 @@ router.get('/auditor/log', Promise.coroutine(function* (req, res) {
 
 router.get('/auditor/insert', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/insert');
-  if (!req.session.userId) {
+  if (!req.session.auditorId) {
     return res.status(403).fail()
   }
 const today = new Date();
 const order = yield Order.findAll({
     where:{
       status: 3,
-      updatedAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`, 
+      updatedAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`,
         `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()+1}`]}
     }
    });
  const count = yield Order.count({
     where:{
       status: 3,
-      updatedAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`, 
+      updatedAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`,
         `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()+1}`]}
     }
    });
@@ -208,13 +208,13 @@ const order = yield Order.findAll({
         }
         else{
           k=0;
-        }   
+        }
       }
       else {
         k=1;
       }
     }
-  
+
     const newRecord = {
       buyerId: order[i].buyerId,
       sellerId: order[i].sellerId,
@@ -227,7 +227,7 @@ const order = yield Order.findAll({
     };
     const record = yield Record.create(newRecord);
   };
-    
+
   const transaction = yield Record.findAll({
     order:['id']
   });
@@ -235,14 +235,14 @@ const order = yield Order.findAll({
   const count1 = yield Record.count({
     where:{
       wrongStatus: {'$gt': 0},
-      updatedAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`, 
+      updatedAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`,
         `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()+1}`]}
     }
    });
   const record = yield Record.findAll({
     where:{
       wrongStatus: {'$gt': 0},
-      updatedAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`, 
+      updatedAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`,
         `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()+1}`]}
     }
    });

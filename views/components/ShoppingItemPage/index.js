@@ -34,7 +34,7 @@ class ReviewContent extends React.Component {
           { moment(e.createdAt).format('LLL') }
         </div>
         <div className={styles.detail}>
-          评论详情：{ e.text }
+          评论详情：{ e.text || '太好了！您的宝贝太完美了！' }
         </div>
       </div>
     )

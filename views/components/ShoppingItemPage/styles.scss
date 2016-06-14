@@ -66,13 +66,14 @@
 .reviews {
   margin-left: 30px;
   .review {
-    min-height: 150px;    
+    min-height: 50px;
     .line {
       line-height: 40px;
       height: 40px;
-      font-size: 14px;
+      font-size: 12px;
       .userName {
         margin-right: 10px;
+        font-size: 14px;
       }
     }
 
