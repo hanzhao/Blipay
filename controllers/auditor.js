@@ -70,7 +70,7 @@ router.post('/auditor/login', Promise.coroutine(function* (req, res) {
   delete user.salt
   delete user.loginPass
   // 登录信息
-  req.session.auditorId = user.id 
+  req.session.auditorId = user.id
   return res.success({ user });
 }));
 
@@ -167,7 +167,6 @@ router.get('/auditor/log', Promise.coroutine(function* (req, res) {
   if (!req.session.auditorId) {
     return res.status(403).fail()
   }
-
   const logtable = yield Logtable.findAll({
     order: ['id']
   });
@@ -179,42 +178,32 @@ router.get('/auditor/insert', Promise.coroutine(function* (req, res) {
   if (!req.session.auditorId) {
     return res.status(403).fail()
   }
-const today = new Date();
-const order = yield Order.findAll({
+  const today = new Date();
+  const order = yield Order.findAll({
     where:{
       status: 3,
       updatedAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`,
         `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()+1}`]}
     }
-   });
- const count = yield Order.count({
-    where:{
-      status: 3,
-      updatedAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`,
-        `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()+1}`]}
-    }
-   });
- for(var i=0;i<count;i++)
- {
+  });
+  for (let i = 0; i < order.length; ++i) {
     const buy = yield Transaction.findById(order[i].buyerTransId);
     const sell = yield Transaction.findById(order[i].sellerTransId);
-    var k=0;
-    if(order[i].totalCost>=500)
-      k=2;
-    if(order[i].status===3){
-      if(-buy.amount===sell.amount && sell.amount===order[i].totalCost){
-        if(order[i].totalCost===0 || order[i].totalCost>=500){
-          k=2;
+    let k = 0;
+    if (order[i].totalCost >= 500) {
+      k = 2;
+    }
+    if (order[i].status === 3) {
+      if (-buy.amount === sell.amount && sell.amount === order[i].totalCost ){
+        if (order[i].totalCost === 0 || order[i].totalCost >= 500) {
+          k = 2;
+        } else {
+          k = 0;
         }
-        else{
-          k=0;
-        }
-      }
-      else {
-        k=1;
+      } else {
+        k = 1;
       }
     }
-
     const newRecord = {
       buyerId: order[i].buyerId,
       sellerId: order[i].sellerId,
@@ -226,42 +215,34 @@ const order = yield Order.findAll({
       wrongStatus: k
     };
     const record = yield Record.create(newRecord);
-  };
+  }
 
   const transaction = yield Record.findAll({
-    order:['id']
+    order: ['id']
   });
 
-  const count1 = yield Record.count({
-    where:{
-      wrongStatus: {'$gt': 0},
-      updatedAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`,
-        `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()+1}`]}
-    }
-   });
   const record = yield Record.findAll({
     where:{
       wrongStatus: {'$gt': 0},
       updatedAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`,
         `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()+1}`]}
     }
-   });
-   for(var i=0;i<count1;i++)
-   {
-      const newLogtable = {
-        buyerId: record[i].buyerId,
-        sellerId: record[i].sellerId,
-        totalCost: record[i].totalCost,
-        buyerPay: record[i].buyerPay,
-        sellerGet: record[i].sellerGet,
-        status: record[i].status,
-        orderId: record[i].orderId,
-        wrongStatus: record[i].wrongStatus
-      };
-  const logtable = yield Logtable.create(newLogtable)
-  };
+  });
+  for (let i = 0; i < record.length; ++i) {
+    const newLogtable = {
+      buyerId: record[i].buyerId,
+      sellerId: record[i].sellerId,
+      totalCost: record[i].totalCost,
+      buyerPay: record[i].buyerPay,
+      sellerGet: record[i].sellerGet,
+      status: record[i].status,
+      orderId: record[i].orderId,
+      wrongStatus: record[i].wrongStatus
+    };
+    const logtable = yield Logtable.create(newLogtable)
+  }
 
-  return res.success({ transaction })
+  return res.success({ transaction });
 }));
 
 module.exports = router;

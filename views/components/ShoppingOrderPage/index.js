@@ -102,7 +102,7 @@ class ShoppingReviewModal extends React.Component {
     let items = [];
     if (order)
       items = order.items
-    reviews = Array(items.length).fill({ score: 5, text: 'Default' });
+    reviews = Array(items.length).fill({ score: 5, text: '太好了！您的宝贝太完美了！' });
     return (
       <Modal title="商品评价"
         visible={this.props.showReviewModal}

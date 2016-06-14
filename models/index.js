@@ -6,7 +6,8 @@ const db = new Sequelize(config.db, config.username, config.password, {
   host: config.host,
   dialect: config.dialect,
   pool: config.pool,
-  logging: false
+  logging: false,
+  timezone: '+08:00'
 });
 
 const User = require('./user')(db);
