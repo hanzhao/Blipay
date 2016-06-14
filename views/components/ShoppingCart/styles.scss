@@ -50,6 +50,9 @@
     height: 50px;
     right: 100px;
     padding-right: 20px;
+    :global(.ant-badge) {
+      vertical-align: inherit;
+    }
     .cartIcon {
       display: inline-block;
       cursor: pointer;

@@ -1,4 +1,7 @@
 .modal:global(.ant-modal) {
+  max-height: 460px;
+  font-size: 16px;
+  width: 800px !important;
   .chatUsers {
     width: 200px;
     display: inline-block;
@@ -13,10 +16,9 @@
   }
   .chatMain {
     height: 300px;
-    width: 400px;
+    flex: 1;
     display: inline-block;
     .chatDisplay {
-      border-left: 1px solid gray;
       overflow-x: auto;
       overflow-y: auto;
       height: 80%;
@@ -41,7 +43,4 @@
       }
     }
   }
-  max-height: 460px;
-  font-size: 16px;
-  width: 800px !important;
 }

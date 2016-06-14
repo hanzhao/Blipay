@@ -11,7 +11,7 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport(config.mailConfig);
 const cookPassword = require('../services/account').cookPassword;
 
-router.post('/account/apply_verification', 
+router.post('/account/apply_verification',
   Promise.coroutine(function* (req, res) {
     if (!req.session.userId) {
       return res.status(403).fail();
@@ -30,7 +30,7 @@ router.post('/account/apply_verification',
 router.post('/account/register', Promise.coroutine(function* (req, res) {
   let user = yield User.findOne({
     where: { userName: req.body.userName },
-    attributes: ['id']
+    attributes: ['id', 'userName']
   });
   if (user) {
     return res.fail({ type: 'USERNAME_EXIST' });
@@ -40,7 +40,8 @@ router.post('/account/register', Promise.coroutine(function* (req, res) {
     userName: req.body.userName,
     salt: salt,
     loginPass: cookPassword(req.body.loginPass, salt),
-    payPass: cookPassword(req.body.payPass, salt)
+    payPass: cookPassword(req.body.payPass, salt),
+    lastLogin: new Date().toString()
   };
   user = yield User.create(newUser)
   req.session.userId = user.id
@@ -51,7 +52,7 @@ router.post('/account/register', Promise.coroutine(function* (req, res) {
 router.post('/account/login', Promise.coroutine(function* (req, res) {
   let user = yield User.findOne({
     where: { userName: req.body.userName },
-    attributes: ['id', 'loginPass', 'salt', 'lastLogin', 'disabled']
+    attributes: ['id', 'userName', 'loginPass', 'salt', 'lastLogin', 'disabled']
   });
   if (!user) {
     return res.fail({ type: 'USER_NOT_EXIST' });
@@ -184,7 +185,7 @@ router.post('/account/change_paypass', Promise.coroutine(function *(req, res) {
   return res.success();
 }));
 
-router.post('/account/change_loginpass', 
+router.post('/account/change_loginpass',
   Promise.coroutine(function *(req, res) {
     if (!req.session.userId) {
       return res.status(403).fail();
@@ -265,7 +266,7 @@ router.post('/account/withdraw', Promise.coroutine(function* (req, res) {
   return res.success({ user, transaction });
 }));
 
-router.post('/account/find_password', 
+router.post('/account/find_password',
   Promise.coroutine(function* (req, res) {
     let user = yield User.findOne({
       where: { userName: req.body.userName },

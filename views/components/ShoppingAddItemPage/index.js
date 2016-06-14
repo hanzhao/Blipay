@@ -55,7 +55,7 @@ function getValidate(item) {
 
 @connect(
   (state) => ({
-    status: state.account.user.status
+    status: state.account.user && state.account.user.status
   })
 )
 @reduxForm({

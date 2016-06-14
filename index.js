@@ -113,13 +113,13 @@ const socketSession = socketIOSession(sessionSettings);
 
 
 io.use(socketSession.parser);
-const users = new Array();
-const sockets = new Array();
+const users = [];
+const sockets = [];
 
 io.on('connection', function (socket) {
   console.log('connected!');
   if (!socket.session.userId)
-    return ;
+    return;
   let userId = socket.session.userId;
   let userName = socket.session.userName;
   // Welcome message on connection

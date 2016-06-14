@@ -13,7 +13,7 @@ class ShoppingWelcomePage extends React.Component {
     return (
     	<div className={styles.container}>
         <div className={styles.left}>
-          <ShoppingMenu/>
+          <ShoppingMenu />
         </div>
     	</div>
 

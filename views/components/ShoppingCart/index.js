@@ -45,15 +45,7 @@ class ShoppingCart extends React.Component {
         [styles.show]: (this.props.user||this.props.cartItems.length>0) && !this.props.showShoppingChat && !this.props.showShoppingCartModal
       }) }>
         <ChatModal onCancel={this.props.toggleShoppingChat} footer={null} />
-        <ShoppingCartModal onCancel={this.props.toggleShoppingCart}
-          footer={null} />
-        {
-          this.props.user?<Badge count={this.props.newMsg}
-          onClick={this.props.toggleShoppingChat}
-          >
-          <span className={styles.chatText}>GiliGili</span>
-        </Badge>:null
-        }
+        <ShoppingCartModal onCancel={this.props.toggleShoppingCart} footer={null} />
         <Container>
           <div className={styles.inner}>
             {/* <span className={styles.pricer}>
@@ -62,6 +54,13 @@ class ShoppingCart extends React.Component {
                 { getTotalPrice(cartItems).toFixed(2) }
               </span> 元
             </span> */}
+            {
+              this.props.user &&
+              <Badge count={this.props.newMsg}
+                     onClick={this.props.toggleShoppingChat}>
+                <Icon type="aliwangwang-o" />
+              </Badge>
+            }
             <span className={styles.cartIcon}
               onClick={this.props.toggleShoppingCart}>
               <Icon type="shopping-cart" />
