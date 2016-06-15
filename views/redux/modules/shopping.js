@@ -694,6 +694,15 @@ export default function reducer(state = initialState, action = {}) {
         showBookModal: !state.showBookModal,
         _t_: action.data
       }
+    case BOOK_HOTEL_SUCCESS:
+      message.success('预订成功')
+      setTimeout(() => {
+        store.dispatch(push(`/shopping/order`))
+      }, 0)
+      return {
+        ...state,
+        showBookModal: false
+      }
     case ADD_ROOM_FAIL:
     case LOAD_MY_ROOMS_FAIL:
 

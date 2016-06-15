@@ -68,7 +68,7 @@ function getValidate(item) {
 })
 class AdminAddBookerForm extends React.Component {
   render() {
-    const { fields: { userName, realName, password, repassword },
+    const { fields: { userName, realName, password, repassword, address },
              handleSubmit, resetForm, status } = this.props;
     return (
       <Form horizontal onSubmit={handleSubmit}>

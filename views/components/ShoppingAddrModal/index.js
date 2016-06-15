@@ -2,7 +2,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { asyncConnect } from 'redux-connect';
-import { Modal, Input, message, Cascader } from 'antd';
+import { Modal, Input, message, Cascader, Row, Col } from 'antd';
 import store from '../../redux/store';
 import { buyCartItems, toggleShoppingAddr } from '../../redux/modules/shopping';
 import { reduxForm } from 'redux-form';
@@ -44,9 +44,23 @@ class AddressModal extends React.Component {
         visible={showShoppingAddrModal}
         onCancel={toggleShoppingAddr}
         onOk={submit}>
-        <div style={{ textAlign: 'center' }}>
-          <Cascader style={{ width: 300, marginBottom: 10 }} options={towns.provs} placeholder="请选择地区" {...city} />
-          <Input placeholder="具体地址" {...addr}/>
+        <div>
+          <Row>
+            <Col span="6" offset="3">
+              所在城市：
+            </Col>
+            <Col span="12">
+              <Cascader style={{ width: 180, marginBottom: 10 }} options={towns.provs} placeholder="请选择地区" {...city} />
+            </Col>
+          </Row>
+          <Row>
+            <Col span="6" offset="3">
+              具体地址：
+            </Col>
+            <Col span="12">
+              <Input placeholder="请输入具体地址" {...addr}/>
+            </Col>
+          </Row>
         </div>
       </Modal>
     )

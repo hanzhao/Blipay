@@ -130,7 +130,8 @@ const SearchInput = React.createClass({
 class ShoppingBookHotelPage extends React.Component {
   state = {
     current: 1,
-    filter: ''
+    filter: '',
+    area: ''
   }
   handlePagination = (current) => {
     this.setState({ current })
@@ -140,16 +141,22 @@ class ShoppingBookHotelPage extends React.Component {
       filter: e
     })
   }
+  handleArea = (e) => {
+    this.setState({
+      area: e.join('')
+    })
+  }
   render() {
     let { hotels, chatUsers, toggleSeller } = this.props
     const { current } = this.state
+    hotels = hotels.filter(e => e.address.indexOf(this.state.area) === 0 && e.realName.indexOf(this.state.filter) !== -1)
     return (
       <div className={styles.wrapper}>
         <ShoppingPageHeader icon="home" text="酒店列表" />
         <Row className={styles.input}>
           <Col span="6" offset="5">
             <span>城市：</span>
-            <Cascader options={towns.provs} placeholder="选择酒店所在城市" />
+            <Cascader options={towns.provs} placeholder="选择酒店所在城市" onChange={this.handleArea} />
           </Col>
           <Col span="6" offset="2">
             <SearchInput placeholder="输入酒店名点击搜索"
