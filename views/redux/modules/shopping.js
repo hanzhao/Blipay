@@ -1,6 +1,6 @@
 import store from '../store'
 import { push } from 'react-router-redux'
-import { message } from 'antd'
+import { message,Modal } from 'antd'
 import io from 'socket.io-client';
 
 let socket = null;
@@ -446,7 +446,11 @@ export default function reducer(state = initialState, action = {}) {
         cartItems: []
       }
     case PAY_ORDER_SUCCESS:
-      message.success('订单支付成功')
+      // message.success('订单支付成功')
+      Modal.success({
+        title: '订单支付成功！',
+        onCancel() { },
+      })
       setTimeout(() => {
         store.dispatch(push(`/shopping/order`))
       }, 0)
