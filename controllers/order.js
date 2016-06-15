@@ -6,6 +6,8 @@ const Promise = require('bluebird');
 const Item = require('../models').Item;
 /** 用户 */
 const User = require('../models').User;
+/** 房间 */
+const Room = require('../models').Room;
 /** 订单 */
 const Order = require('../models').Order;
 /** 图片附件 */
@@ -379,8 +381,7 @@ router.post('/order/order_list', Promise.coroutine(function* (req, res) {
 
 /** 获取商品评价 */
 router.post('/item/review', Promise.coroutine(function* (req, res) {
-  console.log('/item/review');
-  console.log(req.body);
+  console.log('/item/review', req.body);
   try {
     const item = yield Item.findOne({ where: { id: req.body.itemId } });
     const reviews = yield item.getReviews();
@@ -390,5 +391,105 @@ router.post('/item/review', Promise.coroutine(function* (req, res) {
     return res.fail('in /item/review   ' + require('util').inspect(e));
   }
 }));
+
+/******************** Booking *******************/
+router.get('/book/rooms', Promise.coroutine(function* (req, res) {
+  if (!req.session.userId) { return res.status(403).fail(); }
+  console.log('/book/rooms', req.body);
+  try {
+    const users = yield User.findAll({
+      where: { booker: 1 },
+      attributes: ['id', 'realName', 'address'],
+      include: { model: Room }
+    })
+    return res.success({ users })
+  } catch (e) {
+    return res.fail('in /book/rooms   ' + require('util').inspect(e));
+  }
+}))
+
+router.get('/book/my-rooms', Promise.coroutine(function* (req, res) {
+  if (!req.session.userId) { return res.status(403).fail(); }
+  console.log('/book/my-rooms', req.body);
+  try {
+    const user = yield User.findById(req.session.userId)
+    const rooms = yield user.getRooms()
+    return res.success({ rooms })
+  } catch (e) {
+    return res.fail('in /book/my-rooms   ' + require('util').inspect(e));
+  }
+}))
+
+router.post('/book/add-room', Promise.coroutine(function* (req, res) {
+  if (!req.session.userId) { return res.status(403).fail(); }
+  console.log('/book/add-room', req.body);
+  try {
+    const newRoom = {
+      userId: req.session.userId,
+      name: req.body.name,
+      description: req.body.description || '',
+      price: req.body.price,
+      disabled: 0
+    }
+    const room = yield Room.create(newRoom)
+    return res.success({ room })
+  } catch (e) {
+    return res.fail('in /book/add-room   ' + require('util').inspect(e));
+  }
+}))
+
+router.post('/book/update-room', Promise.coroutine(function* (req, res) {
+  if (!req.session.userId) { return res.status(403).fail(); }
+  try {
+    const room = yield Room.findById(req.body.id)
+    yield room.update({
+      name: req.body.name,
+      description: req.body.description || ''
+    })
+    return res.success()
+  } catch (e) {
+    return res.fail('in /book/update-room   ' + require('util').inspect(e));
+  }
+}))
+
+router.post('/book/disable-room', Promise.coroutine(function* (req, res) {
+  try {
+    const room = yield Room.findById(req.body.id)
+    yield room.update({ disabled: 1 })
+    return res.success({ room })
+  } catch (e) {
+    return res.fail('in /book/disable-room   ' + require('util').inspect(e));
+  }
+}))
+
+router.post('/book/enable-room', Promise.coroutine(function* (req, res) {
+  try {
+    const room = yield Room.findById(req.body.id)
+    yield room.update({ disabled: 0 })
+    return res.success({ room })
+  } catch (e) {
+    return res.fail('in /book/enable-room   ' + require('util').inspect(e));
+  }
+}))
+
+router.post('/book/book-hotel', Promise.coroutine(function* (req, res) {
+  try {
+    const hotel = yield User.findById(req.body.uid)
+    const room = yield Room.findById(req.body.id)
+    const item = yield createItem(req.body.uid, {
+      name: '[酒店预订]' + hotel.realName + room.name + ' ' + req.body.day + ' ' + '天',
+      remain: 1,
+      price: room.price * req.body.day,
+      description: '[酒店预订]' + hotel.realName + room.name + ' ' + req.body.day + ' ' + '天',
+      photo: []
+    })
+    const order = yield createOrder(req.session.userId, [
+      { id: item.id, amount: 1 }
+    ], '身份证：' + req.body.idNumber + '，真实姓名：' + req.body.realName)
+    return res.success()
+  } catch (e) {
+    return res.fail('in /book/book-hotel   ' + require('util').inspect(e));
+  }
+}))
 
 module.exports = router

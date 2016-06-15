@@ -27,6 +27,7 @@ import AdminInfoPage from './components/AdminInfoPage';
 import AdminManager from './components/AdminManager';
 import AdminAddAdminPage from './components/AdminAddAdminPage';
 import AdminAddAuditorPage from './components/AdminAddAuditorPage';
+import AdminAddBookerPage from './components/AdminAddBookerPage';
 import AdminRegisterPage from './components/AdminRegisterPage';
 import AdminJudgement from './components/AdminJudgement';
 import AdminVerify from './components/AdminVerify';
@@ -35,6 +36,7 @@ import AdminManagePage from './components/AdminManagePage';
 import AdminManageUserPage from './components/AdminManageUserPage';
 import AdminManageAuditorPage from './components/AdminManageAuditorPage';
 import AdminManageAdminPage from './components/AdminManageAdminPage';
+import AdminManageBookerPage from './components/AdminManageBookerPage';
 import ShoppingPage from './components/ShoppingPage';
 import ShoppingItemPage from './components/ShoppingItemPage';
 import ShoppingWelcomePage from './components/ShoppingWelcomePage';
@@ -42,6 +44,9 @@ import ShoppingOrderPage from './components/ShoppingOrderPage';
 import ShoppingInfoPage from './components/ShoppingInfoPage';
 import ShoppingAddItemPage from './components/ShoppingAddItemPage';
 import ShoppingItemManage from './components/ShoppingItemManage';
+import ShoppingManageRoomPage from './components/ShoppingManageRoomPage';
+import ShoppingAddRoomPage from './components/ShoppingAddRoomPage';
+import ShoppingBookHotelPage from './components/ShoppingBookHotelPage';
 import NotFoundPage from './components/NotFoundPage';
 
 import BookingPage from './components/BookingPage'
@@ -71,6 +76,8 @@ const router = (
             <Route path="/admin/panel/manage/admin/add" component={AdminAddAdminPage} />
             <Route path="/admin/panel/manage/auditor" component={AdminManageAuditorPage} />
             <Route path="/admin/panel/manage/auditor/add" component={AdminAddAuditorPage} />
+            <Route path="/admin/panel/manage/booker" component={AdminManageBookerPage} />
+            <Route path="/admin/panel/manage/booker/add" component={AdminAddBookerPage} />
           </Route>
 	        <Route path="/admin/panel/judgement" component={AdminJudgement} />
           <Route path="/admin/panel/verification" component={AdminVerify} />
@@ -105,6 +112,9 @@ const router = (
           <Route path="/shopping/order" component={ShoppingOrderPage} />
           <Route path="/shopping/add_item" component={ShoppingAddItemPage} />
           <Route path="/shopping/manage_item" component={ShoppingItemManage} />
+          <Route path="/shopping/manage_room" component={ShoppingManageRoomPage} />
+          <Route path="/shopping/add_room" component={ShoppingAddRoomPage} />
+          <Route path="/shopping/book" component={ShoppingBookHotelPage} />
         </Route>
         <Route path="/booking" component={BookingPage}>
           <IndexRoute component={BookingInfoPage} />

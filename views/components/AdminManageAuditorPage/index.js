@@ -54,20 +54,20 @@ const columns = [{
   render(text, record) {
     if (record.disabled === 0) {
       return (
-        <Popconfirm title={`确实要禁用 ${record.adminName} 吗？`}
+        <Popconfirm title={`确实要冻结 ${record.adminName} 吗？`}
                     onConfirm={disableAdmin.bind(this, record.id)}>
           <a>
-            禁用
+            冻结
           </a>
         </Popconfirm>
       )
     }
     else {
       return (
-        <Popconfirm title={`确实要启用 ${record.adminName} 吗？`}
+        <Popconfirm title={`确实要解冻 ${record.adminName} 吗？`}
                     onConfirm={enableAdmin.bind(this, record.id)}>
           <a>
-            启用
+            解冻
           </a>
         </Popconfirm>
       )

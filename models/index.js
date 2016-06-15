@@ -12,6 +12,7 @@ const db = new Sequelize(config.db, config.username, config.password, {
 
 const User = require('./user')(db);
 const Item = require('./item')(db);
+const Room = require('./room')(db);
 const Transaction = require('./transaction')(db);
 const Order = require('./order')(db);
 const OrderItem = require('./order_item')(db);
@@ -31,6 +32,9 @@ const Logtable = require('./logtable')(db);
 const ItemSeller = Item.belongsTo(User, {
   as: 'seller'
 });
+
+Room.belongsTo(User);
+User.hasMany(Room);
 
 Transaction.belongsTo(User);
 User.hasMany(Transaction);
@@ -56,7 +60,7 @@ AdminLog.belongsTo(Admin)
 User.hasMany(Attachment)
 
 const initDatabase = Promise.coroutine(function* () {
-  for (let t of [User, Item, Transaction, Order,
+  for (let t of [User, Item, Transaction, Order, Room,
                  OrderItem, Review, Attachment, ItemAttachment,
                  Admin, AdminLog, Arbitration, Identification, Specialaccount, Record, Logtable]) {
     yield t.sync();
@@ -67,7 +71,7 @@ initDatabase()
 
 module.exports = {
   User, Item, Transaction, Order, OrderItem, Review, Attachment,
-  ItemSeller, ItemAttachment,
+  ItemSeller, ItemAttachment, Room,
   Admin, AdminLog, Arbitration, Identification, Specialaccount, Record, Logtable,
   db,
 };

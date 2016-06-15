@@ -37,10 +37,7 @@ class NavBar extends React.Component {
             <Link to="/account">个人账户</Link>
           </Menu.Item>
           <Menu.Item key="/shopping">
-            <Link to="/shopping">购买商品</Link>
-          </Menu.Item>
-          <Menu.Item key="/booking">
-            <Link to="/booking">在线订票</Link>
+            <Link to={user && user.booker ? "/shopping/order" : "/shopping"}>在线商城</Link>
           </Menu.Item>
           <Menu.Item key="/" style={{ display: !user ? 'inherit' : 'none' }}>
             <Link to="/">登录</Link>

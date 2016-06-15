@@ -66,6 +66,13 @@ module.exports = (db) => {
     },
     cardBack: {
       type: Sequelize.INTEGER
+    },
+    booker: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0
+    },
+    address: {
+      type: Sequelize.STRING
     }
   });
 };

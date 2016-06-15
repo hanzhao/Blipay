@@ -53,6 +53,9 @@
     :global(.ant-badge) {
       vertical-align: inherit;
     }
+    :global(.ant-badge-count) {
+      margin-top: 30px;
+    }
     .cartIcon {
       display: inline-block;
       cursor: pointer;

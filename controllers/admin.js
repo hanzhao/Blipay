@@ -479,7 +479,9 @@ router.get('/admin/users', Promise.coroutine(function* (req, res) {
   if (!req.session.adminId) {
     return res.status(403).fail()
   }
-  const users = yield User.findAll()
+  const users = yield User.findAll({
+    where: { booker: req.query.booker ? 1 : 0 }
+  })
   res.success({ users })
 }))
 
@@ -601,5 +603,36 @@ router.get('/admin/admin/:adminId', Promise.coroutine(function* (req, res) {
   const admin = yield Admin.findById(req.params.adminId)
   res.success({ admin })
 }))
+
+router.post('/admin/adduser',Promise.coroutine(function *(req,res){
+  let user = yield User.findOne({
+    where:{ userName: req.body.name }
+  });
+  if (user) {
+    return res.fail({ type: 'USERNAME_EXIST' })
+  }
+  const salt = crypto.randomBytes(64).toString('base64');
+  const paySalt = crypto.randomBytes(64).toString('base64');
+  const newUser = {
+    userName: req.body.userName,
+    realName: req.body.realName,
+    booker: req.body.booker ? 1 : 0,
+    salt: salt,
+    status: req.body.booker ? 2 : 0,
+    loginPass: cookPassword(req.body.password,
+                            salt,
+                            config.saltPos),
+    payPass: cookPassword(req.body.password,
+                            salt,
+                            config.saltPos),
+    address: req.body.address
+  };
+  user = yield User.create(newUser)
+  yield AdminLog.create({
+    adminId: req.session.adminId,
+    content: `创建了票务管理员 #${user.id} - ${user.userName}`
+  })
+  return res.success({ user })
+}));
 
 module.exports = router;

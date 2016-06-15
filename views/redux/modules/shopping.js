@@ -88,6 +88,31 @@ const CLEAR_NEW_MSG = 'Blipay/shopping/CLEAR_NEW_MSG'
 const SELECT_CHATER = 'Blipay/shopping/SELECT_CHATER'
 const TOGGLE_SHOPPING_SELLER = 'Blipay/shopping/TOGGLE_SHOPPING_SELLER'
 
+// Booking
+const LOAD_MY_ROOMS = 'Blipay/shopping/LOAD_MY_ROOMS'
+const LOAD_MY_ROOMS_SUCCESS = 'Blipay/shopping/LOAD_MY_ROOMS_SUCCESS'
+const LOAD_MY_ROOMS_FAIL = 'Blipay/shopping/LOAD_MY_ROOMS_FAIL'
+const LOAD_ROOMS = 'Blipay/shopping/LOAD_ROOMS'
+const LOAD_ROOMS_SUCCESS = 'Blipay/shopping/LOAD_ROOMS_SUCCESS'
+const LOAD_ROOMS_FAIL = 'Blipay/shopping/LOAD_ROOMS_FAIL'
+const ADD_ROOM = 'Blipay/shopping/ADD_ROOM'
+const ADD_ROOM_SUCCESS = 'Blipay/shopping/ADD_ROOM_SUCCESS'
+const ADD_ROOM_FAIL = 'Blipay/shopping/ADD_ROOM_FAIL'
+const UPDATE_ROOM = 'Blipay/shopping/UPDATE_ROOM'
+const UPDATE_ROOM_SUCCESS = 'Blipay/shopping/UPDATE_ROOM_SUCCESS'
+const UPDATE_ROOM_FAIL = 'Blipay/shopping/UPDATE_ROOM_FAIL'
+const DISABLE_ROOM = 'Blipay/shopping/DISABLE_ROOM'
+const DISABLE_ROOM_SUCCESS = 'Blipay/shopping/DISABLE_ROOM_SUCCESS'
+const DISABLE_ROOM_FAIL = 'Blipay/shopping/DISABLE_ROOM_FAIL'
+const ENABLE_ROOM = 'Blipay/shopping/ENABLE_ROOM'
+const ENABLE_ROOM_SUCCESS = 'Blipay/shopping/ENABLE_ROOM_SUCCESS'
+const ENABLE_ROOM_FAIL = 'Blipay/shopping/ENABLE_ROOM_FAIL'
+const TOGGLE_BOOK_MODAL = 'Blipay/shopping/TOGGLE_BOOK_MODAL'
+const BOOK_HOTEL = 'Blipay/shopping/BOOK_HOTEL'
+const BOOK_HOTEL_SUCCESS = 'Blipay/shopping/BOOK_HOTEL_SUCCESS'
+const BOOK_HOTEL_FAIL = 'Blipay/shopping/BOOK_HOTEL_FAIL'
+
+
 
 const messages = {
   NO_ITEM: '商品不存在',
@@ -299,7 +324,45 @@ export const startChat = () => {
   }
 }
 
+/***** Booking *****/
+export const loadMyRooms = () => ({
+  types: [LOAD_MY_ROOMS, LOAD_MY_ROOMS_SUCCESS, LOAD_MY_ROOMS_FAIL],
+  promise: (client) => client.get('/api/book/my-rooms')
+})
 
+export const addRoom = (data) => ({
+  types: [ADD_ROOM, ADD_ROOM_SUCCESS, ADD_ROOM_FAIL],
+  promise: (client) => client.post('/api/book/add-room', data)
+})
+
+export const loadRooms = () => ({
+  types: [LOAD_ROOMS, LOAD_ROOMS_SUCCESS, LOAD_ROOMS_FAIL],
+  promise: (client) => client.get('/api/book/rooms')
+})
+
+export const setRoomEnabled = (data) => ({
+  types: [ENABLE_ROOM, ENABLE_ROOM_SUCCESS, ENABLE_ROOM_FAIL],
+  promise: (client) => client.post('/api/book/enable-room', data)
+})
+
+export const setRoomDisabled = (data) => ({
+  types: [DISABLE_ROOM, DISABLE_ROOM_SUCCESS, DISABLE_ROOM_FAIL],
+  promise: (client) => client.post('/api/book/disable-room', data)
+})
+
+export const toggleBookModal = (e) => ({
+  type: TOGGLE_BOOK_MODAL,
+  data: e
+})
+
+export const bookHotel = (data) => {
+  data.day = Math.floor((Number(data.date[1]) - Number(data.date[0])) / 86400000)
+  console.log(data)
+  return {
+    types: [BOOK_HOTEL, BOOK_HOTEL_SUCCESS, BOOK_HOTEL_FAIL],
+    promise: (client) => client.post('/api/book/book-hotel', data)
+  }
+}
 
 const initialState = {
   cartItems: [],
@@ -595,6 +658,45 @@ export default function reducer(state = initialState, action = {}) {
         listUsers: newListUsers,
         showChatModal: true
       }
+    /********** Booking ************/
+    case LOAD_MY_ROOMS_SUCCESS:
+      return {
+        ...state,
+        myRooms: action.result.rooms
+      }
+    case ADD_ROOM_SUCCESS:
+      message.success('添加成功')
+      setTimeout(() => {
+        store.dispatch(push(`/shopping/manage_room`))
+      }, 0)
+      return {
+        ...state
+      }
+    case DISABLE_ROOM_SUCCESS:
+    case ENABLE_ROOM_SUCCESS:
+      message.success('操作成功')
+      let updated = action.result.room
+      let index = _.findIndex(state.myRooms, ['id', updated.id])
+      return {
+        ...state,
+        myRooms: [...state.myRooms.slice(0, index),
+                         { ...state.myRooms[index], ...updated },
+                         ...state.myRooms.slice(index + 1)]
+      }
+    case LOAD_ROOMS_SUCCESS:
+      return {
+        ...state,
+        hotels: action.result.users
+      }
+    case TOGGLE_BOOK_MODAL:
+      return {
+        ...state,
+        showBookModal: !state.showBookModal,
+        _t_: action.data
+      }
+    case ADD_ROOM_FAIL:
+    case LOAD_MY_ROOMS_FAIL:
+
     case ADD_ITEM_FAIL:
     case BUY_CART_ITEMS_FAIL:
     case LOAD_ITEM_FAIL:

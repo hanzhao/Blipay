@@ -19,6 +19,9 @@ const LOAD_ADMIN_INFO_FAIL = 'Blipay/admin/LOAD_ADMIN_INFO_FAIL';
 const ADD_ADMIN = 'Blipay/admin/ADD_ADMIN';
 const ADD_ADMIN_SUCCESS = 'Blipay/admin/ADD_ADMIN_SUCCESS';
 const ADD_ADMIN_FAIL = 'Blipay/admin/ADD_ADMIN_FAIL';
+const ADD_USER = 'Blipay/admin/ADD_USER';
+const ADD_USER_SUCCESS = 'Blipay/admin/ADD_USER_SUCCESS';
+const ADD_USER_FAIL = 'Blipay/admin/ADD_USER_FAIL';
 const DELETE_ADMIN = 'Blipay/admin/DELETE_ADMIN';
 const DELETE_ADMIN_SUCCESS = 'Blipay/admin/DELETE_ADMIN_SUCCESS';
 const DELETE_ADMIN_FAIL = 'Blipay/admin/DELETE_ADMIN_FAIL'
@@ -107,7 +110,9 @@ const SET_ADMIN_ENABLED_FAIL = 'Blipay/admin/SET_ADMIN_ENABLED_FAIL'
 const messages = {
   USER_NOT_EXIST: '当前用户名未注册。',
   INVALID_USERNAME_OR_PASSWORD: '用户名或密码错误。',
-  USER_DISABLED: '账户被禁用'
+  USER_DISABLED: '账户被禁用',
+  USERNAME_EXIST: '用户名已经被注册',
+  ADMINNAME_EXIST: '用户名已经被注册'
 }
 
 // 用户管理模块初始状态
@@ -168,6 +173,11 @@ export const getArbitrationList = () => ({
 export const addAdmin = (data) => ({
   types: [ADD_ADMIN, ADD_ADMIN_SUCCESS, ADD_ADMIN_FAIL],
   promise: (client) => client.post('/api/admin/addadmin', data)
+});
+
+export const addUser = (data) => ({
+  types: [ADD_USER, ADD_USER_SUCCESS, ADD_USER_FAIL],
+  promise: (client) => client.post('/api/admin/adduser', data)
 });
 
 /*删除管理员*/
@@ -235,9 +245,9 @@ export const verify = (data) =>({
   promise: (client) => client.post('/api/admin/verify',data)
 });
 
-export const loadUsersInfo = () => ({
+export const loadUsersInfo = (data) => ({
   types: [LOAD_USERS_INFO, LOAD_USERS_INFO_SUCCESS, LOAD_USERS_INFO_FAIL],
-  promise: (client) => client.get('/api/admin/users')
+  promise: (client) => client.get('/api/admin/users', data)
 })
 
 export const setUserDisabled = (id) => ({
@@ -345,6 +355,14 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state
       }
+    case ADD_USER_SUCCESS:
+      message.success('添加账户成功')
+      setTimeout(() => {
+        store.dispatch(push('/admin/panel/manage/booker'))
+      }, 0)
+      return {
+        ...state
+      }
     case DELETE_ADMIN_SUCCESS:
       return {
         ...state,
@@ -410,6 +428,7 @@ export default function reducer(state = initialState, action = {}) {
       }
     // Errors
     case ADD_ADMIN_FAIL:
+    case ADD_USER_FAIL:
     case DELETE_ADMIN_FAIL:
     case MODIFY_ADMIN_FAIL:
     case MODIFY_USER_FAIL:
@@ -419,6 +438,7 @@ export default function reducer(state = initialState, action = {}) {
     case LOGIN_FAIL:
     case LOGOUT_FAIL:
     case UPDATE_ID_FAIL:
+      message.error((action.error.type && messages[action.error.type]) || '未知错误')
       return {
         ...state,
         message: (action.error.type && messages[action.error.type]) || '未知错误'

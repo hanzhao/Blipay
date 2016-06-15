@@ -109,7 +109,7 @@ router.get('/account/info', Promise.coroutine(function* (req, res) {
   }
   const user = yield User.findById(req.session.userId, {
     attributes: ['userName', 'realName', 'balance', 'lastLogin',
-                 'email', 'phone', 'idNumber', 'status', 'id']
+                 'email', 'phone', 'idNumber', 'status', 'id', 'booker']
   });
   return res.success({ user });
 }));

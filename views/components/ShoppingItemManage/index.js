@@ -47,6 +47,9 @@ let BasicDemo = React.createClass
               <ShoppingItemManageTable key={i} content={e} />
             ))
           }
+          { !contents.length &&
+            <span>您还没有添加过任何商品哦</span>
+          }
           </div>
         </div>
       );

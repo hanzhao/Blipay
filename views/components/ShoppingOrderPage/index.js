@@ -240,7 +240,7 @@ class ShoppingRefundConfirmModal extends React.Component {
     }
   }],
   (state) => ({
-    userId: state.account.user.id,
+    userId: state.account.user && state.account.user.id,
     orders: state.shopping.orders.map((e, i) => ({ ...e, key: i }))
   })
 )
@@ -259,7 +259,8 @@ class ShoppingOrderPage extends React.Component {
           {
             record.items.map((item, i) => (
               <div key={i} className={styles.itemPrice}>
-                <Link to={`/shopping/item/${item.id}`}>{ item.name }</Link>
+              { item.name.indexOf('[酒店预订]') === 0 ? item.name :
+                <Link to={`/shopping/item/${item.id}`}>{ item.name }</Link> }
               </div>
             ))
           }
@@ -301,38 +302,38 @@ class ShoppingOrderPage extends React.Component {
             if (this.props.userId == record.buyerId)
               return <Button type="ghost" onClick={ pay.bind(this, record) }>确认付款</Button>
             else if (this.props.userId == record.sellerId)
-              return <spin>等待付款</spin>
+              return <span>等待付款</span>
             break;
           case 1:
             if (this.props.userId == record.sellerId)
-              return <Button type="ghost" onClick={ ship.bind(this, record) }>确认发货</Button>
+              return <Button type="ghost" onClick={ ship.bind(this, record) }>{record.items[0].name.indexOf('[酒店预订]') === 0 ? '同意入住' : '确认发货'}</Button>
             else if (this.props.userId == record.buyerId)
-              return <spin>等待发货</spin>
+              return <span>{record.items[0].name.indexOf('[酒店预订]') === 0 ? '等待确认' : '等待发货'}</span>
             break;
           case 2:
             if (this.props.userId == record.buyerId)
-              return <Button type="ghost" onClick={toggleReviewModal.bind(this, record) }>确认收货</Button>
+              return <Button type="ghost" onClick={toggleReviewModal.bind(this, record) }>{record.items[0].name.indexOf('[酒店预订]') === 0 ? '确认入住' : '确认收货'}</Button>
             else if (this.props.userId == record.sellerId)
-              return <spin>等待收货</spin>
+              return <span>{record.items[0].name.indexOf('[酒店预订]') === 0 ? '等待入住' : '等待收货'}</span>
             break;
           case 3:
             if (this.props.userId == record.buyerId)
-              return <Button type="ghost" onClick={toggleRefundModal.bind(this, record.id) }>退货申请</Button>
+              return record.items[0].name.indexOf('[酒店预订]') === 0 ? <span /> : <Button type="ghost" onClick={toggleRefundModal.bind(this, record.id) }>退货申请</Button>
             else if (this.props.userId == record.sellerId)
-              return <spin>对方已收货</spin>
+              return <span>{record.items[0].name.indexOf('[酒店预订]') === 0 ? '对方已入住' : '对方已收货'}</span>
             break;
           case 4:
             if (this.props.userId == record.sellerId)
               return <Button type="ghost" onClick={toggleRefundConfirmModal.bind(this, record) }>处理退货请求</Button>
-            return <spin>等待退货</spin>
+            return <span>等待退货</span>
           case 5:
-            return <spin>完成退货</spin>
+            return <span>完成退货</span>
           case 6:
-            return <spin>等待仲裁</spin>
+            return <span>等待仲裁</span>
           case 7:
-            return <spin>仲裁退款</spin>
+            return <span>仲裁退款</span>
           case 8:
-            return <spin>仲裁不退款</spin>
+            return <span>仲裁不退款</span>
           default:
         }
       }

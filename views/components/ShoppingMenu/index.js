@@ -24,9 +24,14 @@ class ShoppingMenu extends React.Component {
         defaultOpenKeys={['sub1']}
         selectedKeys={[location.pathname]}
         mode="inline">
-        <Menu.Item key="/shopping/info">
+        <Menu.Item key="/shopping/info" style={{ display: user && user.booker ? 'none' : 'inherit' }}>
           <Link to="/shopping/info">
             <Icon type="info-circle-o" /> 浏览宝贝
+          </Link>
+        </Menu.Item>
+        <Menu.Item key="/shopping/book" style={{ display: user && user.booker ? 'none' : 'inherit' }}>
+          <Link to="/shopping/book">
+            <Icon type="home" /> 预订酒店
           </Link>
         </Menu.Item>
         <Menu.Item key="/shopping/order" style={{ display: user ? 'inherit' : 'none' }}>
@@ -34,12 +39,17 @@ class ShoppingMenu extends React.Component {
             <Icon type="exception" /> 订单管理
           </Link>
         </Menu.Item>
-        <Menu.Item key="/shopping/add_item" style={{ display: user ? 'inherit' : 'none' }}>
+        <Menu.Item key="/shopping/manage_room" style={{ display: user && user.booker ? 'inherit' : 'none' }}>
+          <Link to="/shopping/manage_room">
+            <Icon type="home" /> 管理房间
+          </Link>
+        </Menu.Item>
+        <Menu.Item key="/shopping/add_item" style={{ display: user && !user.booker ? 'inherit' : 'none' }}>
           <Link to="/shopping/add_item">
             <Icon type="plus-square" /> 商品添加
           </Link>
         </Menu.Item>
-        <Menu.Item key="/shopping/manage_item" style={{ display: user ? 'inherit' : 'none' }}>
+        <Menu.Item key="/shopping/manage_item" style={{ display: user && !user.booker ? 'inherit' : 'none' }}>
           <Link to="/shopping/manage_item">
             <Icon type="exception" /> 商品管理
           </Link>

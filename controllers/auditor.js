@@ -68,7 +68,8 @@ router.post('/auditor/login', Promise.coroutine(function* (req, res) {
   let user = yield User.findOne({
     where: {
       adminName: req.body.userName,
-      level: 2 },
+      level: 2
+    },
     attributes: ['id', 'loginPass', 'salt']
   });
   if (!user) {

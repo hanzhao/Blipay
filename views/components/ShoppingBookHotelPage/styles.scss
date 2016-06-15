@@ -1,0 +1,46 @@
+.wrapper {
+  :global(.ant-cascader-picker) {
+    min-width: 180px;
+  }
+}
+
+.container {
+  padding: 10px 20px;
+  .wangwang {
+    margin-left: 0.5em;
+  }
+  .name {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    font-size: 130%;
+  }
+  .address {
+    font-size: 12px;
+    margin-left: 0.5em;
+    color: #8e8e8e;
+  }
+  .online {
+    color: dodgerblue
+  }
+  .line {
+    margin: 1px 0;
+    .name {
+      font-size: 16px;
+    }
+    .price {
+      line-height: 30px;
+      color: #c63555;
+      font-size: 16px;
+      &::before {
+        content: '¥';
+      }
+    }
+  }
+}
+
+.pagination {
+  margin-bottom: 10px;
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+}
