@@ -29,14 +29,14 @@ const validateCard = (rule, value, callback) => {
 
 const getLevelDetail = (level) => {
   switch (level) {
-    case 0:
-      return '超级管理员'
-    case 1:
-      return '普通管理员'
-    default:
-      return '未知权限'
+  case 0:
+    return '超级管理员';
+  case 1:
+    return '普通管理员';
+  default:
+    return '未知权限';
   }
-}
+};
 
 const getGreeting = () => {
   const hour = (new Date()).getHours();
@@ -76,7 +76,7 @@ class AccountWelcomePage extends React.Component {
   };
   render() {
     const { admin } = this.props;
-    const logs = this.props.logs.map(e => ({ ...e, key: e.id }))
+    const logs = this.props.logs.map(e => ({ ...e, key: e.id }));
     return (
       <div className={styles.container}>
         <div className={styles.upperHalf}>

@@ -18,7 +18,7 @@ describe('POST /account/register', () => {
       .post('/account/register')
       .send(data)
       .expect((res) => {
-        assert.equal(res.body.error.type, 'USERNAME_EXIST')
+        assert.equal(res.body.error.type, 'USERNAME_EXIST');
       })
       .expect(200, done);
   });

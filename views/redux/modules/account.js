@@ -1,5 +1,5 @@
-import store from '../store'
-import { push } from 'react-router-redux'
+import store from '../store';
+import { push } from 'react-router-redux';
 
 // Action 表
 // 注册相关动作
@@ -55,13 +55,13 @@ const FIND_PASSWORD = 'Blipay/account/FIND_PASSWORD';
 const FIND_PASSWORD_SUCCESS = 'Blipay/account/FIND_PASSWORD_SUCCESS';
 const FIND_PASSWORD_FAIL = 'Blipay/account/FIND_PASSWORD_FAIL';
 // 重定向到商品
-const SET_REDIR = 'Blipay/account/SET_REDIR'
+const SET_REDIR = 'Blipay/account/SET_REDIR';
 
 const messages = {
   USER_NOT_EXIST: '当前用户名未注册。',
   INVALID_USERNAME_OR_PASSWORD: '用户名或密码错误。',
   USER_DISABLED: '当前账户被禁用'
-}
+};
 
 // 用户管理模块初始状态
 const initialState = {
@@ -70,39 +70,39 @@ const initialState = {
   showTopupModal: false,
   showWithdrawModal: false,
   showVerification: false
-}
+};
 
 // Action Creators
 export const register = (data) => ({
   types: [REGISTER, REGISTER_SUCCESS, REGISTER_FAIL],
   promise: (client) => client.post('/api/account/register', data)
-})
+});
 
 export const login = (data) => ({
   types: [LOGIN, LOGIN_SUCCESS, LOGIN_FAIL],
   promise: (client) => client.post('/api/account/login', data)
-})
+});
 
 export const logout = () => ({
   types: [LOGOUT, LOGOUT_SUCCESS, LOGOUT_FAIL],
   promise: (client) => client.get('/api/account/logout')
-})
+});
 
 export const toggleTopup = () => ({
   type: TOGGLE_TOPUP
-})
+});
 
 export const toggleWithdraw = () => ({
   type: TOGGLE_WITHDRAW
-})
+});
 
 export const toggleModifyLoginpass = () => ({
   type: TOGGLE_MODIFY_LOGINPASS
-})
+});
 
 export const toggleModifyPaypass = () => ({
   type: TOGGLE_MODIFY_PAYPASS
-})
+});
 
 export const toggleVerification = () => ({
   type: TOGGLE_VERIFICATION
@@ -111,27 +111,27 @@ export const toggleVerification = () => ({
 export const loadAccountInfo = () => ({
   types: [LOAD_ACCOUNT_INFO, LOAD_ACCOUNT_INFO_SUCCESS, LOAD_ACCOUNT_INFO_FAIL],
   promise: (client) => client.get('/api/account/info')
-})
+});
 
 export const loadTransactions = () => ({
   types: [LOAD_TRANSACTIONS, LOAD_TRANSACTIONS_SUCCESS, LOAD_TRANSACTIONS_FAIL],
   promise: (client) => client.get('/api/account/transactions')
-})
+});
 
 export const topup = (data) => ({
   types: [TOPUP, TOPUP_SUCCESS, TOPUP_FAIL],
   promise: (client) => client.post('/api/account/topup', data)
-})
+});
 
 export const withdraw = (data) => ({
   types: [WITHDRAW, WITHDRAW_SUCCESS, WITHDRAW_FAIL],
   promise: (client) => client.post('/api/account/withdraw', data)
-})
+});
 
 export const updateInfo = (data) => ({
   types: [UPDATE_INFO, UPDATE_INFO_SUCCESS, UPDATE_INFO_FAIL],
   promise: (client) => client.post('/api/account/update_info', data)
-})
+});
 
 export const applyVerification = (data) => ({
   types: [APPLY_VERIFICATION, APPLY_VERIFICATION_SUCCESS, APPLY_VERIFICATION_FAIL],
@@ -155,156 +155,156 @@ export const findPassword = (data) => ({
 
 export const setRedir = () => ({
   type: SET_REDIR
-})
+});
 
 // Helper
 const wrapTransaction = (e) => ({
   ...e,
   createdAt: new Date(e.createdAt),
   updatedAt: new Date(e.updatedAt)
-})
+});
 
 // Reducer
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
-    case REGISTER_SUCCESS:
-    case LOGIN_SUCCESS:
+  case REGISTER_SUCCESS:
+  case LOGIN_SUCCESS:
+    setTimeout(() => {
+      store.dispatch(push(state.redir ? '/shopping' : '/account'));
+    }, 0);
+    return {
+      ...state,
+      message: null
+    };
+  case LOGOUT_SUCCESS:
+    setTimeout(() => {
+      store.dispatch(push('/'));
+    }, 0);
+    return {
+      ...state,
+      user: null,
+      message: null
+    };
+  case TOGGLE_TOPUP:
+    return {
+      ...state,
+      showTopupModal: !state.showTopupModal
+    };
+  case TOGGLE_WITHDRAW:
+    return {
+      ...state,
+      showWithdrawModal: !state.showWithdrawModal
+    };
+  case TOGGLE_MODIFY_LOGINPASS:
+    return {
+      ...state,
+      showModifyLoginpassModal: !state.showModifyLoginpassModal
+    };
+  case TOGGLE_MODIFY_PAYPASS:
+    return {
+      ...state,
+      showModifyPaypassModal: !state.showModifyPaypassModal
+    };
+  case TOGGLE_VERIFICATION:
+    return {
+      ...state,
+      showVerification: !state.showVerification
+    };
+  case LOAD_ACCOUNT_INFO_SUCCESS:
+    if (action.result.user && location.pathname === '/') {
       setTimeout(() => {
-        store.dispatch(push(state.redir?'/shopping':'/account'))
-      }, 0)
-      return {
-        ...state,
-        message: null
-      }
-    case LOGOUT_SUCCESS:
-      setTimeout(() => {
-        store.dispatch(push('/'))
-      }, 0)
-      return {
-        ...state,
-        user: null,
-        message: null
-      };
-    case TOGGLE_TOPUP:
-      return {
-        ...state,
-        showTopupModal: !state.showTopupModal
-      }
-    case TOGGLE_WITHDRAW:
-      return {
-        ...state,
-        showWithdrawModal: !state.showWithdrawModal
-      }
-    case TOGGLE_MODIFY_LOGINPASS:
-      return {
-        ...state,
-        showModifyLoginpassModal: !state.showModifyLoginpassModal
-      }
-    case TOGGLE_MODIFY_PAYPASS:
-      return {
-        ...state,
-        showModifyPaypassModal: !state.showModifyPaypassModal
-      }
-    case TOGGLE_VERIFICATION:
-      return {
-        ...state,
-        showVerification: !state.showVerification
-      };
-    case LOAD_ACCOUNT_INFO_SUCCESS:
-      if (action.result.user && location.pathname === '/') {
-        setTimeout(() => {
-          store.dispatch(push('/account'))
-        }, 0)
-      }
-      return {
-        ...state,
-        user: action.result.user,
-        message: null
-      }
-    case LOAD_TRANSACTIONS_SUCCESS:
-      return {
-        ...state,
+        store.dispatch(push('/account'));
+      }, 0);
+    }
+    return {
+      ...state,
+      user: action.result.user,
+      message: null
+    };
+  case LOAD_TRANSACTIONS_SUCCESS:
+    return {
+      ...state,
         // 映射 transactions 里的 createdAt 和 updatedAt 变成 Date Object
-        transactions: action.result.transactions.map(e => wrapTransaction(e)),
-        message: null
-      }
-    case TOPUP_SUCCESS:
-      return {
-        ...state,
-        user: { ...state.user, ...action.result.user },
-        transactions: [ ...state.transactions,
+      transactions: action.result.transactions.map(e => wrapTransaction(e)),
+      message: null
+    };
+  case TOPUP_SUCCESS:
+    return {
+      ...state,
+      user: { ...state.user, ...action.result.user },
+      transactions: [ ...state.transactions,
                         wrapTransaction(action.result.transaction) ],
-        showTopupModal: false,
-        message: null
-      }
-    case WITHDRAW_SUCCESS:
-      return {
-        ...state,
-        user: { ...state.user, ...action.result.user },
-        transactions: [ ...state.transactions,
+      showTopupModal: false,
+      message: null
+    };
+  case WITHDRAW_SUCCESS:
+    return {
+      ...state,
+      user: { ...state.user, ...action.result.user },
+      transactions: [ ...state.transactions,
                         wrapTransaction(action.result.transaction) ],
-        showWithdrawModal: false,
-        message: null
-      }
-    case UPDATE_INFO_SUCCESS:
-      return {
-        ...state,
-        user: { ...state.user, ...action.result.user },
-        message: null
-      }
-    case APPLY_VERIFICATION_SUCCESS:
-      return {
-        ...state,
-        showVerification: false,
-        user: { ...state.user, status: 1 },
-        message: null
-      };
-    case CHANGE_LOGINPASS_SUCCESS:
-      return {
-        ...state,
-        showModifyLoginpassModal: false,
-        message: null
-      };
-    case CHANGE_PAYPASS_SUCCESS:
-      return {
-        ...state,
-        showModifyPaypassModal: false,
-        message: null
-      };
-    case FIND_PASSWORD:
-      return state;
-    case FIND_PASSWORD_SUCCESS:
-      return {
-        ...state,
-        findRes: '已将新密码发送至您的邮箱。'
-      };
-    case FIND_PASSWORD_FAIL:
-      return {
-        ...state,
-        findRes: '用户名或邮箱输入有误。'
-      }
-    case SET_REDIR:
-      return {
-        ...state,
-        redir: true
-      }
+      showWithdrawModal: false,
+      message: null
+    };
+  case UPDATE_INFO_SUCCESS:
+    return {
+      ...state,
+      user: { ...state.user, ...action.result.user },
+      message: null
+    };
+  case APPLY_VERIFICATION_SUCCESS:
+    return {
+      ...state,
+      showVerification: false,
+      user: { ...state.user, status: 1 },
+      message: null
+    };
+  case CHANGE_LOGINPASS_SUCCESS:
+    return {
+      ...state,
+      showModifyLoginpassModal: false,
+      message: null
+    };
+  case CHANGE_PAYPASS_SUCCESS:
+    return {
+      ...state,
+      showModifyPaypassModal: false,
+      message: null
+    };
+  case FIND_PASSWORD:
+    return state;
+  case FIND_PASSWORD_SUCCESS:
+    return {
+      ...state,
+      findRes: '已将新密码发送至您的邮箱。'
+    };
+  case FIND_PASSWORD_FAIL:
+    return {
+      ...state,
+      findRes: '用户名或邮箱输入有误。'
+    };
+  case SET_REDIR:
+    return {
+      ...state,
+      redir: true
+    };
     // Errors
-    case CHANGE_PAYPASS_FAIL:
-    case CHANGE_LOGINPASS_FAIL:
-    case APPLY_VERIFICATION_FAIL:
-    case REGISTER_FAIL:
-    case LOGIN_FAIL:
-    case LOGOUT_FAIL:
-      return {
-        ...state,
-        message: (action.error.type && messages[action.error.type]) || '未知错误'
-      }
-    case '@@router/LOCATION_CHANGE':
-      return {
-        ...state,
-        __SECRET_RERENDER_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: !state.__SECRET_RERENDER_DO_NOT_USE_OR_YOU_WILL_BE_FIRED
-      }
-    default:
-      return state
+  case CHANGE_PAYPASS_FAIL:
+  case CHANGE_LOGINPASS_FAIL:
+  case APPLY_VERIFICATION_FAIL:
+  case REGISTER_FAIL:
+  case LOGIN_FAIL:
+  case LOGOUT_FAIL:
+    return {
+      ...state,
+      message: (action.error.type && messages[action.error.type]) || '未知错误'
+    };
+  case '@@router/LOCATION_CHANGE':
+    return {
+      ...state,
+      __SECRET_RERENDER_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: !state.__SECRET_RERENDER_DO_NOT_USE_OR_YOU_WILL_BE_FIRED
+    };
+  default:
+    return state;
   }
 }

@@ -9,7 +9,7 @@ import Container from '../Container';
 import Logo from '../Logo';
 import styles from './styles';
 
-import { logout } from '../../redux/modules/account'
+import { logout } from '../../redux/modules/account';
 /*
  * 菜单数据
  */
@@ -26,7 +26,7 @@ const getFirstPart = () => `/${location.pathname.split('/')[1]}`;
 )
 class NavBar extends React.Component {
   render() {
-    const { user, logout } = this.props
+    const { user, logout } = this.props;
     return (
       <Container className={styles.navbar}>
         <Logo className={styles.logo} />

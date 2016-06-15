@@ -23,7 +23,7 @@ class AuditorLoginPage extends React.Component {
         
        
       <div className={styles.wrapper}
-           style={{ height: window.innerHeight -85 }}>
+           style={{ height: window.innerHeight - 85 }}>
            
            
         {/* 占满整个屏幕 */}

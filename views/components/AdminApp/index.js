@@ -13,7 +13,7 @@ import './styles';
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState } }) => {
-      return dispatch(loadAdminInfo())
+      return dispatch(loadAdminInfo());
     }
   }]
 )

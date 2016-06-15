@@ -116,12 +116,12 @@ class AuditSearchPage extends React.Component {
   handleChange = (value) => {
     this.setState({
       range: [value[0], value[1]]
-    })
+    });
   }
   render() {
     const transactions = this.props.transactions.filter((e) =>
       e.createdAt >= this.state.range[0] && e.createdAt <= this.state.range[1]
-    )
+    );
     return (
       <div className={styles.container}>
         <div className={styles.mypicker}>

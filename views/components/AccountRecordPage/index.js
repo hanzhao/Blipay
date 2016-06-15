@@ -10,7 +10,7 @@ import AccountRecordTable from '../AccountRecordTable';
 import store from '../../redux/store';
 import styles from './styles';
 import {
-  loadTransactions,
+  loadTransactions
 } from '../../redux/modules/account';
 
 const RangePicker = DatePicker.RangePicker;
@@ -26,7 +26,7 @@ const tableProps = {
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState } }) => {
-      return dispatch(loadTransactions())
+      return dispatch(loadTransactions());
     }
   }],
   (state) => ({
@@ -41,12 +41,12 @@ class AccountRecordPage extends React.Component {
   handleChange = (value) => {
     this.setState({
       range: [value[0], value[1]]
-    })
+    });
   }
   render() {
     const transactions = this.props.transactions.filter((e) =>
       e.createdAt >= this.state.range[0] && e.createdAt <= this.state.range[1]
-    )
+    );
     return (
       <div className={styles.container}>
         <RangePicker className={styles.picker}

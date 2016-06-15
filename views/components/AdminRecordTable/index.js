@@ -19,7 +19,7 @@ const columns = [{
   render(text) {
     return (
       <span>{ text.adminName }</span>
-    )
+    );
   }
 }, {
   title: '操作时间',
@@ -28,7 +28,7 @@ const columns = [{
   render(text) {
     return (
       <span>{ moment(text).fromNow() }</span>
-    )
+    );
   }
 }];
 

@@ -9,7 +9,7 @@ import { Menu, Icon } from 'antd';
 const menus = [
   { to: '/booking/flight', text: '航班预订', icon: 'info-circle-o' },
   { to: '/booking/hotel', text: '酒店预订', icon: 'exception' },
-  { to: '/booking/manage_item', text: '商品管理', icon: 'exception' },
+  { to: '/booking/manage_item', text: '商品管理', icon: 'exception' }
 ];
 
 class BookingMenu extends React.Component {

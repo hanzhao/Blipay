@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import { message } from 'antd';
 import { Provider } from 'react-redux';
 import { Router, Route, IndexRoute, browserHistory } from 'react-router';
-import { ReduxAsyncConnect } from 'redux-connect'
+import { ReduxAsyncConnect } from 'redux-connect';
 import { syncHistoryWithStore } from 'react-router-redux';
 
 import moment from 'moment';
@@ -44,8 +44,8 @@ import ShoppingAddItemPage from './components/ShoppingAddItemPage';
 import ShoppingItemManage from './components/ShoppingItemManage';
 import NotFoundPage from './components/NotFoundPage';
 
-import BookingPage from './components/BookingPage'
-import BookingInfoPage from './components/BookingInfoPage'
+import BookingPage from './components/BookingPage';
+import BookingInfoPage from './components/BookingInfoPage';
 
 import AuditApp from './components/AuditApp';
 import AuditorLoginPage from './components/AuditorLoginPage';

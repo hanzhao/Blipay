@@ -20,7 +20,7 @@ class MainPage extends React.Component {
   render() {
     // 登录后会自动跳转
     if (this.props.user) {
-      return <span></span>
+      return <span></span>;
     }
     return (
       <div className={styles.wrapper}

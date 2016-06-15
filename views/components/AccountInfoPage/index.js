@@ -76,7 +76,7 @@ const validateName = (rule, value, callback) => {
 
 class AccountInfoPage extends React.Component {
   render() {
-    const { user, handleSubmit } = this.props
+    const { user, handleSubmit } = this.props;
     const items = [{
       title: '真实姓名',
       display: user.realName,

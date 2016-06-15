@@ -45,18 +45,18 @@ class ChatModal extends React.Component {
   render() {
     const { user, listUsers, showChatModal, sendMessage, chatUsers, chatMsgs, clearNewMsg, selectChater, chaterId, selfMsg, resetForm, fields: { text } } = this.props;
     const sendMsg = (e) => {
-      sendMessage(text.value)
-      selfMsg({ to: chaterId, text: text.value })
-      resetForm()
-      e.preventDefault()
-    }
-    if (!user) { return null }
+      sendMessage(text.value);
+      selfMsg({ to: chaterId, text: text.value });
+      resetForm();
+      e.preventDefault();
+    };
+    if (!user) { return null; }
     setTimeout(() => {
-      const node = ReactDOM.findDOMNode(this.refs.messages)
+      const node = ReactDOM.findDOMNode(this.refs.messages);
       if (node && node.scrollHeight) {
-        node.scrollTop = node.scrollHeight
+        node.scrollTop = node.scrollHeight;
       }
-    }, 0)
+    }, 0);
     return (
       <Modal title="消息" footer={null}
              wrapClassName="vertical-center-modal"
@@ -111,8 +111,8 @@ class ChatModal extends React.Component {
           </Col>
         </Row>
       </Modal>
-    )
+    );
   }
 }
 
-export default ChatModal
+export default ChatModal;

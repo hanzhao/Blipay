@@ -13,7 +13,7 @@ class AuditPage extends React.Component {
   render() {
     return (
        <div className={styles.wrapper}
-           style={{ height: window.innerHeight -85}}>
+           style={{ height: window.innerHeight - 85}}>
       
         <Container className={styles.container}>
         <div className={styles.left}>

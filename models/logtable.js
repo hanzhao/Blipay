@@ -31,8 +31,8 @@ module.exports = (db) => {
     },
     /*infomation*/
     info:{
-            type: Sequelize.STRING
-        },
+      type: Sequelize.STRING
+    }
     /*买家卖家id,转账id*/
   });
 };

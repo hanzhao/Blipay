@@ -9,7 +9,7 @@ const menus = [
   { to: '/admin/panel/manage/admin', text: '管理员', icon: 'user' }
 ];
 
-import styles from './styles'
+import styles from './styles';
 
 class AdminManagePage extends React.Component {
   render() {
@@ -28,8 +28,8 @@ class AdminManagePage extends React.Component {
           { this.props.children }
         </div>
       </div>
-    )
+    );
   }
 }
 
-export default AdminManagePage
+export default AdminManagePage;

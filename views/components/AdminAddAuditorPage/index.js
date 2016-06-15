@@ -14,7 +14,7 @@ import styles from './styles';
 
 const formItemLayout = {
   labelCol: { span: 8 },
-  wrapperCol: { span: 10 },
+  wrapperCol: { span: 10 }
 };
 
 const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
@@ -34,25 +34,25 @@ const validate = (values) => {
     errors.password = '密码必须包含字母和数字组合，长度至少 8 位';
   }
   if (!repassword) {
-    errors.repassword = '请重复填写登录密码'
+    errors.repassword = '请重复填写登录密码';
   } else if (repassword !== password) {
-    errors.repassword = '两次输入不一致'
+    errors.repassword = '两次输入不一致';
   }
   return errors;
 };
 
 function getValidate(item) {
   if (!item.touched) {
-    return {}
+    return {};
   } else if (!item.error) {
     return {
       validateStatus: 'success'
-    }
+    };
   } else {
     return {
       validateStatus: 'error',
       help: item.error
-    }
+    };
   }
 }
 
@@ -104,7 +104,7 @@ class AdminAddAuditorForm extends React.Component {
 
 class AdminAddAuditorPage extends React.Component {
   render() {
-      return (
+    return (
         <div>
           <AdminPageHeader icon="plus-circle-o" text="添加审计员" />
           <AdminAddAuditorForm />

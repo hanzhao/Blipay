@@ -1,23 +1,23 @@
-import React from 'react'
-import { Link } from 'react-router'
-import { asyncConnect } from 'redux-connect'
-import { Table, Popconfirm, Input, Button, Row, Col, Icon } from 'antd'
-import moment from 'moment'
+import React from 'react';
+import { Link } from 'react-router';
+import { asyncConnect } from 'redux-connect';
+import { Table, Popconfirm, Input, Button, Row, Col, Icon } from 'antd';
+import moment from 'moment';
 
 import { loadAdminsInfo,
          setAdminDisabled,
-         setAdminEnabled } from '../../redux/modules/admin'
-import store from '../../redux/store'
+         setAdminEnabled } from '../../redux/modules/admin';
+import store from '../../redux/store';
 
-import styles from './styles'
+import styles from './styles';
 
 const disableAdmin = (id) => {
-  store.dispatch(setAdminDisabled({ id }))
-}
+  store.dispatch(setAdminDisabled({ id }));
+};
 
 const enableAdmin = (id) => {
-  store.dispatch(setAdminEnabled({ id }))
-}
+  store.dispatch(setAdminEnabled({ id }));
+};
 
 const columns = [{
   title: '审计员 ID',
@@ -42,7 +42,7 @@ const columns = [{
   render(text) {
     return (
       <span>{ moment(text).format('LLL') }</span>
-    )
+    );
   }
 }, {
   title: '操作',
@@ -57,7 +57,7 @@ const columns = [{
             禁用
           </a>
         </Popconfirm>
-      )
+      );
     }
     else {
       return (
@@ -67,15 +67,15 @@ const columns = [{
             启用
           </a>
         </Popconfirm>
-      )
+      );
     }
   }
-}]
+}];
 
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState } }) => {
-      return dispatch(loadAdminsInfo({ level: 2 }))
+      return dispatch(loadAdminsInfo({ level: 2 }));
     }
   }],
   (state) => ({
@@ -89,11 +89,11 @@ class AdminManageAuditorPage extends React.Component {
   handleFilter = (e) => {
     this.setState({
       filter: e.target.value
-    })
+    });
   }
   render() {
     const admins = this.props.admins.filter(e => e.adminName.indexOf(this.state.filter) !== -1)
-                                    .map(e => ({ ...e, key: e.id }))
+                                    .map(e => ({ ...e, key: e.id }));
     return (
       <div>
         <div className={styles.input}>
@@ -116,8 +116,8 @@ class AdminManageAuditorPage extends React.Component {
                columns={columns}
                pagination={{ showSizeChanger: true }} />
       </div>
-    )
+    );
   }
 }
 
-export default AdminManageAuditorPage
+export default AdminManageAuditorPage;

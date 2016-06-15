@@ -39,7 +39,7 @@ const tableProps = {
 )
 class AuditUserPage extends React.Component {
   render() {
-    var loguser = this.props.loguser
+    var loguser = this.props.loguser;
     return (
       <div className={styles.container}>
       <div className={styles.balanceValue}>                

@@ -121,17 +121,17 @@ class AuditLatestRecordPage extends React.Component {
   handleChange = (value) => {
     this.setState({
       range: [value[0], value[1]]
-    })
+    });
   }
   render() {
     var transactions = this.props.transactions.filter((e) =>
       e.createdAt >= this.state.range[0] && e.createdAt <= this.state.range[1]
-    )
-    var i=0;
-    var flow=0;
-    while(i<transactions.length){
-    	flow=flow+transactions[i].totalCost;
-    	i++;
+    );
+    var i = 0;
+    var flow = 0;
+    while(i < transactions.length){
+    	                    flow = flow + transactions[i].totalCost;
+    	                    i++;
     }
     return (
       <div className={styles.container}>

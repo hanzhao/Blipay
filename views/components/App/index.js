@@ -12,7 +12,7 @@ import './styles';
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState }}) => {
-      return dispatch(loadAccountInfo())
+      return dispatch(loadAccountInfo());
     }
   }]
 )

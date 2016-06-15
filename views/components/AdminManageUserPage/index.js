@@ -1,22 +1,22 @@
-import React from 'react'
-import { asyncConnect } from 'redux-connect'
-import { Table, Popconfirm, Input,Icon } from 'antd'
-import moment from 'moment'
+import React from 'react';
+import { asyncConnect } from 'redux-connect';
+import { Table, Popconfirm, Input,Icon } from 'antd';
+import moment from 'moment';
 
 import { loadUsersInfo,
          setUserDisabled,
-         setUserEnabled } from '../../redux/modules/admin'
-import store from '../../redux/store'
+         setUserEnabled } from '../../redux/modules/admin';
+import store from '../../redux/store';
 
-import styles from './styles'
+import styles from './styles';
 
 const disableUser = (id) => {
-  store.dispatch(setUserDisabled({ id }))
-}
+  store.dispatch(setUserDisabled({ id }));
+};
 
 const enableUser = (id) => {
-  store.dispatch(setUserEnabled({ id }))
-}
+  store.dispatch(setUserEnabled({ id }));
+};
 
 const columns = [{
   title: '用户 ID',
@@ -51,7 +51,7 @@ const columns = [{
   render(text) {
     return (
       <span>{ moment(text).format('LLL') }</span>
-    )
+    );
   }
 }, {
   title: '认证状态',
@@ -59,12 +59,12 @@ const columns = [{
   key: 'status',
   render(text, record) {
     switch (record.status) {
-      case 1:
-        return <span className={styles.statusVerifying}>审核中</span>
-      case 2:
-        return <span className={styles.statusVerified}>认证通过</span>
-      default:
-        return <span className={styles.statusUnverified}>未认证</span>
+    case 1:
+      return <span className={styles.statusVerifying}>审核中</span>;
+    case 2:
+      return <span className={styles.statusVerified}>认证通过</span>;
+    default:
+      return <span className={styles.statusUnverified}>未认证</span>;
     }
   }
 }, {
@@ -80,7 +80,7 @@ const columns = [{
             冻结
           </a>
         </Popconfirm>
-      )
+      );
     }
     else {
       return (
@@ -90,15 +90,15 @@ const columns = [{
             解冻
           </a>
         </Popconfirm>
-      )
+      );
     }
   }
-}]
+}];
 
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState } }) => {
-      return dispatch(loadUsersInfo())
+      return dispatch(loadUsersInfo());
     }
   }],
   (state) => ({
@@ -112,11 +112,11 @@ class AdminManageUserPage extends React.Component {
   handleFilter = (e) => {
     this.setState({
       filter: e.target.value
-    })
+    });
   }
   render() {
     const users = this.props.users.filter(e => e.userName.indexOf(this.state.filter) !== -1)
-                                  .map(e => ({ ...e, key: e.id }))
+                                  .map(e => ({ ...e, key: e.id }));
     return (
       <div>
         <div className={styles.input}>
@@ -127,8 +127,8 @@ class AdminManageUserPage extends React.Component {
                columns={columns}
                pagination={{ showSizeChanger: true }} />
       </div>
-    )
+    );
   }
 }
 
-export default AdminManageUserPage
+export default AdminManageUserPage;

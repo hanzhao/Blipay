@@ -14,7 +14,7 @@ function showPopup(){
   message.success('注册成功！');
   setTimeout(() => {
     location.replace('/admin');
-  }, 1000)
+  }, 1000);
 }
 
 @reduxForm({

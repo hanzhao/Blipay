@@ -43,9 +43,9 @@ router.post('/account/register', Promise.coroutine(function* (req, res) {
     payPass: cookPassword(req.body.payPass, salt),
     lastLogin: new Date().toString()
   };
-  user = yield User.create(newUser)
-  req.session.userId = user.id
-  req.session.userName = user.userName
+  user = yield User.create(newUser);
+  req.session.userId = user.id;
+  req.session.userName = user.userName;
   return res.success({});
 }));
 
@@ -72,8 +72,8 @@ router.post('/account/login', Promise.coroutine(function* (req, res) {
   delete user.salt;
   delete user.loginPass;
   // 登录信息
-  req.session.userId = user.id
-  req.session.userName = user.userName
+  req.session.userId = user.id;
+  req.session.userName = user.userName;
   return res.success({ user });
 }));
 

@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 const Sequelize = require('sequelize');
 const config = require('../config').database;
 
@@ -45,15 +45,15 @@ Record.belongsTo(User, { as: 'buyer' });
 Logtable.belongsTo(User, { as: 'seller' });
 Logtable.belongsTo(User, { as: 'buyer' });
 
-Review.belongsTo(User)
+Review.belongsTo(User);
 Item.hasMany(Review);
-User.hasMany(Review)
+User.hasMany(Review);
 
-Attachment.belongsTo(User)
-Attachment.belongsToMany(Item, { through: ItemAttachment })
-Item.belongsToMany(Attachment, { through: ItemAttachment })
-AdminLog.belongsTo(Admin)
-User.hasMany(Attachment)
+Attachment.belongsTo(User);
+Attachment.belongsToMany(Item, { through: ItemAttachment });
+Item.belongsToMany(Attachment, { through: ItemAttachment });
+AdminLog.belongsTo(Admin);
+User.hasMany(Attachment);
 
 const initDatabase = Promise.coroutine(function* () {
   for (let t of [User, Item, Transaction, Order,
@@ -62,12 +62,12 @@ const initDatabase = Promise.coroutine(function* () {
     yield t.sync();
     // console.log(`Table ${t.name} synced`);
   }
-})
-initDatabase()
+});
+initDatabase();
 
 module.exports = {
   User, Item, Transaction, Order, OrderItem, Review, Attachment,
   ItemSeller, ItemAttachment,
   Admin, AdminLog, Arbitration, Identification, Specialaccount, Record, Logtable,
-  db,
+  db
 };

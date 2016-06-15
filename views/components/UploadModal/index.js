@@ -21,10 +21,10 @@ class UploadModal extends React.Component {
 
   render() {
     const uploadProps = {
-      action: "/api/photo/new",
-      name: "photo",
-      listType: "picture",
-      accept: "image/*",
+      action: '/api/photo/new',
+      name: 'photo',
+      listType: 'picture',
+      accept: 'image/*',
       onChange: this.handleChange
     };
     return (

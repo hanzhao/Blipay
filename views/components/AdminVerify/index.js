@@ -21,23 +21,23 @@ const tableProps = {
 
 const doVerify = (data) => (
   store.dispatch(verify(data))
-)
+);
 
 const columns = [{
   title: '用户 ID',
   dataIndex: 'id',
   key: 'id',
-  sorter: (a, b) => a.id < b.id ? -1: 1
+  sorter: (a, b) => a.id < b.id ? -1 : 1
 }, {
   title: '用户名',
   dataIndex: 'userName',
   key: 'userName',
-  sorter: (a, b) => a.userName < b.userName ? -1: 1
+  sorter: (a, b) => a.userName < b.userName ? -1 : 1
 }, {
   title: '用户身份证号码',
   dataIndex: 'idNumber',
   key: 'idNumber',
-  sorter: (a, b) => a.idNumber < b.idNumber ? -1: 1,
+  sorter: (a, b) => a.idNumber < b.idNumber ? -1 : 1,
   render(text, record) {
     return (
       <Popover content={
@@ -58,7 +58,7 @@ const columns = [{
       } title="身份证照片" trigger="hover">
         <Button type="dashed">{ text }</Button>
       </Popover>
-    )
+    );
   }
 }, {
   title: '用户真实姓名',
@@ -93,14 +93,14 @@ const columns = [{
         }
         { status === 2 && <span>通过了实名验证</span> }
       </div>
-    )
+    );
   }
 }];
 
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState } }) => {
-      return dispatch(loadVerifyingList())
+      return dispatch(loadVerifyingList());
     }
   }],
   (state) => ({

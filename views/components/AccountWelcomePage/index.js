@@ -208,12 +208,12 @@ const getGreeting = () => {
     toggleWithdraw: () => dispatch(toggleWithdraw()),
     logout: () => dispatch(logout()),
     handleTopup: (data) => dispatch(topup(data)),
-    handleWithdraw: (data) => dispatch(withdraw(data)),
+    handleWithdraw: (data) => dispatch(withdraw(data))
   })
 )
 class AccountWelcomePage extends React.Component {
   render() {
-    const { user, transactions } = this.props
+    const { user, transactions } = this.props;
     if (!user) {
       return <span />;
     }

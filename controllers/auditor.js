@@ -21,11 +21,11 @@ const transporter = nodemailer.createTransport(config.mailConfig);
 router.post('/auditor/check_recordid', Promise.coroutine(function* (req, res) {
   console.log('in check_recordid', req.body);
   if (!req.session.auditorId) {
-    return res.status(403).fail()
+    return res.status(403).fail();
   }
   const record = yield Record.findById(parseInt(req.body.id), {
     attributes: ['id']
-  })
+  });
   if (parseInt(req.body.id) === record.id) {
     return res.success();
   } else {
@@ -35,7 +35,7 @@ router.post('/auditor/check_recordid', Promise.coroutine(function* (req, res) {
 
 const cookPassword = (key, salt) => {
   var hash = crypto.createHash('sha512');
-  const mid = key.length >> 1
+  const mid = key.length >> 1;
   return hash.update(key.slice(0, mid))
     .update(salt)
     .update(key.slice(mid))
@@ -60,7 +60,7 @@ router.post('/auditor/login', Promise.coroutine(function* (req, res) {
     return res.fail({ type: 'USER_NOT_EXIST' });
   }
   const password = cookPassword(req.body.loginPass,
-                                user.salt)
+                                user.salt);
   // 密码错误
   if (password !== user.loginPass)
     return res.fail({ type: 'INVALID_USERNAME_OR_PASSWORD' });
@@ -68,10 +68,10 @@ router.post('/auditor/login', Promise.coroutine(function* (req, res) {
   /*user.lastLogin = new Date().toString()
   yield user.save()*/
   // 删除密码字段
-  delete user.salt
-  delete user.loginPass
+  delete user.salt;
+  delete user.loginPass;
   // 登录信息
-  req.session.auditorId = user.id
+  req.session.auditorId = user.id;
   return res.success({ user });
 }));
 
@@ -84,17 +84,17 @@ router.get('/auditor/logout', (req, res) => {
 router.get('/auditor/info', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/info');
   if (!req.session.auditorId) {
-    return res.success({ })
+    return res.success({ });
   }
   const user = yield User.findById(req.session.auditorId, {
     attributes: ['adminName', 'id']
-  })
-  return res.success({ user })
+  });
+  return res.success({ user });
 }));
 
 router.post('/auditor/addinfo', Promise.coroutine(function* (req, res) {
   if (!req.session.auditorId) {
-    return res.status(403).fail()
+    return res.status(403).fail();
   }
   yield Record.update({
     info: req.body.info
@@ -104,7 +104,7 @@ router.post('/auditor/addinfo', Promise.coroutine(function* (req, res) {
   const record = yield Record.findById(parseInt(req.body.id));
   if (record.wrongStatus > 0) {
     yield Logtable.update({
-    info: req.body.info
+      info: req.body.info
     }, {
       where: { orderId: record.orderId}
     });
@@ -115,7 +115,7 @@ router.post('/auditor/addinfo', Promise.coroutine(function* (req, res) {
 
 router.post('/auditor/searchorder', Promise.coroutine(function* (req, res) {
   if (!req.session.auditorId) {
-    return res.status(403).fail()
+    return res.status(403).fail();
   }
   const transaction = yield Record.findAll({
     where: {
@@ -128,7 +128,7 @@ router.post('/auditor/searchorder', Promise.coroutine(function* (req, res) {
 
 router.post('/auditor/searchbuyer', Promise.coroutine(function* (req, res) {
   if (!req.session.auditorId) {
-    return res.status(403).fail()
+    return res.status(403).fail();
   }
   const transaction = yield Record.findAll({
     where: {
@@ -141,7 +141,7 @@ router.post('/auditor/searchbuyer', Promise.coroutine(function* (req, res) {
 
 router.post('/auditor/searchseller', Promise.coroutine(function* (req, res) {
   if (!req.session.auditorId) {
-    return res.status(403).fail()
+    return res.status(403).fail();
   }
   const transaction = yield Record.findAll({
     where: {
@@ -155,54 +155,54 @@ router.post('/auditor/searchseller', Promise.coroutine(function* (req, res) {
 router.get('/auditor/transactions', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/transactions');
   if (!req.session.auditorId) {
-    return res.status(403).fail()
+    return res.status(403).fail();
   }
   const transactions = yield Record.findAll({
     order: ['id']
   });
-  return res.success({ transactions })
+  return res.success({ transactions });
 }));
 
 router.get('/auditor/log', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/log');
   if (!req.session.auditorId) {
-    return res.status(403).fail()
+    return res.status(403).fail();
   }
   const logtable = yield Logtable.findAll({
     order: ['id']
   });
-  return res.success({ logtable })
+  return res.success({ logtable });
 }));
 
 router.get('/auditor/user', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/user');
   if (!req.session.auditorId) {
-    return res.status(403).fail()
+    return res.status(403).fail();
   }
   const loguser = yield Users.findAll({
     where:{
       balance: {'$lt': 0}
     }
   });
-  return res.success({ loguser })
+  return res.success({ loguser });
 }));
 
 router.get('/auditor/insert', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/insert');
   if (!req.session.auditorId) {
-    return res.status(403).fail()
+    return res.status(403).fail();
   }
   const today = new Date();
   const order = yield Order.findAll({
     where:{
       status: 3,
-      updatedAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`,
-        `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()+1}`]}
+      updatedAt: {'$between': [`${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`,
+        `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate() + 1}`]}
     }
   });
   for (let i = 0; i < order.length; ++i) {
-    const cnt = yield Record.count({ where: { orderId: order[i].id } })
-    if (cnt > 0) { continue }
+    const cnt = yield Record.count({ where: { orderId: order[i].id } });
+    if (cnt > 0) { continue; }
     const buy = yield Transaction.findById(order[i].buyerTransId);
     const sell = yield Transaction.findById(order[i].sellerTransId);
     let k = 0;
@@ -240,13 +240,13 @@ router.get('/auditor/insert', Promise.coroutine(function* (req, res) {
   const record = yield Record.findAll({
     where:{
       wrongStatus: {'$gt': 0},
-      updatedAt: {'$between': [`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`,
-        `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()+1}`]}
+      updatedAt: {'$between': [`${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`,
+        `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate() + 1}`]}
     }
   });
   for (let i = 0; i < record.length; ++i) {
-    const cnt = yield Logtable.count({ where: { orderId: order[i].id } })
-    if (cnt > 0) { continue }
+    const cnt = yield Logtable.count({ where: { orderId: order[i].id } });
+    if (cnt > 0) { continue; }
     const newLogtable = {
       buyerId: record[i].buyerId,
       sellerId: record[i].sellerId,
@@ -257,7 +257,7 @@ router.get('/auditor/insert', Promise.coroutine(function* (req, res) {
       orderId: record[i].orderId,
       wrongStatus: record[i].wrongStatus
     };
-    const logtable = yield Logtable.create(newLogtable)
+    const logtable = yield Logtable.create(newLogtable);
   }
 
   return res.success({ transaction });

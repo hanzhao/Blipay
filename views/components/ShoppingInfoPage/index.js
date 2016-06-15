@@ -30,7 +30,7 @@ function fetch(value, callback) {
   function fake() {
     const str = querystring.encode({
       code: 'utf-8',
-      q: value,
+      q: value
     });
     jsonp(`http://suggest.taobao.com/sug?${str}`, (err, d) => {
       if (currentValue === value) {
@@ -39,7 +39,7 @@ function fetch(value, callback) {
         result.forEach((r) => {
           data.push({
             value: r[0],
-            text: r[0],
+            text: r[0]
           });
         });
         callback(data);
@@ -55,7 +55,7 @@ const SearchInput = React.createClass({
     return {
       data: [],
       value: '',
-      focus: false,
+      focus: false
     };
   },
   handleChange(value) {
@@ -63,21 +63,21 @@ const SearchInput = React.createClass({
     fetch(value, (data) => this.setState({ data }));
   },
   handleSubmit() {
-    this.props.handleSubmit(this.state.value)
+    this.props.handleSubmit(this.state.value);
   },
   handleFocusBlur(e) {
     this.setState({
-      focus: e.target === document.activeElement,
+      focus: e.target === document.activeElement
     });
   },
   render() {
     const btnCls = classNames({
       'ant-search-btn': true,
-      'ant-search-btn-noempty': !!this.state.value.trim(),
+      'ant-search-btn-noempty': !!this.state.value.trim()
     });
     const searchCls = classNames({
       'ant-search-input': true,
-      'ant-search-input-focus': this.state.focus,
+      'ant-search-input-focus': this.state.focus
     });
     const options = this.state.data.map(d =>
       <Select.Option key={d.value}>{d.text}</Select.Option>
@@ -106,13 +106,13 @@ const SearchInput = React.createClass({
         </Input.Group>
       </div>
     );
-  },
+  }
 });
 
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState } }) => {
-      return dispatch(loadItems())
+      return dispatch(loadItems());
     }
   }],
   (state) => ({
@@ -129,31 +129,31 @@ class ShoppingInfoPage extends React.Component {
     filter: ''
   }
   handleClick = (id) => {
-    store.dispatch(push(`/shopping/item/${id}`))
+    store.dispatch(push(`/shopping/item/${id}`));
   }
   handlePagination = (current) => {
-    this.setState({ current })
+    this.setState({ current });
   }
   handleFilter = (e) => {
     this.setState({
       filter: e
-    })
+    });
   }
   getPageSize = () => {
-    const right = document.getElementById('shopping-right')
+    const right = document.getElementById('shopping-right');
     if (right) {
-      const { width, height } = right.getBoundingClientRect()
-      return Math.floor(width / 270) * Math.floor((height - 200) / 310)
+      const { width, height } = right.getBoundingClientRect();
+      return Math.floor(width / 270) * Math.floor((height - 200) / 310);
     } else {
-      setTimeout(() => this.forceUpdate(), 1)
-      return 1
+      setTimeout(() => this.forceUpdate(), 1);
+      return 1;
     }
   }
   render() {
-    let { items, chatUsers, toggleSeller } = this.props
-    items = items.filter(e => e.name.indexOf(this.state.filter) !== -1)
-    const pageSize = this.getPageSize()
-    const { current } = this.state
+    let { items, chatUsers, toggleSeller } = this.props;
+    items = items.filter(e => e.name.indexOf(this.state.filter) !== -1);
+    const pageSize = this.getPageSize();
+    const { current } = this.state;
     return (
       <div>
         <ShoppingPageHeader icon="info-circle-o" text="浏览宝贝" />

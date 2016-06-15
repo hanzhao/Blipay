@@ -21,12 +21,12 @@ const Reject = React.createClass({
   getInitialState() {
     return {
       loading: false,
-      visible: false,
+      visible: false
     };
   },
   showModal() {
     this.setState({
-      visible: true,
+      visible: true
     });
   },
   handleOk() {
@@ -51,14 +51,14 @@ const Reject = React.createClass({
             <Button key="back" type="ghost" size="large" onClick={this.handleCancel}>返 回</Button>,
             <Button key="submit" type="primary" size="large" loading={this.state.loading} onClick={this.handleOk}>
               提 交
-            </Button>,
+            </Button>
           ]}>
           <Input placeholder="请输入拒绝理由" />
 
         </Modal>
       </div>
     );
-  },
+  }
 });
 
 const modalconfirm = Modal.confirm;
@@ -69,18 +69,18 @@ function showConfirm_accept() {
     onOk() {
       console.log('确定');
     },
-    onCancel() {},
+    onCancel() {}
   });
 }
 
 const columns1 = [{
   title: '用户名',
   dataIndex: 'name',
-  key: 'name',
+  key: 'name'
 }, {
   title: '用户ID',
   dataIndex: 'id',
-  key: 'id',
+  key: 'id'
 },{
   title: '用户真实姓名',
   dataIndex: 'realname',
@@ -127,7 +127,7 @@ const data1 = [{
 const data2 = [{
   key: '1',
   identification_front:'身份证正面',
-  identification_back:'身份证反面',
+  identification_back:'身份证反面'
 
 }];
 
@@ -136,7 +136,7 @@ const data3 = [{
   information:'浙江大学2013级学生'
 }];
 
-const datanull=null;
+const datanull = null;
 
 class AdminVerifyDetail extends React.Component {
   render() {

@@ -1,18 +1,18 @@
-import React from 'react'
-import { Carousel } from 'antd'
+import React from 'react';
+import { Carousel } from 'antd';
 
 import styles from './styles';
 
 class ShoppingPhotosCarousel extends React.Component {
   render() {
-    const { photos } = this.props
+    const { photos } = this.props;
     if (photos.length === 1) {
       return (
         <div>
           <img className={styles.photo}
                src={`/api/photo/show?id=${photos[0].id}`} />
         </div>
-      )
+      );
     }
     return (
       <Carousel autoplay>
@@ -21,8 +21,8 @@ class ShoppingPhotosCarousel extends React.Component {
              src={`/api/photo/show?id=${e.id}`} />
       ))}
       </Carousel>
-    )
+    );
   }
 }
 
-export default ShoppingPhotosCarousel
+export default ShoppingPhotosCarousel;

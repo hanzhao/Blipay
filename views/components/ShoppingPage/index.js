@@ -7,7 +7,7 @@ import styles from './styles';
 import Container from '../Container';
 import ShoppingMenu from '../ShoppingMenu';
 import ShoppingCart from '../ShoppingCart';
-import ShoppingLoggingModal from '../ShoppingLoggingModal'
+import ShoppingLoggingModal from '../ShoppingLoggingModal';
 import { connect } from 'react-redux';
 import {
   startChat
@@ -16,7 +16,7 @@ import {
 
 @connect(
   (state) => ({
-    user: state.account.user,
+    user: state.account.user
   }),
   (dispatch) => ({
     startChat: () => dispatch(startChat())
@@ -25,9 +25,9 @@ import {
 class ShoppingPage extends React.Component {
 
   render() {
-    console.log(this.props.userId)
+    console.log(this.props.userId);
     if(this.props.user)
-      startChat()
+      startChat();
     return(
       <div className={styles.wrapper}
            style={{ height: window.innerHeight - 85 }}>
@@ -42,7 +42,7 @@ class ShoppingPage extends React.Component {
         <ShoppingCart />
         <ShoppingLoggingModal />
       </div>
-    )
+    );
   }
 }
 

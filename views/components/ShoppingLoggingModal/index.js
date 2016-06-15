@@ -4,7 +4,7 @@ import { push } from 'react-router-redux';
 import { Link } from 'react-router';
 import { Modal, Table, Button } from 'antd';
 
-import { toggleLoginModal } from '../../redux/modules/shopping'
+import { toggleLoginModal } from '../../redux/modules/shopping';
 import styles from './styles';
 
 @connect(
@@ -15,7 +15,7 @@ import styles from './styles';
     toggleLoginModal: () => dispatch(toggleLoginModal()),
     redirectToLogin: () => {
       dispatch(push('/')),
-      dispatch(toggleLoginModal())
+      dispatch(toggleLoginModal());
     }
   })
 )
@@ -31,8 +31,8 @@ class ShoppingLoggingModal extends React.Component {
           您还没有登录 Blipay，登录后才可以进行结算哦！
         </div>
       </Modal>
-    )
+    );
   }
 }
 
-export default ShoppingLoggingModal
+export default ShoppingLoggingModal;

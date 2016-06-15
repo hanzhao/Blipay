@@ -6,44 +6,44 @@ import { InputNumber } from 'antd';
 const createForm = Form.create;
 const FormItem = Form.Item;
 import ajax from '../../common/ajax';
-let  currentID=0;
+let  currentID = 0;
 class ShoppingOrderPageTable extends React.Component {
   render()
   {
     const handleSubmit = ()=> {
       this.props.form.validateFields(async (errors) => {
-        let res=await ajax.post('/api/item/update',
+        let res = await ajax.post('/api/item/update',
           {
             id: this.props.content.id,
             name:  this.props.content.name ,
             price: this.props.content.price,
             remain: this.props.content.remain,
             thumb:  this.props.content.thumb,
-            description: this.props.content.description,
+            description: this.props.content.description
           } );
-        });
+      });
     };
     const handleDelete = ()=> {
       this.props.form.validateFields(async (errors) => {
-        let res=await ajax.post('/api/item/delete',
+        let res = await ajax.post('/api/item/delete',
           {
             id: this.props.content.id
           } );
-        });
+      });
     };
     const onChangePrice = (value)=> {
-        this.props.content.price=value;
+      this.props.content.price = value;
     };
     const onChangeRemain = (value)=> {
-        this.props.content.remain=value;
+      this.props.content.remain = value;
     };
     const onChangeDescription = (e)=> {
-        this.props.content.description=e.target.value;
-        console.log(e.target.value);
+      this.props.content.description = e.target.value;
+      console.log(e.target.value);
     };
     const onChangeName = (e)=> {
-        this.props.content.name= e.target.value;
-       console.log(e.target.value);
+      this.props.content.name = e.target.value;
+      console.log(e.target.value);
     };
     return (
           <Card className={styles.shoppingInfoCard}>

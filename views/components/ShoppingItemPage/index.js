@@ -1,7 +1,7 @@
-import React from 'react'
-import { Alert, Button, Icon, Row, Col, InputNumber, Rate } from 'antd'
-import { asyncConnect } from 'redux-connect'
-import moment from 'moment'
+import React from 'react';
+import { Alert, Button, Icon, Row, Col, InputNumber, Rate } from 'antd';
+import { asyncConnect } from 'redux-connect';
+import moment from 'moment';
 
 import ShoppingPageHeader from '../ShoppingPageHeader';
 import ShoppingPhotosCarousel from '../ShoppingPhotosCarousel';
@@ -14,16 +14,16 @@ import styles from './styles';
 
 const renderDescription = (text) => (
   <div className={styles.description}>
-    { text.split("\n").map((t, i) => (
+    { text.split('\n').map((t, i) => (
       <div key={i}>{ t }</div>
     )) }
   </div>
-)
+);
 
 class ReviewContent extends React.Component {
   render() {
-    const { e } = this.props
-    console.log(e)
+    const { e } = this.props;
+    console.log(e);
     return (
       <div className={styles.review}>
         <div className={styles.line}>
@@ -37,14 +37,14 @@ class ReviewContent extends React.Component {
           评论详情：{ e.text || '太好了！您的宝贝太完美了！' }
         </div>
       </div>
-    )
+    );
   }
 }
 
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState }, params }) => {
-      return dispatch(loadItem(parseInt(params.itemId)))
+      return dispatch(loadItem(parseInt(params.itemId)));
     }
   }],
   (state) => ({
@@ -60,10 +60,10 @@ class ShoppingItemPage extends React.Component {
     now: 1
   };
   saveAmount = (amount) => {
-    this.amount.now = amount
+    this.amount.now = amount;
   }
   render() {
-    const { user, item, handleAddCartItem } = this.props
+    const { user, item, handleAddCartItem } = this.props;
     return (
       <div>
         <ShoppingPageHeader icon="smile" text="浏览商品" />
@@ -139,8 +139,8 @@ class ShoppingItemPage extends React.Component {
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 
-export default ShoppingItemPage
+export default ShoppingItemPage;

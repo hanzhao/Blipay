@@ -48,9 +48,9 @@ const getItem = Promise.coroutine(function* (itemId) {
           }]
       }
     ]
-  })
-  return item
-})
+  });
+  return item;
+});
 
 const getItems = Promise.coroutine(function* () {
   const items = yield Item.findAll({
@@ -67,9 +67,9 @@ const getItems = Promise.coroutine(function* () {
         attributes: ['id']
       }
     ]
-  })
+  });
   return items;
-})
+});
 
 const createOrder = Promise.coroutine(function* (buyerId, items, addr) {
   console.log('service: createOrder:', items);
@@ -78,19 +78,19 @@ const createOrder = Promise.coroutine(function* (buyerId, items, addr) {
       return {
         e: yield Item.findById(e.id),
         amount: e.amount
-      }
-    })))
-    console.log(items)
+      };
+    })));
+    console.log(items);
     const seller = yield User.findOne({ where: { id: items[0].e.sellerId } });
     const buyer = yield User.findOne({ where: { id: buyerId } });
     if (!seller || !buyer) {
       throw new Error('User Not Found');
     }
-    let count = 0, cost = 0
+    let count = 0, cost = 0;
     items.forEach(e => {
-      count += e.amount
-      cost += e.amount * e.e.price
-    })
+      count += e.amount;
+      cost += e.amount * e.e.price;
+    });
     let newOrder = yield Order.create({
       count: count,
       totalCost: cost,
@@ -109,7 +109,7 @@ const createOrder = Promise.coroutine(function* (buyerId, items, addr) {
     }
   }
   catch (e) {
-    console.error(e.stack)
+    console.error(e.stack);
     console.error('Error in service newOrder:' + require('util').inspect(e));
   }
 });
@@ -124,7 +124,7 @@ const handleRefund = Promise.coroutine(
       }
       if (res) {// 退款
         // TODO:
-        const sellerRefund = yield requestPay(order.sellerId, order.totalCost, `订单 #${order.id} 退款`, true)
+        const sellerRefund = yield requestPay(order.sellerId, order.totalCost, `订单 #${order.id} 退款`, true);
         const refundTrans = yield requestReceive(order.buyerId, order.totalCost, `订单 #${order.id} 退款`);
         yield order.update({
           status: 7,

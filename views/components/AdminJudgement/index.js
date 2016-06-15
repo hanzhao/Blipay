@@ -11,7 +11,7 @@ import styles from './styles';
 
 //给table的数据集每个元素加上key
 function addKey(data){
-  let res = new Array()
+  let res = new Array();
   for(let i = 0; i < data.length ;i++){
     res.push({
       ...data[i],
@@ -34,12 +34,12 @@ function showDetail(title,content){
   });
 }
 
-const ops = { acceptOp: 'accept',denyOp: 'deny'}
+const ops = { acceptOp: 'accept',denyOp: 'deny'};
 
 const dealArbitrationInTable = (id,op) => {
   store.dispatch(dealArbitration({id,op}));
   store.dispatch(getArbitrationList());
-}
+};
 
 //定义表头以及每行渲染
 const columns = [{
@@ -117,7 +117,7 @@ class AdminJudgement extends React.Component {
         <Table text
                className={styles.table}
                columns={columns}
-               dataSource={addKey(arbitrationList||[])} />
+               dataSource={addKey(arbitrationList || [])} />
       </div>
     );
   }

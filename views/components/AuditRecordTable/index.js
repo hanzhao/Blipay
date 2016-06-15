@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table } from 'antd';
-import moment from 'moment'
+import moment from 'moment';
 
 import styles from './styles';
 
@@ -55,13 +55,13 @@ const columns = [{
   render(text){
     switch(text)
     {
-      case 0:
+    case 0:
       return '正确';
-      case 1:
+    case 1:
       return <p><font color="red">错误</font></p>;
-      case 2:
+    case 2:
       return <p><font color="orange">警告</font></p>;
-    } ;
+    } 
   },
   sorter: (a, b) => a.wrongStatus < b.wrongStatus ? -1 : 1
 }, {
@@ -70,9 +70,9 @@ const columns = [{
   key: 'info',
   render(text) {
     if (text && text.length > 15) {
-      return <abbr title={text}>鼠标移到此处</abbr>
+      return <abbr title={text}>鼠标移到此处</abbr>;
     } else {
-      return <span>{text || '暂无备注'}</span>
+      return <span>{text || '暂无备注'}</span>;
     }
   }
 }];

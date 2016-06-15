@@ -14,5 +14,5 @@ module.exports = (db) => {
     blob: {
       type: Sequelize.BLOB('medium')
     }
-  })
-}
+  });
+};

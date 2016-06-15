@@ -16,11 +16,11 @@ import ajax from '../../common/ajax';
 
 const getTotalAmount = (items) => (
   items.map(e => e.amount).reduce((a, b) => a + b, 0)
-)
+);
 
 const getTotalPrice = (items) => (
   items.map(e => e.price * e.amount).reduce((a, b) => a + b, 0)
-)
+);
 
 @connect(
   (state) => ({
@@ -38,11 +38,11 @@ const getTotalPrice = (items) => (
 )
 class ShoppingCart extends React.Component {
   render() {
-    const { cartItems } = this.props
+    const { cartItems } = this.props;
     return (
       <div className={classNames({
         [styles.cart]: true,
-        [styles.show]: (this.props.user||this.props.cartItems.length>0) && !this.props.showShoppingChat && !this.props.showShoppingCartModal
+        [styles.show]: (this.props.user || this.props.cartItems.length > 0) && !this.props.showShoppingChat && !this.props.showShoppingCartModal
       }) }>
         <ChatModal onCancel={this.props.toggleShoppingChat} footer={null} />
         <ShoppingCartModal onCancel={this.props.toggleShoppingCart} footer={null} />
@@ -74,7 +74,7 @@ class ShoppingCart extends React.Component {
           </div>
         </Container>
       </div>
-    )
+    );
   }
 }
 

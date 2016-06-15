@@ -6,7 +6,7 @@ import store from '../../redux/store';
 import { buyCartItems, toggleShoppingAddr } from '../../redux/modules/shopping';
 import { reduxForm } from 'redux-form';
 
-import { towns } from '../../common/cascaders'
+import { towns } from '../../common/cascaders';
 
 @connect(
   (state) => ({
@@ -30,14 +30,14 @@ class AddressModal extends React.Component {
       buyCartItems, showShoppingAddrModal, toggleShoppingAddr } = this.props;
     const submit = () => {
       if (!city.value) {
-        message.error('请选择地区')
+        message.error('请选择地区');
       } else if (!addr.value) {
-        message.error('请填写具体地址')
+        message.error('请填写具体地址');
       } else {
-        buyCartItems(city.value.reduce((a, b) => (a + b)) + addr.value)
-        toggleShoppingAddr()
+        buyCartItems(city.value.reduce((a, b) => (a + b)) + addr.value);
+        toggleShoppingAddr();
       }
-    }
+    };
     return (
       <Modal title="地址"
         visible={showShoppingAddrModal}
@@ -48,8 +48,8 @@ class AddressModal extends React.Component {
           <Input placeholder="具体地址" {...addr}/>
         </div>
       </Modal>
-    )
+    );
   }
 }
 
-export default AddressModal
+export default AddressModal;

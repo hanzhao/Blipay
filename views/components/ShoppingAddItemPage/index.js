@@ -15,41 +15,41 @@ import styles from './styles';
 
 const formItemLayout = {
   labelCol: { span: 8 },
-  wrapperCol: { span: 10 },
+  wrapperCol: { span: 10 }
 };
 
 const validate = (values) => {
-  const errors = {}
+  const errors = {};
   if (!values.name) {
-    errors.name = '商品名不能为空'
+    errors.name = '商品名不能为空';
   }
   if (values.name && values.name.length > 30) {
-    errors.name = '商品名不能大于 30 个字'
+    errors.name = '商品名不能大于 30 个字';
   }
   if (!values.description) {
-    errors.description = '请描述一下你的商品信息'
+    errors.description = '请描述一下你的商品信息';
   }
   if (values.description && values.description.length > 250) {
-    errors.description = '商品描述不能大于 250 个字'
+    errors.description = '商品描述不能大于 250 个字';
   }
   if (!values.photo || values.photo.length === 0) {
-    errors.photo = '请上传商品照片'
+    errors.photo = '请上传商品照片';
   }
   return errors;
-}
+};
 
 function getValidate(item) {
   if (!item.touched) {
-    return {}
+    return {};
   } else if (!item.error) {
     return {
       validateStatus: 'success'
-    }
+    };
   } else {
     return {
       validateStatus: 'error',
       help: item.error
-    }
+    };
   }
 }
 
@@ -74,18 +74,18 @@ function getValidate(item) {
 class ShoppingAddItemForm extends React.Component {
   handleChange = ({ file, fileList }) => {
     switch (file.status) {
-      case 'done':
-        message.success('成功上传了一张图片')
-        break
-      case 'error':
-        message.error(file.response.error)
-        break
-      default:
+    case 'done':
+      message.success('成功上传了一张图片');
+      break;
+    case 'error':
+      message.error(file.response.error);
+      break;
+    default:
         // ???
-        break
+      break;
     }
     // connect reduxForm
-    return this.props.fields.photo.onChange(fileList)
+    return this.props.fields.photo.onChange(fileList);
   }
   render() {
     const { fields: { name, price, remain, description, photo },
@@ -145,7 +145,7 @@ class ShoppingAddItemForm extends React.Component {
 
 class ShoppingItemAdd extends React.Component {
   render() {
-      return (
+    return (
         <div>
           <ShoppingPageHeader icon="plus-circle-o" text="添加商品" />
           <ShoppingAddItemForm />

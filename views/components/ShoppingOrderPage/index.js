@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { asyncConnect } from 'redux-connect';
-import { Link } from 'react-router'
+import { Link } from 'react-router';
 import { Modal, Form, Input, InputNumber, Rate, message, Cascader } from 'antd';
 import { Button } from 'antd';
 import { Checkbox } from 'antd';
@@ -9,7 +9,7 @@ import { Pagination } from 'antd';
 import { Radio } from 'antd';
 const RadioGroup = Radio.Group;
 
-import pic from './akarin.png'
+import pic from './akarin.png';
 import styles from './styles';
 import ShoppingPageHeader from '../ShoppingPageHeader';
 import FormModal from '../FormModal';
@@ -46,9 +46,9 @@ const pay = function (order) {
     onOk() {
       store.dispatch(payOrder(order.id));
     },
-    onCancel() { },
-  })
-}
+    onCancel() { }
+  });
+};
 
 const ship = function (order) {
   // store.dispatch(shipOrder(order));
@@ -59,21 +59,21 @@ const ship = function (order) {
     onOk() {
       store.dispatch(shipOrder(order.id));
     },
-    onCancel() { },
-  })
-}
+    onCancel() { }
+  });
+};
 
 const toggleReviewModal = function (order) {
   store.dispatch(toggleShoppingReview(order));
-}
+};
 
 const toggleRefundModal = function (orderId) {
   store.dispatch(toggleShoppingRefund(orderId));
-}
+};
 
 const toggleRefundConfirmModal = function (order) {
   store.dispatch(toggleShoppingRefundConfirm(order));
-}
+};
 
 
 @connect(
@@ -90,18 +90,18 @@ class ShoppingReviewModal extends React.Component {
     let reviews = [];
     const { order, confirm } = this.props;
     const handler = () => {
-      console.log(reviews)
-      confirm(order.id, reviews)
-    }
+      console.log(reviews);
+      confirm(order.id, reviews);
+    };
     const onScoreChanged = (index, score) => {
       reviews[index].score = score;
-    }
+    };
     const onTextChanged = (index, e) => {
       reviews[index].text = e.target.value;
-    }
+    };
     let items = [];
     if (order)
-      items = order.items
+      items = order.items;
     reviews = Array(items.length).fill({ score: 5, text: '太好了！您的宝贝太完美了！' });
     return (
       <Modal title="商品评价"
@@ -126,7 +126,7 @@ class ShoppingReviewModal extends React.Component {
           }
         </Form>
       </Modal>
-    )
+    );
   }
 }
 
@@ -154,10 +154,10 @@ class ShoppingRefundModal extends React.Component {
       reason
     }, refundRequest, orderId} = this.props;
     const handler = () => {
-      console.log(orderId)
-      console.log(reason.value)
-      refundRequest(orderId, reason.value)
-    }
+      console.log(orderId);
+      console.log(reason.value);
+      refundRequest(orderId, reason.value);
+    };
     return (
       <Modal title="退货申请"
         visible={this.props.showRefundModal}
@@ -169,7 +169,7 @@ class ShoppingRefundModal extends React.Component {
           </FormItem>
         </Form>
       </Modal>
-    )
+    );
   }
 }
 
@@ -196,15 +196,15 @@ class ShoppingRefundModal extends React.Component {
 class ShoppingRefundConfirmModal extends React.Component {
   render() {
     const {fields: {reason}, order, agree, agreeRefund, refuseRefund} = this.props;
-    let buyerReason = ''
+    let buyerReason = '';
     if (this.props.order)
-      buyerReason = this.props.order.buyerText
+      buyerReason = this.props.order.buyerText;
     const submit = function () {
       if (agree)
-        agreeRefund(order.id)
+        agreeRefund(order.id);
       else
-        refuseRefund(order.id, reason.value)
-    }
+        refuseRefund(order.id, reason.value);
+    };
     return (
       <Modal title="退货处理"
         visible={this.props.showRefundConfirmModal}
@@ -222,7 +222,7 @@ class ShoppingRefundConfirmModal extends React.Component {
           </FormItem>
         </Form>
       </Modal>
-    )
+    );
   }
 }
 
@@ -232,7 +232,7 @@ class ShoppingRefundConfirmModal extends React.Component {
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState } }) => {
-      return dispatch(loadOrders())
+      return dispatch(loadOrders());
     }
   }],
   (state) => ({
@@ -279,7 +279,7 @@ class ShoppingOrderPage extends React.Component {
     }, {
       title: '总数量',
       dataIndex: 'count',
-      key: 'count',
+      key: 'count'
     }, {
       title: '订单金额',
       dataIndex: 'totalCost',
@@ -293,43 +293,43 @@ class ShoppingOrderPage extends React.Component {
       key: 'status',
       render: (text, record) => {
         switch (record.status) {
-          case 0:
-            if (this.props.userId == record.buyerId)
-              return <Button type="ghost" onClick={ pay.bind(this, record) }>确认付款</Button>
-            else if (this.props.userId == record.sellerId)
-              return <spin>等待付款</spin>
-            break;
-          case 1:
-            if (this.props.userId == record.sellerId)
-              return <Button type="ghost" onClick={ ship.bind(this, record) }>确认发货</Button>
-            else if (this.props.userId == record.buyerId)
-              return <spin>等待发货</spin>
-            break;
-          case 2:
-            if (this.props.userId == record.buyerId)
-              return <Button type="ghost" onClick={toggleReviewModal.bind(this, record) }>确认收货</Button>
-            else if (this.props.userId == record.sellerId)
-              return <spin>等待收货</spin>
-            break;
-          case 3:
-            if (this.props.userId == record.buyerId)
-              return <Button type="ghost" onClick={toggleRefundModal.bind(this, record.id) }>退货申请</Button>
-            else if (this.props.userId == record.sellerId)
-              return <spin>对方已收货</spin>
-            break;
-          case 4:
-            if (this.props.userId == record.sellerId)
-              return <Button type="ghost" onClick={toggleRefundConfirmModal.bind(this, record) }>处理退货请求</Button>
-            return <spin>等待退货</spin>
-          case 5:
-            return <spin>完成退货</spin>
-          case 6:
-            return <spin>等待仲裁</spin>
-          case 7:
-            return <spin>仲裁退款</spin>
-          case 8:
-            return <spin>仲裁不退款</spin>
-          default:
+        case 0:
+          if (this.props.userId == record.buyerId)
+            return <Button type="ghost" onClick={ pay.bind(this, record) }>确认付款</Button>;
+          else if (this.props.userId == record.sellerId)
+            return <spin>等待付款</spin>;
+          break;
+        case 1:
+          if (this.props.userId == record.sellerId)
+            return <Button type="ghost" onClick={ ship.bind(this, record) }>确认发货</Button>;
+          else if (this.props.userId == record.buyerId)
+            return <spin>等待发货</spin>;
+          break;
+        case 2:
+          if (this.props.userId == record.buyerId)
+            return <Button type="ghost" onClick={toggleReviewModal.bind(this, record) }>确认收货</Button>;
+          else if (this.props.userId == record.sellerId)
+            return <spin>等待收货</spin>;
+          break;
+        case 3:
+          if (this.props.userId == record.buyerId)
+            return <Button type="ghost" onClick={toggleRefundModal.bind(this, record.id) }>退货申请</Button>;
+          else if (this.props.userId == record.sellerId)
+            return <spin>对方已收货</spin>;
+          break;
+        case 4:
+          if (this.props.userId == record.sellerId)
+            return <Button type="ghost" onClick={toggleRefundConfirmModal.bind(this, record) }>处理退货请求</Button>;
+          return <spin>等待退货</spin>;
+        case 5:
+          return <spin>完成退货</spin>;
+        case 6:
+          return <spin>等待仲裁</spin>;
+        case 7:
+          return <spin>仲裁退款</spin>;
+        case 8:
+          return <spin>仲裁不退款</spin>;
+        default:
         }
       }
     }
@@ -346,7 +346,7 @@ class ShoppingOrderPage extends React.Component {
       },
       onChange(current) {
         console.log('Current: ', current);
-      },
+      }
     };
     return (
       <div>

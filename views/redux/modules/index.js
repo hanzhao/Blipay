@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 const Sequelize = require('sequelize');
 const config = require('../config').database;
 
@@ -36,10 +36,10 @@ Order.belongsToMany(Item, { through: OrderItem });
 
 Item.hasMany(Review);
 
-Attachment.belongsTo(User)
-Attachment.belongsToMany(Item, { through: ItemAttachment })
-Item.belongsToMany(Attachment, { through: ItemAttachment })
-User.hasMany(Attachment)
+Attachment.belongsTo(User);
+Attachment.belongsToMany(Item, { through: ItemAttachment });
+Item.belongsToMany(Attachment, { through: ItemAttachment });
+User.hasMany(Attachment);
 
 
 const initDatabase = Promise.coroutine(function* () {
@@ -49,8 +49,8 @@ const initDatabase = Promise.coroutine(function* () {
     yield t.sync();
     console.log(`Table ${t.name} synced`);
   }
-})
-initDatabase()
+});
+initDatabase();
 
 module.exports = {
   User, Item, Transaction, Order, OrderItem, Review, Attachment,

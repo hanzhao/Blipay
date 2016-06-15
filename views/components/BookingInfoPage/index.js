@@ -9,7 +9,7 @@ import classNames from 'classnames';
 
 import store from '../../redux/store';
 import BookingPageHeader from '../BookingPageHeader';
-import { cities } from '../../common/cascaders'
+import { cities } from '../../common/cascaders';
 import {
   loadItems
 } from '../../redux/modules/booking';
@@ -24,17 +24,17 @@ const flightPrice = {
   'hangzhou': {
     'hangzhou': '请选择不同的出发地和目的地',
     'nanjing': '1080',
-    'shanghai': '580',
+    'shanghai': '580'
   }, 'nanjing': {
     'hangzhou': '1080',
     'nanjing': '请选择不同的出发地和目的地',
-    'shanghai': '780',
+    'shanghai': '780'
   }, 'shanghai': {
     'hangzhou': '580',
     'nanjing': '780',
-    'shanghai': '请选择不同的出发地和目的地',
-  },
-}
+    'shanghai': '请选择不同的出发地和目的地'
+  }
+};
 
 
 const flightCompany = [
@@ -42,12 +42,12 @@ const flightCompany = [
   '中国东方航空股份有限公司',
   '中国南方航空股份有限公司',
   '春秋航空有限公司'
-]
+];
 
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState } }) => {
-      return dispatch(loadItems())
+      return dispatch(loadItems());
     }
   }],
   (state) => ({
@@ -63,47 +63,47 @@ class BookingInfoPage extends React.Component {
     toPosition: ''
   }
   handleClick = (id) => {
-    store.dispatch(push(`/shopping/item/${id}`))
+    store.dispatch(push(`/shopping/item/${id}`));
   }
   handlePagination = (current) => {
-    this.setState({ current })
+    this.setState({ current });
   }
   handleFilter = (e) => {
     this.setState({
       filter: e
-    })
+    });
   }
   getPageSize = () => {
-    const right = document.getElementById('booking-right')
+    const right = document.getElementById('booking-right');
     if (right) {
-      const { width, height } = right.getBoundingClientRect()
-      return Math.floor(width / 270) * Math.floor((height - 200) / 310)
+      const { width, height } = right.getBoundingClientRect();
+      return Math.floor(width / 270) * Math.floor((height - 200) / 310);
     } else {
-      setTimeout(() => this.forceUpdate(), 1)
-      return 1
+      setTimeout(() => this.forceUpdate(), 1);
+      return 1;
     }
   }
   onChangeFromPosition = (value) => {
     if (value.length > 1) {
-      this.setState({ fromPosition: value[1] })
+      this.setState({ fromPosition: value[1] });
     } else {
-      this.setState({ fromPosition: '' })
+      this.setState({ fromPosition: '' });
     }
   }
   onChangeToPosition = (value) => {
     if (value.length > 1) {
-      this.setState({ toPosition: value[1] })
+      this.setState({ toPosition: value[1] });
     } else {
-      this.setState({ toPosition: '' })
+      this.setState({ toPosition: '' });
     }
   }
   render() {
-    const pageSize = this.getPageSize()
-    const { current } = this.state
-    let textL = (this.state.fromPosition != '' && this.state.toPosition != '') ? flightPrice[this.state.fromPosition][this.state.toPosition] : ''
-    let items = []
+    const pageSize = this.getPageSize();
+    const { current } = this.state;
+    let textL = (this.state.fromPosition != '' && this.state.toPosition != '') ? flightPrice[this.state.fromPosition][this.state.toPosition] : '';
+    let items = [];
     if (textL != '' && textL != '请选择不同的出发地和目的地') {
-      items = Array(4).fill({ price: textL })
+      items = Array(4).fill({ price: textL });
     }
     return (
       <div>

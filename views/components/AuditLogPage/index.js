@@ -45,12 +45,12 @@ class AuditLogPage extends React.Component {
   handleChange = (value) => {
     this.setState({
       range: [value[0], value[1]]
-    })
+    });
   }
   render() {
     const logtable = this.props.logtable.filter((e) =>
       e.createdAt >= this.state.range[0] && e.createdAt <= this.state.range[1]
-    )
+    );
     return (
       <div className={styles.container}>
       <RangePicker className={styles.picker}

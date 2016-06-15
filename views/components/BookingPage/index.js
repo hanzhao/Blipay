@@ -1,8 +1,8 @@
 
-import React from 'react'
-import styles from './styles'
-import Container from '../Container'
-import BookingMenu from '../BookingMenu'
+import React from 'react';
+import styles from './styles';
+import Container from '../Container';
+import BookingMenu from '../BookingMenu';
 
 class BookingPage extends React.Component {
   render() {
@@ -18,8 +18,8 @@ class BookingPage extends React.Component {
           </div>
         </Container>
       </div>
-    )
+    );
   }
 }
 
-export default BookingPage
+export default BookingPage;

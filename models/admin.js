@@ -33,6 +33,6 @@ module.exports = (db) =>{
     disabled: {
       type: Sequelize.INTEGER,
       defaultValue: 0
-    },
+    }
   });
 };

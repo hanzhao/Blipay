@@ -6,7 +6,7 @@ import { reduxForm } from 'redux-form';
 import { Form, Input, Checkbox } from 'antd';
 import { Pagination } from 'antd';
 import styles from './styles';
-import ShoppingItemManageTable from '../ShoppingItemManageTable'
+import ShoppingItemManageTable from '../ShoppingItemManageTable';
 import ShoppingPageHeader from '../ShoppingPageHeader';
 import { Card, Col, Row } from 'antd';
 import { Table } from 'antd';
@@ -18,9 +18,9 @@ const optionsPrice = [{
   value: 'priceLowToHigh',
   label: '价格从小到大'
 }, {
-    value: 'priceHighToLow',
-    label: '价格从大到小'
-  }];
+  value: 'priceHighToLow',
+  label: '价格从大到小'
+}];
 function onChange(value) {
   console.log(value);
 }
@@ -48,7 +48,7 @@ let BasicDemo = React.createClass
         </div>
       );
     }
-  })
+  });
 
 BasicDemo = createForm()(BasicDemo);
 class ShoppingItemManage extends React.Component {

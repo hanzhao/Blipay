@@ -30,7 +30,7 @@ router.get('/item/show', Promise.coroutine(function* (req, res) {
   if (!item) {
     return res.status(404).fail();
   }
-  return res.success({ item })
+  return res.success({ item });
 }));
 
 const validate = (i) => {
@@ -38,9 +38,9 @@ const validate = (i) => {
 };
 
 router.get('/items', Promise.coroutine(function* (req, res) {
-  const items = yield getItems()
+  const items = yield getItems();
   return res.success({ items });
-}))
+}));
 
 router.post('/item/item_list', Promise.coroutine(function* (req, res) {
   console.log('in /item/item_list');
@@ -98,11 +98,11 @@ router.post('/item/update', Promise.coroutine(function* (req, res) {
   try {
     const item = yield Item.findOne({ where: { id: req.body.id } });
     if (!item) {
-      return res.fail({ type: 'NO_ITEM' })
+      return res.fail({ type: 'NO_ITEM' });
     }
     // TODO: check item owner and authentication
     if (item.sellerId != req.session.userId) {
-      return res.fail({ type: 'AUTH_FAIL' })
+      return res.fail({ type: 'AUTH_FAIL' });
     }
     yield item.update(req.body);
     return res.success('Item updated.');
@@ -118,7 +118,7 @@ router.post('/item/delete', Promise.coroutine(function* (req, res) {
   try {
     const item = yield Item.findOne({ where: { id: req.body.id } });
     if (!item) {
-      return res.fail({ type: 'NO_ITEM' })
+      return res.fail({ type: 'NO_ITEM' });
     }
     // TODO: check item owner and authentication
     if (item.sellerId != req.session.userId) {
@@ -150,7 +150,7 @@ router.post('/order/delete', Promise.coroutine(function* (req, res) {
   try {
     const order = yield Order.findOne({ where: { id: req.body.orderId } });
     if (!order) {
-      return res.fail({ type: 'NO_ORDER' })
+      return res.fail({ type: 'NO_ORDER' });
     }
     // TODO: Use transaction
 
@@ -171,114 +171,114 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
       return res.fail({ type: 'NO_ORDER' });
     }
     switch (req.body.op) {
-      case 'pay':
-        if (order.status != 0) {
-          return res.fail({ type: 'INVALID_OP' })
-        }
-        if (req.session.userId != order.buyerId) {
-          return res.fail({ type: 'AUTH_FAIL' })
-        }
-        const payTrans = yield requestPay(order.buyerId, order.totalCost,
+    case 'pay':
+      if (order.status != 0) {
+        return res.fail({ type: 'INVALID_OP' });
+      }
+      if (req.session.userId != order.buyerId) {
+        return res.fail({ type: 'AUTH_FAIL' });
+      }
+      const payTrans = yield requestPay(order.buyerId, order.totalCost,
           `成功支付订单 #${order.id}`);
-        yield order.update({
-          buyerTransId: payTrans,
-          status: 1
-        });
-        break;
-      case 'ship':
-        if (order.status != 1) {
-          return res.fail({ type: 'INVALID_OP' })
-        }
+      yield order.update({
+        buyerTransId: payTrans,
+        status: 1
+      });
+      break;
+    case 'ship':
+      if (order.status != 1) {
+        return res.fail({ type: 'INVALID_OP' });
+      }
         // TODO:
-        if (req.session.userId != order.sellerId) {
-          return res.fail({ type: 'AUTH_FAIL' })
-        }
-        yield order.update({
-          status: 2
-        });
-        break;
-      case 'confirm':
-        if (order.status != 2) {
-          return res.fail({ type: 'INVALID_OP' })
-        }
+      if (req.session.userId != order.sellerId) {
+        return res.fail({ type: 'AUTH_FAIL' });
+      }
+      yield order.update({
+        status: 2
+      });
+      break;
+    case 'confirm':
+      if (order.status != 2) {
+        return res.fail({ type: 'INVALID_OP' });
+      }
         // TODO:
-        if (req.session.userId != order.buyerId) {
-          return res.fail({ type: 'AUTH_FAIL' })
-        }
-        const items = yield order.getItems();
-        for (var index = 0; index < items.length; index++) {
-          yield items[index].addReview(
+      if (req.session.userId != order.buyerId) {
+        return res.fail({ type: 'AUTH_FAIL' });
+      }
+      const items = yield order.getItems();
+      for (var index = 0; index < items.length; index++) {
+        yield items[index].addReview(
             yield Review.create({
               score: req.body.reviews[index].score,
               text: req.body.reviews[index].text,
               userId: req.session.userId
             })
           );
-        };
-        const confirmTrans = yield requestReceive(
+      }
+      const confirmTrans = yield requestReceive(
           order.sellerId, order.totalCost,
           `获得订单 #${order.id} 的收益`
         );
-        yield order.update({
-          sellerTransId: confirmTrans,
-          status: 3
-        });
-        break;
-      case 'reqRefund':
-        if (order.status != 2 && order.status != 3) {
-          return res.fail({ type: 'INVALID_OP' })
-        }
+      yield order.update({
+        sellerTransId: confirmTrans,
+        status: 3
+      });
+      break;
+    case 'reqRefund':
+      if (order.status != 2 && order.status != 3) {
+        return res.fail({ type: 'INVALID_OP' });
+      }
         // TODO:
-        if (req.session.userId != order.buyerId) {
-          return res.fail({ type: 'AUTH_FAIL' })
-        }
-        if (!validate(req.body.refundReason)) {
-          throw new Error('Expect refundReason');
-        }
-        yield order.update({
-          buyerText: req.body.refundReason,
-          status: 4
-        });
-        break;
-      case 'refuseRefund':
-        if (order.status != 4) {
-          return res.fail({ type: 'INVALID_OP' })
-        }
+      if (req.session.userId != order.buyerId) {
+        return res.fail({ type: 'AUTH_FAIL' });
+      }
+      if (!validate(req.body.refundReason)) {
+        throw new Error('Expect refundReason');
+      }
+      yield order.update({
+        buyerText: req.body.refundReason,
+        status: 4
+      });
+      break;
+    case 'refuseRefund':
+      if (order.status != 4) {
+        return res.fail({ type: 'INVALID_OP' });
+      }
         // TODO:
-        if (!validate(req.body.refuseReason)) {
-          throw new Error('Expect refuseReason');
-        }
-        yield order.update({
-          sellerText: req.body.refuseReason,
-          status: 6
-        });
-        const seller = yield User.findOne({where: {id: order.sellerId}})
-        const buyer = yield User.findOne({where: {id: order.buyerId}})
+      if (!validate(req.body.refuseReason)) {
+        throw new Error('Expect refuseReason');
+      }
+      yield order.update({
+        sellerText: req.body.refuseReason,
+        status: 6
+      });
+      const seller = yield User.findOne({where: {id: order.sellerId}});
+      const buyer = yield User.findOne({where: {id: order.buyerId}});
         // TODO: Call B5
-        yield Arbitration.create({
-          userName: buyer.userName,
-          complained: seller.userName,
-          buyerText: order.buyerText,
-          sellerText: order.sellerText,
-          orderId: order.id,
-          state: 'ing'
-        })
-        break;
-      case 'confirmRefund':
-        if (order.status != 4) {
-          return res.fail({ type: 'INVALID_OP' })
-        }
+      yield Arbitration.create({
+        userName: buyer.userName,
+        complained: seller.userName,
+        buyerText: order.buyerText,
+        sellerText: order.sellerText,
+        orderId: order.id,
+        state: 'ing'
+      });
+      break;
+    case 'confirmRefund':
+      if (order.status != 4) {
+        return res.fail({ type: 'INVALID_OP' });
+      }
         // TODO:
-        const sellerRefund = yield requestPay(order.sellerId, order.totalCost, `订单 #${order.id} 退款`)
-        const refundTrans = yield requestReceive(order.buyerId, order.totalCost, `订单 #${order.id} 退款`);
-        yield order.update({
-          status: 5,
-          refundTransId: refundTrans,
-          sellerRefundTransId: sellerRefund
-        });
-        break;
-      default:
-        return res.fail({ type: 'INVALID_OP' })
+      const sellerRefund = yield requestPay(order.sellerId, order.totalCost, `订单 #${order.id} 退款`);
+      const refundTrans = yield requestReceive(order.buyerId, order.totalCost, `订单 #${order.id} 退款`);
+      yield order.update({
+        status: 5,
+        refundTransId: refundTrans,
+        sellerRefundTransId: sellerRefund
+      });
+      break;
+    default:
+      return res.fail({ type: 'INVALID_OP' });
     }
     return res.success(order);
   }
@@ -346,4 +346,4 @@ router.post('/item/review', Promise.coroutine(function* (req, res) {
   }
 }));
 
-module.exports = router
+module.exports = router;
