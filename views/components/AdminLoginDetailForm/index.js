@@ -6,7 +6,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { Form, Input, Icon, Button } from 'antd';
-import { Link } from 'react-router';
 import styles from './styles';
 import { login } from '../../redux/modules/admin';
 

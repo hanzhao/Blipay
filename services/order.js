@@ -115,7 +115,7 @@ const createOrder = Promise.coroutine(function* (buyerId, items, addr) {
 });
 
 const handleRefund = Promise.coroutine(
-  function* (orderId, res, buyerRes, sellerRes) {
+  function* (orderId, res) {
     console.log('service: handleRefund:');
     try {
       const order = yield Order.findOne({ where: { id: orderId } });
@@ -124,8 +124,10 @@ const handleRefund = Promise.coroutine(
       }
       if (res) {// 退款
         // TODO:
-        const sellerRefund = yield requestPay(order.sellerId, order.totalCost, `订单 #${order.id} 退款`, true);
-        const refundTrans = yield requestReceive(order.buyerId, order.totalCost, `订单 #${order.id} 退款`);
+        const sellerRefund = yield requestPay(
+          order.sellerId, order.totalCost, `订单 #${order.id} 退款`, true);
+        const refundTrans = yield requestReceive(
+          order.buyerId, order.totalCost, `订单 #${order.id} 退款`);
         yield order.update({
           status: 7,
           refundTransId: refundTrans,

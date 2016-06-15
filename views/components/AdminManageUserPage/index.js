@@ -97,7 +97,7 @@ const columns = [{
 
 @asyncConnect(
   [{
-    promise: ({ store: { dispatch, getState } }) => {
+    promise: ({ store: { dispatch } }) => {
       return dispatch(loadUsersInfo());
     }
   }],
@@ -115,12 +115,15 @@ class AdminManageUserPage extends React.Component {
     });
   }
   render() {
-    const users = this.props.users.filter(e => e.userName.indexOf(this.state.filter) !== -1)
+    const users = 
+      this.props.users.filter(e => e.userName.indexOf(this.state.filter) !== -1)
                                   .map(e => ({ ...e, key: e.id }));
     return (
       <div>
         <div className={styles.input}>
-          <Input addonBefore={<Icon type="search" />} value={this.state.filter} onChange={this.handleFilter}
+          <Input addonBefore={<Icon type="search" />} 
+                  value={this.state.filter} 
+                  onChange={this.handleFilter}
                  placeholder="输入用户名开始搜索" />
         </div>
         <Table dataSource={users}

@@ -5,7 +5,6 @@ import React from 'react';
 
 import Container from '../Container';
 import AuditorLogin1 from '../AuditorLogin1';
-import AuditorLoginBar from '../AuditorLoginBar';
 import styles from './styles';
 import mascot from './2233.png';
 import dust from './dust.png';

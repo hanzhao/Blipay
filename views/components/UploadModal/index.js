@@ -2,8 +2,8 @@
  * 用于上传文件的提示框
  */
 import React from 'react';
-import { connect } from 'react-redux';
-import { Modal, Upload, Icon, Button, message } from 'antd';
+
+import { Modal, Upload, Icon, Button } from 'antd';
 import styles from './styles';
 
 class UploadModal extends React.Component {
@@ -51,7 +51,8 @@ class UploadModal extends React.Component {
           <Button className={styles.confirm}
                   type="primary"
                   onClick={this.props.btnCallback.bind(this, {
-                    attachments: this.state.fileList.map(e => e.response && e.response.data.attachmentId)
+                    attachments: this.state.fileList.map(
+                        e => e.response && e.response.data.attachmentId)
                   })}
                   loading={this.props.loading === true}>
             {this.props.btnText}

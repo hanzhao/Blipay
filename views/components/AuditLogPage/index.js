@@ -1,16 +1,11 @@
 import React from 'react';
 import _ from 'lodash';
 import { asyncConnect } from 'redux-connect';
-import { Form, DatePicker, Button } from 'antd';
+import { DatePicker } from 'antd';
 import AuditRecordTable from '../AuditRecordTable';
-import FormModal from '../FormModal';
 import styles from './styles';
-import ajax from '../../common/ajax';
-import store from '../../redux/store';
-import moment from 'moment';
 import {
   logout,
-  loadTransactions,
   loadLog
 } from '../../redux/modules/auditor';
 
@@ -26,7 +21,7 @@ const tableProps = {
 
 @asyncConnect(
   [{
-    promise: ({ store: { dispatch, getState } }) => {
+    promise: ({ store: { dispatch } }) => {
       return dispatch(loadLog());
     }
   }],

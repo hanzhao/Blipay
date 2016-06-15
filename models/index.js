@@ -58,7 +58,8 @@ User.hasMany(Attachment);
 const initDatabase = Promise.coroutine(function* () {
   for (let t of [User, Item, Transaction, Order,
                  OrderItem, Review, Attachment, ItemAttachment,
-                 Admin, AdminLog, Arbitration, Identification, Specialaccount, Record, Logtable]) {
+                 Admin, AdminLog, Arbitration, Identification, 
+                 Specialaccount, Record, Logtable]) {
     yield t.sync();
     // console.log(`Table ${t.name} synced`);
   }
@@ -68,6 +69,7 @@ initDatabase();
 module.exports = {
   User, Item, Transaction, Order, OrderItem, Review, Attachment,
   ItemSeller, ItemAttachment,
-  Admin, AdminLog, Arbitration, Identification, Specialaccount, Record, Logtable,
+  Admin, AdminLog, Arbitration, Identification, 
+  Specialaccount, Record, Logtable,
   db
 };

@@ -1,4 +1,3 @@
-const request = require('supertest');
 const proxy = require('../helper');
 const router = require('../../controllers/order');
 

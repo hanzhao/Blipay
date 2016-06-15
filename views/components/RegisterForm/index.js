@@ -7,7 +7,6 @@ import { reduxForm } from 'redux-form';
 import { Form, Input, Icon, Button } from 'antd';
 import { connect } from 'react-redux';
 import { register } from '../../redux/modules/account';
-import store from '../../redux/store';
 import ajax from '../../common/ajax';
 import styles from './styles';
 

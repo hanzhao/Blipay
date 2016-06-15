@@ -3,7 +3,7 @@
 global.Promise = require('bluebird');
 global.ROOT = __dirname;
 
-const glob = require('glob');
+
 const http = require('http');
 // Express 服务器框架
 const express = require('express');
@@ -92,7 +92,7 @@ require('./models');
 app.use(require('./controllers'));
 
 // 错误处理
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   res.status(500).send(err.stack);
   console.error(err);
 });

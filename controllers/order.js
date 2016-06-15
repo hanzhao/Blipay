@@ -179,7 +179,7 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
         return res.fail({ type: 'AUTH_FAIL' });
       }
       const payTrans = yield requestPay(order.buyerId, order.totalCost,
-          `成功支付订单 #${order.id}`);
+                `成功支付订单 #${order.id}`);
       yield order.update({
         buyerTransId: payTrans,
         status: 1
@@ -189,7 +189,7 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
       if (order.status != 1) {
         return res.fail({ type: 'INVALID_OP' });
       }
-        // TODO:
+              // TODO:
       if (req.session.userId != order.sellerId) {
         return res.fail({ type: 'AUTH_FAIL' });
       }
@@ -201,24 +201,24 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
       if (order.status != 2) {
         return res.fail({ type: 'INVALID_OP' });
       }
-        // TODO:
+              // TODO:
       if (req.session.userId != order.buyerId) {
         return res.fail({ type: 'AUTH_FAIL' });
       }
       const items = yield order.getItems();
       for (var index = 0; index < items.length; index++) {
         yield items[index].addReview(
-            yield Review.create({
-              score: req.body.reviews[index].score,
-              text: req.body.reviews[index].text,
-              userId: req.session.userId
-            })
-          );
+                  yield Review.create({
+                    score: req.body.reviews[index].score,
+                    text: req.body.reviews[index].text,
+                    userId: req.session.userId
+                  })
+                );
       }
       const confirmTrans = yield requestReceive(
-          order.sellerId, order.totalCost,
-          `获得订单 #${order.id} 的收益`
-        );
+                order.sellerId, order.totalCost,
+                `获得订单 #${order.id} 的收益`
+              );
       yield order.update({
         sellerTransId: confirmTrans,
         status: 3
@@ -228,7 +228,7 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
       if (order.status != 2 && order.status != 3) {
         return res.fail({ type: 'INVALID_OP' });
       }
-        // TODO:
+              // TODO:
       if (req.session.userId != order.buyerId) {
         return res.fail({ type: 'AUTH_FAIL' });
       }
@@ -244,7 +244,7 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
       if (order.status != 4) {
         return res.fail({ type: 'INVALID_OP' });
       }
-        // TODO:
+              // TODO:
       if (!validate(req.body.refuseReason)) {
         throw new Error('Expect refuseReason');
       }
@@ -254,7 +254,7 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
       });
       const seller = yield User.findOne({where: {id: order.sellerId}});
       const buyer = yield User.findOne({where: {id: order.buyerId}});
-        // TODO: Call B5
+              // TODO: Call B5
       yield Arbitration.create({
         userName: buyer.userName,
         complained: seller.userName,
@@ -268,9 +268,13 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
       if (order.status != 4) {
         return res.fail({ type: 'INVALID_OP' });
       }
-        // TODO:
-      const sellerRefund = yield requestPay(order.sellerId, order.totalCost, `订单 #${order.id} 退款`);
-      const refundTrans = yield requestReceive(order.buyerId, order.totalCost, `订单 #${order.id} 退款`);
+              // TODO:
+      const sellerRefund 
+              = yield requestPay(
+                order.sellerId, order.totalCost, `订单 #${order.id} 退款`);
+      const refundTrans 
+              = yield requestReceive(
+                order.buyerId, order.totalCost, `订单 #${order.id} 退款`);
       yield order.update({
         status: 5,
         refundTransId: refundTrans,

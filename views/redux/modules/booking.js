@@ -29,7 +29,8 @@ const CLEAR_SHOPPING_CART = 'Blipay/shopping/CLEAR_SHOPPING_CART';
 // 订单页面各Modal
 const TOGGLE_SHOPPING_REVIEW = 'Blipay/shopping/TOGGLE_SHOPPING_REVIEW';
 const TOGGLE_SHOPPING_REFUND = 'Blipay/shopping/TOGGLE_SHOPPING_REFUND';
-const TOGGLE_SHOPPING_REFUND_CONFIRM = 'Blipay/shopping/TOGGLE_SHOPPING_REFUND_CONFIRM';
+const TOGGLE_SHOPPING_REFUND_CONFIRM = 
+  'Blipay/shopping/TOGGLE_SHOPPING_REFUND_CONFIRM';
 
 // 获取订单信息
 const LOAD_ORDERS = 'Blipay/shopping/LOAD_ORDERS';
@@ -87,7 +88,8 @@ export const loadItems = () => ({
 
 export const loadOrders = () => ({
   types: [LOAD_ORDERS, LOAD_ORDERS_SUCCESS, LOAD_ORDERS_FAIL],
-  promise: (client) => client.post('/api/order/order_list', { sellerId: true, buyerId: true })
+  promise: (client) => 
+    client.post('/api/order/order_list', { sellerId: true, buyerId: true })
 });
 
 export const addCartItem = (item) => ({
