@@ -2,6 +2,7 @@
 const _ = require('lodash');
 const db = require('../models').db;
 const User = require('../models').Admin;
+const Users = require('../models').User;
 const Transaction = require('../models').Transaction;
 const Record = require('../models').Record;
 const Logtable = require('../models').Logtable;
@@ -171,6 +172,19 @@ router.get('/auditor/log', Promise.coroutine(function* (req, res) {
     order: ['id']
   });
   return res.success({ logtable })
+}));
+
+router.get('/auditor/user', Promise.coroutine(function* (req, res) {
+  console.log('in /auditor/user');
+  if (!req.session.auditorId) {
+    return res.status(403).fail()
+  }
+  const loguser = yield Users.findAll({
+    where:{
+      balance: {'$lt': 0}
+    }
+  });
+  return res.success({ loguser })
 }));
 
 router.get('/auditor/insert', Promise.coroutine(function* (req, res) {
