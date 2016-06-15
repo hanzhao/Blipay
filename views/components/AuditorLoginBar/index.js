@@ -1,5 +1,5 @@
 /*
- * 导航条类
+ * 审计员导航条类
  */
 import React from 'react';
 import { Link } from 'react-router';

@@ -1,5 +1,5 @@
 /*
- * 首页
+ * 管理员首页
  */
 import React from 'react';
 

@@ -1,5 +1,5 @@
 /*
- * 主页注册或登录框
+ * 管理员主页注册或登录框
  */
 
 import React from 'react';

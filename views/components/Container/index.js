@@ -1,5 +1,5 @@
 /*
- * 960px/1200px/1600px 自适应居中
+ * 960px/1200px/1600px 自适应居中容器
  */
 
 import React from 'react';

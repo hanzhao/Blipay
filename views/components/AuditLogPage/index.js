@@ -1,3 +1,4 @@
+/** 审计交易记录 */
 import React from 'react';
 import _ from 'lodash';
 import { asyncConnect } from 'redux-connect';
@@ -14,6 +15,7 @@ import {
   loadLog
 } from '../../redux/modules/auditor';
 
+/** 日期选择 */
 const RangePicker = DatePicker.RangePicker;
 
 const tableProps = {

@@ -1,25 +1,4 @@
-/*
- * 
- */
-/*import React from 'react';
-
-import AuditorLoginBar from '../AuditorLoginBar/';
-
-import './styles';
-
-class App extends React.Component {
-  render() {
-    return (
-      <div>
-        <AuditorLoginBar />
-        { this.props.children }
-      </div>
-    );
-  }
-}
-
-export default App;*/
-
+/** 审计员顶级页面 */
 import React from 'react';
 import { asyncConnect } from 'redux-connect';
 

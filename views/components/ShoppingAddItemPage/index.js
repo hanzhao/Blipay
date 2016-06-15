@@ -1,3 +1,4 @@
+/** 购物 添加商品 */
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';

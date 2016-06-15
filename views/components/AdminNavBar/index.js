@@ -1,6 +1,4 @@
-/*
- * 导航条类
- */
+/** 管理员页面顶部导航条 */
 import React from 'react';
 import Container from '../Container';
 import Logo from '../Logo';

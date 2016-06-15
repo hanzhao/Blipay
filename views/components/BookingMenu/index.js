@@ -1,5 +1,5 @@
 /*
- * booking menu
+ * 订票左边菜单
  */
 
 import React from 'react';

@@ -20,6 +20,7 @@ import {
   withdraw
 } from '../../redux/modules/account';
 
+/** 检验充值金额 */
 const validateTopupAmount = (rule, value, callback) => {
   if (!value) {
     callback();
@@ -39,6 +40,7 @@ const validateTopupAmount = (rule, value, callback) => {
   }
 };
 
+/** 检验提现金额 */
 const validateWithdrawAmount = (rule, value, callback) => {
   if (!value) {
     callback();
@@ -71,6 +73,7 @@ const validatePaypass = async (rule, value, callback) => {
   }
 };
 
+/** 检验卡号 */
 const validateCard = (rule, value, callback) => {
   if (!value) {
     callback();
@@ -83,6 +86,7 @@ const validateCard = (rule, value, callback) => {
   }
 };
 
+/** 提现表单 */
 const withdrawalPropsArray = [
   {
     input: {
@@ -123,6 +127,7 @@ const withdrawalPropsArray = [
   }
 ];
 
+/** 充值表单 */
 const topupPropsArray = [
   {
     input: {
@@ -191,6 +196,7 @@ const getGreeting = () => {
     return '晚上好';
 };
 
+/** 主页面 */
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState } }) => {

@@ -1,5 +1,5 @@
 /*
-* gou mai shang pin
+* 商品父页面
 */
 
 import React from 'react';

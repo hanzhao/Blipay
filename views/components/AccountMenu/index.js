@@ -1,5 +1,5 @@
 /*
- * 左边的导航条
+ * 账户页面左边的导航条
  */
 
 import React from 'react';

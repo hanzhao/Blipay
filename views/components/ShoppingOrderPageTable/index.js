@@ -1,3 +1,4 @@
+/** 订单信息表 */
 import React from 'react';
 import styles from './styles';
 import { Form, Button , Card ,Input} from 'antd';

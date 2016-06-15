@@ -1,5 +1,5 @@
 /*
- * 个人账户界面
+ * 管理员个人账户界面
  */
 
 import React from 'react';

@@ -1,3 +1,4 @@
+/** 管理员 管理用户界面 */
 import React from 'react';
 import { Link } from 'react-router';
 import { Menu, Icon } from 'antd';

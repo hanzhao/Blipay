@@ -1,9 +1,11 @@
+/** 管理员日志页面 */
 import React from 'react';
 import { Table } from 'antd';
 import moment from 'moment';
 
 import styles from './styles';
 
+/** 表格头 */
 const columns = [{
   title: '日志 ID',
   dataIndex: 'id',
@@ -32,6 +34,7 @@ const columns = [{
   }
 }];
 
+/** 表格头 */
 class AdminRecordTable extends React.Component {
   render() {
     return (

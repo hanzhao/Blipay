@@ -1,6 +1,4 @@
-/*
- * Admin for users' verification
-*/
+/** 管理员处理用户实名验证页面 */
 import React from 'react';
 import { Link } from 'react-router';
 import { Input, Button, Row, Col, Table, Popover, Popconfirm } from 'antd';

@@ -1,3 +1,4 @@
+/** 商品展示页 */
 import React from 'react';
 import { push } from 'react-router-redux';
 import { asyncConnect } from 'redux-connect';

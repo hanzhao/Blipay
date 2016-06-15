@@ -1,9 +1,11 @@
+/** 审计用户的数据表格 */
 import React from 'react';
 import { Table } from 'antd';
 import moment from 'moment'
 
 import styles from './styles';
 
+/** 表头 */
 const columns = [{
   title: '用户编号',
   dataIndex: 'id',
@@ -40,6 +42,7 @@ const columns = [{
   sorter: (a, b) => a.updatedAt < b.updatedAt ? -1 : 1
 },];
 
+/**填充表格 */
 const wrapAmount = (data) => {
   return data.map((d, index) => ({
     ...d,

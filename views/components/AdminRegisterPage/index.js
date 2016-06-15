@@ -1,5 +1,5 @@
 /*
- * 注册界面
+ * 管理员注册界面
  */
 import React from 'react';
 import { reduxForm } from 'redux-form';
@@ -17,6 +17,7 @@ function showPopup(){
   }, 1000)
 }
 
+/** 表单修饰 */
 @reduxForm({
   form: 'user-register',
   fields: ['username', 'password','level','realname','phone','email']

@@ -1,7 +1,4 @@
-/*
- * shopping menu
- */
-
+/** 购物页面导航 */
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';

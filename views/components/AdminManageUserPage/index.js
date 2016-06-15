@@ -1,3 +1,4 @@
+/** 管理员管理用户界面 */
 import React from 'react'
 import { asyncConnect } from 'redux-connect'
 import { Table, Popconfirm, Input,Icon } from 'antd'
@@ -18,6 +19,7 @@ const enableUser = (id) => {
   store.dispatch(setUserEnabled({ id }))
 }
 
+/** 表格头 */
 const columns = [{
   title: '用户 ID',
   dataIndex: 'id',
@@ -95,6 +97,7 @@ const columns = [{
   }
 }]
 
+/** 主页面 */
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState } }) => {

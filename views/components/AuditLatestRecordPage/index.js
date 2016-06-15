@@ -19,8 +19,10 @@ import {
   addinfo
 } from '../../redux/modules/auditor';
 
+/** 选择日期 */
 const RangePicker = DatePicker.RangePicker;
 
+/** 表单属性 */
 const tableProps = {
   pagination: {
     simple: true,
@@ -29,6 +31,7 @@ const tableProps = {
   }
 };
 
+/** 表单内容校验 */
 const validateId = async (rule, value, callback) => {
   try {
     await ajax.post('/api/auditor/check_recordid', {
@@ -53,6 +56,7 @@ const validateInfo = (rule, value, callback) => {
   }
 };
 
+/** 表单格式 */
 const addinfoPropsArray = [
   {
     input: {
@@ -81,6 +85,7 @@ const addinfoPropsArray = [
   }
 ];
 
+/** 数字处理 */
 const getFlowHead = (flow) => {
   if (isNaN(flow))
     return '0';
@@ -95,7 +100,7 @@ const getFlowTail = (flow) => {
     return (flow.toFixed(2) + '').split('.')[1];
 };
 
-
+/** 主页面 */
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState } }) => {

@@ -1,3 +1,4 @@
+/** 购物车以及聊天浮动条 */
 import React from 'react';
 import { connect } from 'react-redux';
 import { Icon, Button, message, Badge } from 'antd';
@@ -14,10 +15,12 @@ import {
 import styles from './styles';
 import ajax from '../../common/ajax';
 
+/** 购物车总商品数量 */
 const getTotalAmount = (items) => (
   items.map(e => e.amount).reduce((a, b) => a + b, 0)
 )
 
+/** 购物车总价值 */
 const getTotalPrice = (items) => (
   items.map(e => e.price * e.amount).reduce((a, b) => a + b, 0)
 )

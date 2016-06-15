@@ -1,3 +1,4 @@
+/** 购物车窗口 */
 import React from 'react';
 import { connect } from 'react-redux';
 import { Modal, Table, Button } from 'antd';

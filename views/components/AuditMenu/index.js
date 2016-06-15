@@ -6,6 +6,7 @@ import React from 'react';
 import { Link } from 'react-router';
 import { Menu, Icon } from 'antd';
 
+/** 导航菜单选项 */
 const menus = [
   { to: '/audit', text: '最新帐单', icon: 'star' },
   { to: '/audit/search', text: '检索', icon: 'search' },

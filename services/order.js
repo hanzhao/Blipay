@@ -1,3 +1,4 @@
+/** 订单内部接口 */
 'use strict';
 const Item = require('../models').Item;
 const Attachment = require('../models').Attachment;
@@ -6,9 +7,11 @@ const User = require('../models').User;
 const Order = require('../models').Order;
 const Review = require('../models').Review;
 
+/** 调用用户接口 */
 const requestPay = require('../services/account').requestPay;
 const requestReceive = require('../services/account').requestReceive;
 
+/** 生成新商品 */
 const createItem = Promise.coroutine(function* (sellerId, item) {
   if (item.remain < 0) {
     throw new Error('INVALID_REMAIN');
@@ -28,6 +31,7 @@ const createItem = Promise.coroutine(function* (sellerId, item) {
   return newItem;
 });
 
+/** 获取商品信息 */
 const getItem = Promise.coroutine(function* (itemId) {
   const item = yield Item.findById(itemId, {
     attributes: ['id', 'name', 'description', 'price', 'remain'],
@@ -52,6 +56,7 @@ const getItem = Promise.coroutine(function* (itemId) {
   return item
 })
 
+/** 获取所有有余量商品 */
 const getItems = Promise.coroutine(function* () {
   const items = yield Item.findAll({
     where: { remain: { $gt: 0 } },
@@ -71,9 +76,11 @@ const getItems = Promise.coroutine(function* () {
   return items;
 })
 
+/** 创建订单 */
 const createOrder = Promise.coroutine(function* (buyerId, items, addr) {
   console.log('service: createOrder:', items);
   try {
+    /** 订单中商品 */
     items = yield Promise.all(items.map(Promise.coroutine(function* (e) {
       return {
         e: yield Item.findById(e.id),
@@ -87,6 +94,7 @@ const createOrder = Promise.coroutine(function* (buyerId, items, addr) {
       throw new Error('User Not Found');
     }
     let count = 0, cost = 0
+    /** 计算价格 */
     items.forEach(e => {
       count += e.amount
       cost += e.amount * e.e.price
@@ -99,6 +107,7 @@ const createOrder = Promise.coroutine(function* (buyerId, items, addr) {
     });
     yield newOrder.setSeller(seller);
     yield newOrder.setBuyer(buyer);
+    /** 减少商品余量 */
     for (var i = 0; i < items.length; ++i) {
       const item = items[i];
       yield item.e.decrement('remain', { by: item.amount });
@@ -114,6 +123,7 @@ const createOrder = Promise.coroutine(function* (buyerId, items, addr) {
   }
 });
 
+/** 仲裁回调结果 */
 const handleRefund = Promise.coroutine(
   function* (orderId, res, buyerRes, sellerRes) {
     console.log('service: handleRefund:');
@@ -123,7 +133,7 @@ const handleRefund = Promise.coroutine(
         throw new Error('Fatal error, from B5 or data failure');
       }
       if (res) {// 退款
-        // TODO:
+        /** 仲裁退款 */
         const sellerRefund = yield requestPay(order.sellerId, order.totalCost, `订单 #${order.id} 退款`, true)
         const refundTrans = yield requestReceive(order.buyerId, order.totalCost, `订单 #${order.id} 退款`);
         yield order.update({
@@ -133,7 +143,7 @@ const handleRefund = Promise.coroutine(
         });
       }
       else {
-        // TODO:
+        /** 结束仲裁 */
         yield order.update({
           status: 8
         });

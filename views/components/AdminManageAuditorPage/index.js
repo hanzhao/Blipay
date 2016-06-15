@@ -1,3 +1,4 @@
+/**　管理审计员页面 */
 import React from 'react'
 import { Link } from 'react-router'
 import { asyncConnect } from 'redux-connect'
@@ -19,6 +20,8 @@ const enableAdmin = (id) => {
   store.dispatch(setAdminEnabled({ id }))
 }
 
+
+/** 表格头 */
 const columns = [{
   title: '审计员 ID',
   dataIndex: 'id',
@@ -72,6 +75,7 @@ const columns = [{
   }
 }]
 
+/** 主页面 */
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState } }) => {
