@@ -99,10 +99,10 @@ router.post('/auditor/addinfo', Promise.coroutine(function* (req, res) {
   yield Record.update({
     info: req.body.info
   }, {
-    where: { id: parseInt(req.body.id)}
+    where: { id: parseInt(req.body.id) }
   });
   const record = yield Record.findById(parseInt(req.body.id));
-  if(record.wrongStatus>0){
+  if (record.wrongStatus > 0) {
     yield Logtable.update({
     info: req.body.info
     }, {
@@ -201,6 +201,8 @@ router.get('/auditor/insert', Promise.coroutine(function* (req, res) {
     }
   });
   for (let i = 0; i < order.length; ++i) {
+    const cnt = yield Record.count({ where: { orderId: order[i].id } })
+    if (cnt > 0) { continue }
     const buy = yield Transaction.findById(order[i].buyerTransId);
     const sell = yield Transaction.findById(order[i].sellerTransId);
     let k = 0;
@@ -243,6 +245,8 @@ router.get('/auditor/insert', Promise.coroutine(function* (req, res) {
     }
   });
   for (let i = 0; i < record.length; ++i) {
+    const cnt = yield Logtable.count({ where: { orderId: order[i].id } })
+    if (cnt > 0) { continue }
     const newLogtable = {
       buyerId: record[i].buyerId,
       sellerId: record[i].sellerId,

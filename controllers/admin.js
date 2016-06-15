@@ -25,7 +25,7 @@ const cookPassword = (key, salt) => {
 router.post('/admin/login',Promise.coroutine(function* (req,res){
   console.log('in /admin/login', req.body);
   let admin = yield Admin.findOne({
-    where:{ adminName: req.body.username }
+    where:{ adminName: req.body.username, level: { $lt: 2 } }
   })
   if (!admin) {
     return res.fail({ type: 'USER_NOT_EXIST' });
@@ -577,7 +577,7 @@ router.post('/admin/add',Promise.coroutine(function* (req,res) {
   const salt = crypto.randomBytes(64).toString('base64');
   const newAdmin = {
       adminName: req.body.adminName,
-      level: req.body.level == 2 ? 2 : 1, // 审计员/普通管理员
+      level: req.body.level, // 审计员/普通管理员
       salt: salt,
       loginPass: cookPassword(req.body.loginPass, salt)
   };

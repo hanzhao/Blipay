@@ -9,6 +9,7 @@ import classNames from 'classnames';
 
 import store from '../../redux/store';
 import BookingPageHeader from '../BookingPageHeader';
+import { cities } from '../../common/cascaders'
 import {
   loadItems
 } from '../../redux/modules/booking';
@@ -18,29 +19,6 @@ import styles from './styles';
 
 let timeout;
 let currentValue;
-
-const options = [{
-  value: 'zhejiang',
-  label: '浙江',
-  children: [{
-    value: 'hangzhou',
-    label: '杭州',
-  }],
-}, {
-  value: 'jiangsu',
-  label: '江苏',
-  children: [{
-    value: 'nanjing',
-    label: '南京',
-  }],
-}, {
-  value: 'shanghai',
-  label: '上海',
-  children: [{
-    value: 'shanghai',
-    label: '上海',
-  }],
-}];
 
 const flightPrice = {
   'hangzhou': {
@@ -133,11 +111,16 @@ class BookingInfoPage extends React.Component {
         <div className={styles.flex}>
           <div className={styles.position}>
             出发地：
-            <Cascader options={options} onChange={this.onChangeFromPosition} placeholder="请选择地区" />
+            <Cascader options={cities.provs} onChange={this.onChangeFromPosition} placeholder="请选择地区" />
           </div>
           <div className={styles.position}>
             目的地:
-            <Cascader options={options} onChange={this.onChangeToPosition} placeholder="请选择地区" />
+            <Cascader options={cities.provs} onChange={this.onChangeToPosition} placeholder="请选择地区" />
+          </div>
+          <div className={styles.position}>
+            <Button type="primary">
+              搜索航班
+            </Button>
           </div>
         </div>
         {
