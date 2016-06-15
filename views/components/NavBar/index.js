@@ -33,7 +33,8 @@ class NavBar extends React.Component {
         <Menu className={styles.menu}
               mode="horizontal"
               selectedKeys={[getFirstPart(location.pathname)]}>
-          <Menu.Item key="/account" style={{ display: user ? 'inherit' : 'none' }}>
+          <Menu.Item key="/account" 
+            style={{ display: user ? 'inherit' : 'none' }}>
             <Link to="/account">个人账户</Link>
           </Menu.Item>
           <Menu.Item key="/shopping">
@@ -42,10 +43,12 @@ class NavBar extends React.Component {
           <Menu.Item key="/booking">
             <Link to="/booking">在线订票</Link>
           </Menu.Item>
-          <Menu.Item key="/" style={{ display: !user ? 'inherit' : 'none' }}>
+          <Menu.Item key="/" 
+            style={{ display: !user ? 'inherit' : 'none' }}>
             <Link to="/">登录</Link>
           </Menu.Item>
-          <Menu.Item key="/logout" style={{ display: user ? 'inherit' : 'none' }}>
+          <Menu.Item key="/logout" 
+            style={{ display: user ? 'inherit' : 'none' }}>
             <a onClick={logout}>登出</a>
           </Menu.Item>
         </Menu>

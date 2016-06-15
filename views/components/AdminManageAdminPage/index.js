@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router';
 import { asyncConnect } from 'redux-connect';
 import { Table, Popconfirm, Input, Button, Row, Col, Icon } from 'antd';
-import moment from 'moment';
 
 import { loadAdminsInfo,
          setAdminDisabled,
@@ -74,7 +73,7 @@ const columns = [{
 
 @asyncConnect(
   [{
-    promise: ({ store: { dispatch, getState } }) => {
+    promise: ({ store: { dispatch } }) => {
       return dispatch(loadAdminsInfo());
     }
   }],
@@ -92,7 +91,9 @@ class AdminManageAdminPage extends React.Component {
     });
   }
   render() {
-    const admins = this.props.admins.filter(e => e.adminName.indexOf(this.state.filter) !== -1)
+    const admins = 
+      this.props.admins.filter(
+          e => e.adminName.indexOf(this.state.filter) !== -1)
                                     .map(e => ({ ...e, key: e.id }));
     return (
       <div>

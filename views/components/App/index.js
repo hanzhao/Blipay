@@ -11,7 +11,7 @@ import './styles';
 
 @asyncConnect(
   [{
-    promise: ({ store: { dispatch, getState }}) => {
+    promise: ({ store: { dispatch }}) => {
       return dispatch(loadAccountInfo());
     }
   }]

@@ -2,8 +2,7 @@
  * Admin for users' verification
 */
 import React from 'react';
-import { Link } from 'react-router';
-import { Input, Button, Row, Col, Table, Popover, Popconfirm } from 'antd';
+import { Button, Row, Col, Table, Popover, Popconfirm } from 'antd';
 import { asyncConnect } from 'redux-connect';
 
 import store from '../../redux/store';
@@ -99,7 +98,7 @@ const columns = [{
 
 @asyncConnect(
   [{
-    promise: ({ store: { dispatch, getState } }) => {
+    promise: ({ store: { dispatch } }) => {
       return dispatch(loadVerifyingList());
     }
   }],

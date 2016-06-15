@@ -21,34 +21,35 @@ const checkBalance = Promise.coroutine(function *(userId) {
   return user.balance;
 });
 
-const requestPay = Promise.coroutine(function *(userId, amount, info, canBelowZero) {
-  if (isNaN(amount)) {
-    throw new Error('INVALID_AMOUNT');
-  }
-  const user = yield User.findById(userId, {
-    attributes: [ 'balance' ]
-  });
-  if (!user) {
-    throw new Error('INVALID_USERID');
-  }
-  if (user.balance < amount && !canBelowZero) {
-    throw new Error('INSUFFICIENT_AMOUNT');
-  }
-  const newTransaction = {
-    userId: userId,
-    amount: -amount,
-    type: 3,
-    status: 1,
-    info: info || `支出 ${amount} 元`
-  };
-  const transaction = yield Transaction.create(newTransaction);
-  yield User.update({
-    balance: db.literal(`balance - ${amount}`)
-  }, {
-    where: { id: userId }
-  });
-  return transaction.id;
-});
+const requestPay = Promise.coroutine(
+        function *(userId, amount, info, canBelowZero) {
+          if (isNaN(amount)) {
+            throw new Error('INVALID_AMOUNT');
+          }
+          const user = yield User.findById(userId, {
+            attributes: [ 'balance' ]
+          });
+          if (!user) {
+            throw new Error('INVALID_USERID');
+          }
+          if (user.balance < amount && !canBelowZero) {
+            throw new Error('INSUFFICIENT_AMOUNT');
+          }
+          const newTransaction = {
+            userId: userId,
+            amount: -amount,
+            type: 3,
+            status: 1,
+            info: info || `支出 ${amount} 元`
+          };
+          const transaction = yield Transaction.create(newTransaction);
+          yield User.update({
+            balance: db.literal(`balance - ${amount}`)
+          }, {
+            where: { id: userId }
+          });
+          return transaction.id;
+        });
 
 const requestReceive = Promise.coroutine(function *(userId, amount, info) {
   if (isNaN(amount)) {

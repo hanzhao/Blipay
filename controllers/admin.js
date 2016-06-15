@@ -104,7 +104,7 @@ router.post('/admin/delete',Promise.coroutine(function *(req,res) {
   console.log('int /admin/delete');
   console.log(req.body);
 
-  let deletecount = yield Specialaccout.destroy({
+  let deletecount = yield Specialaccount.destroy({
     where:{
       name: req.body.name
     }

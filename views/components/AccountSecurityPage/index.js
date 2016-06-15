@@ -106,9 +106,7 @@ const brief = {
   2: '您已通过实名验证。'
 };
 
-const error = {
 
-};
 
 const loginpassPropsArray = [
   {

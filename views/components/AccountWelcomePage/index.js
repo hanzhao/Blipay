@@ -193,7 +193,7 @@ const getGreeting = () => {
 
 @asyncConnect(
   [{
-    promise: ({ store: { dispatch, getState } }) => {
+    promise: ({ store: { dispatch } }) => {
       return dispatch(loadTransactions());
     }
   }],
@@ -221,7 +221,8 @@ class AccountWelcomePage extends React.Component {
       <div className={styles.container}>
         <div className={styles.upperHalf}>
           <div className={styles.info}>
-            <div className={styles.greeting}>{getGreeting()}，{user.realName || user.userName}！</div>
+            <div className={styles.greeting}>
+            {getGreeting()}，{user.realName || user.userName}！</div>
             <div className={styles.lastLogin}>
               上次登录时间：{
                 user.lastLogin ?

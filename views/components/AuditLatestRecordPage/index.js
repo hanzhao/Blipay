@@ -130,8 +130,8 @@ class AuditLatestRecordPage extends React.Component {
     var i = 0;
     var flow = 0;
     while(i < transactions.length){
-    	                    flow = flow + transactions[i].totalCost;
-    	                    i++;
+    	                                        flow = flow + transactions[i].totalCost;
+    	                                        i++;
     }
     return (
       <div className={styles.container}>

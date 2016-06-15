@@ -74,7 +74,7 @@ const columns = [{
 
 @asyncConnect(
   [{
-    promise: ({ store: { dispatch, getState } }) => {
+    promise: ({ store: { dispatch } }) => {
       return dispatch(loadAdminsInfo({ level: 2 }));
     }
   }],
@@ -92,7 +92,9 @@ class AdminManageAuditorPage extends React.Component {
     });
   }
   render() {
-    const admins = this.props.admins.filter(e => e.adminName.indexOf(this.state.filter) !== -1)
+    const admins = 
+      this.props.admins.filter(
+          e => e.adminName.indexOf(this.state.filter) !== -1)
                                     .map(e => ({ ...e, key: e.id }));
     return (
       <div>

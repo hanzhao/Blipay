@@ -1,8 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
-import { Link } from 'react-router';
-import { Modal, Table, Button } from 'antd';
+import { Modal } from 'antd';
 
 import { toggleLoginModal } from '../../redux/modules/shopping';
 import styles from './styles';

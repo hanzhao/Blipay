@@ -5,7 +5,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import is from 'is_js';
 
-import store from '../../redux/store';
 import ajax from '../../common/ajax';
 import TogglableInput from '../TogglableInput';
 import { updateInfo } from '../../redux/modules/account';

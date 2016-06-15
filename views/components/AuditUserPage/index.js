@@ -1,19 +1,14 @@
 import React from 'react';
 import _ from 'lodash';
 import { asyncConnect } from 'redux-connect';
-import { Form, DatePicker, Button } from 'antd';
 import AuditUserTable from '../AuditUserTable';
-import FormModal from '../FormModal';
 import styles from './styles';
-import ajax from '../../common/ajax';
-import store from '../../redux/store';
-import moment from 'moment';
 import {
   logout,
   loadUser
 } from '../../redux/modules/auditor';
 
-const RangePicker = DatePicker.RangePicker;
+
 
 const tableProps = {
   pagination: {
@@ -25,7 +20,7 @@ const tableProps = {
 
 @asyncConnect(
   [{
-    promise: ({ store: { dispatch, getState } }) => {
+    promise: ({ store: { dispatch } }) => {
       return dispatch(loadUser());
     }
   }],
