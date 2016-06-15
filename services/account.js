@@ -21,7 +21,7 @@ const checkBalance = Promise.coroutine(function *(userId) {
   return user.balance;
 });
 
-const requestPay = Promise.coroutine(function *(userId, amount, info) {
+const requestPay = Promise.coroutine(function *(userId, amount, info, canBelowZero) {
   if (isNaN(amount)) {
     throw new Error('INVALID_AMOUNT');
   }
@@ -31,7 +31,7 @@ const requestPay = Promise.coroutine(function *(userId, amount, info) {
   if (!user) {
     throw new Error('INVALID_USERID');
   }
-  if (user.balance < amount) {
+  if (user.balance < amount && !canBelowZero) {
     throw new Error('INSUFFICIENT_AMOUNT');
   }
   const newTransaction = {

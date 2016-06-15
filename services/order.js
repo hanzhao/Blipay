@@ -124,7 +124,7 @@ const handleRefund = Promise.coroutine(
       }
       if (res) {// 退款
         // TODO:
-        const sellerRefund = yield requestPay(order.sellerId, order.totalCost, `订单 #${order.id} 退款`)
+        const sellerRefund = yield requestPay(order.sellerId, order.totalCost, `订单 #${order.id} 退款`, true)
         const refundTrans = yield requestReceive(order.buyerId, order.totalCost, `订单 #${order.id} 退款`);
         yield order.update({
           status: 7,

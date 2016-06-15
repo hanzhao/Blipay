@@ -361,32 +361,28 @@ router.get('/admin/verifyinglist',Promise.coroutine(function* (req,res) {
 
 /*获取仲裁信息*/
 router.get('/admin/getarbitration',Promise.coroutine(function *(req,res){
-    let abs = yield Arbitration.findAll({
-        where:{
-            state: 'ing'
-        }
-    });
-    return res.success({
-        code: 0,
-        arbitrationList: abs
-    });
+  let abs = yield Arbitration.findAll({
+    where: { state: 'ing' }
+  });
+  return res.success({
+    code: 0,
+    arbitrationList: abs
+  });
 }));
 
 /*解决仲裁*/
 router.post('/admin/dealarbitration',Promise.coroutine(function *(req,res){
-    yield Arbitration.update({
-        state: req.body.op
-    },{
-        where:{
-            id: req.body.id
-        }
-    });
-    const arb = yield Arbitration.findOne({where: {id: req.body.id}});
-    yield handleRefund(arb.orderId, req.body.op == 'accept', '', '');
-    return res.success({
-        op: req.body.op,
-        code :0
-    });
+  yield Arbitration.update({
+    state: req.body.op
+  }, {
+    where: { id: req.body.id }
+  });
+  const arb = yield Arbitration.findOne({ where: { id: req.body.id } });
+  yield handleRefund(arb.orderId, req.body.op == 'accept', '', '');
+  return res.success({
+    op: req.body.op,
+    code :0
+  });
 }));
 
 router.post('/admin/verify', Promise.coroutine(function* (req,res) {
@@ -407,14 +403,10 @@ router.post('/admin/verify', Promise.coroutine(function* (req,res) {
 
 /*删除管理员*/
 router.post('/admin/deleteadmin',Promise.coroutine(function *(req,res){
-    yield Admin.destroy({
-        where:{
-            adminName: req.body.adminName
-        }
-    });
-    return res.success({
-        code :0
-    });
+  yield Admin.destroy({
+    where: { adminName: req.body.adminName }
+  });
+  return res.success({ code: 0 });
 }));
 
 router.post('/admin/addadmin',Promise.coroutine(function *(req,res){
@@ -447,30 +439,24 @@ router.post('/admin/addadmin',Promise.coroutine(function *(req,res){
 
 /*删除管理员*/
 router.post('/admin/deleteadmin',Promise.coroutine(function *(req,res){
-    yield Admin.destroy({
-        where:{
-            adminName: req.body.adminName
-        }
-    });
-    return res.success({
-        code :0
-    });
+  yield Admin.destroy({
+    where: { adminName: req.body.adminName }
+  });
+  return res.success({ code :0 });
 }));
 
 /*更改管理员权限*/
 router.post('/admin/changelevel',Promise.coroutine(function *(req,res){
-    yield Admin.update(
-    {
-        level: level + req.body.changelevel
-    },
-    {
-        where:{
-            adminName: req.body.adminName
-        }
-    });
-    return res.success({
-        code: 0
-    });
+  yield Admin.update({
+    level: level + req.body.changelevel
+  }, {
+    where: {
+      adminName: req.body.adminName
+    }
+  });
+  return res.success({
+    code: 0
+  });
 }));
 
 router.get('/admin/users', Promise.coroutine(function* (req, res) {
