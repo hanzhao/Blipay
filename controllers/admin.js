@@ -1,15 +1,26 @@
 'use strict'
+
+/** 用户表 */
 const User = require('../models').User;
+/** 特殊用户表 */
 const Specialaccount = require('../models').Specialaccount;
+/** 管理员表 */
 const Admin =  require('../models').Admin;
+/** 配置 */
 const config = require('../config/admin');
+/** 后端路由 */
 const Router = require('express').Router;
+/** 加密模块 */
 const crypto = require('crypto');
 const router = Router();
+/** 实名认证表 */
 const Identification = require('../models').Identification;
+/** 仲裁表 */
 const Arbitration = require('../models').Arbitration;
+/** 记录表 */
 const AdminLog = require('../models').AdminLog;
 
+/** 订单仲裁处理回调接口 */
 const handleRefund = require('../services/order').handleRefund
 
 const cookPassword = (key, salt) => {
@@ -43,6 +54,7 @@ router.post('/admin/login',Promise.coroutine(function* (req,res){
 }));
 
 router.get('/admin/info', Promise.coroutine(function* (req, res) {
+  /** 权限验证 */
   if (!req.session.adminId) {
     return res.status(403).fail()
   }
@@ -339,6 +351,7 @@ router.get('/admin/admininfo',Promise.coroutine(function *(req,res){
 
 /*查找所有的管理员操作记录*/
 router.get('/admin/log', Promise.coroutine(function* (req, res) {
+  /** 权限验证 */
   if (!req.session.adminId) {
     return res.status(403).fail()
   }
@@ -350,6 +363,7 @@ router.get('/admin/log', Promise.coroutine(function* (req, res) {
 
 /*查看所有的未自动认证用户*/
 router.get('/admin/verifyinglist',Promise.coroutine(function* (req,res) {
+  /** 权限验证 */
   if (!req.session.adminId) {
     return res.status(403).fail()
   }
@@ -386,6 +400,7 @@ router.post('/admin/dealarbitration',Promise.coroutine(function *(req,res){
 }));
 
 router.post('/admin/verify', Promise.coroutine(function* (req,res) {
+  /** 权限验证 */
   if (!req.session.adminId) {
     return res.status(403).fail();
   }
@@ -460,6 +475,7 @@ router.post('/admin/changelevel',Promise.coroutine(function *(req,res){
 }));
 
 router.get('/admin/users', Promise.coroutine(function* (req, res) {
+  /** 权限验证 */
   if (!req.session.adminId) {
     return res.status(403).fail()
   }
@@ -468,6 +484,7 @@ router.get('/admin/users', Promise.coroutine(function* (req, res) {
 }))
 
 router.post('/admin/user/disable', Promise.coroutine(function* (req, res) {
+  /** 权限验证 */
   if (!req.session.adminId) {
     return res.status(403).fail()
   }
@@ -482,6 +499,7 @@ router.post('/admin/user/disable', Promise.coroutine(function* (req, res) {
 }))
 
 router.post('/admin/user/enable', Promise.coroutine(function* (req, res) {
+  /** 权限验证 */
   if (!req.session.adminId) {
     return res.status(403).fail()
   }
@@ -496,6 +514,7 @@ router.post('/admin/user/enable', Promise.coroutine(function* (req, res) {
 }))
 
 router.get('/admin/user/:userId', Promise.coroutine(function* (req, res) {
+  /** 权限验证 */
   if (!req.session.adminId) {
     return res.status(403).fail()
   }
@@ -504,6 +523,7 @@ router.get('/admin/user/:userId', Promise.coroutine(function* (req, res) {
 }))
 
 router.get('/admin/admins', Promise.coroutine(function* (req, res) {
+  /** 权限验证 */
   if (!req.session.adminId) {
     return res.status(403).fail()
   }
@@ -523,6 +543,7 @@ router.get('/admin/admins', Promise.coroutine(function* (req, res) {
 }))
 
 router.post('/admin/admin/disable', Promise.coroutine(function* (req, res) {
+  /** 权限验证 */
   if (!req.session.adminId) {
     return res.status(403).fail()
   }
@@ -538,6 +559,7 @@ router.post('/admin/admin/disable', Promise.coroutine(function* (req, res) {
 }))
 
 router.post('/admin/admin/enable', Promise.coroutine(function* (req, res) {
+  /** 权限验证 */
   if (!req.session.adminId) {
     return res.status(403).fail()
   }
@@ -572,6 +594,7 @@ router.post('/admin/add',Promise.coroutine(function* (req,res) {
 }));
 
 router.get('/admin/admin/:adminId', Promise.coroutine(function* (req, res) {
+  /** 权限验证 */
   if (!req.session.adminId) {
     return res.status(403).fail()
   }

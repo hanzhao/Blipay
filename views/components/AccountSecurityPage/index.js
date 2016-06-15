@@ -17,6 +17,7 @@ import {
   changePaypass
 } from '../../redux/modules/account';
 
+/** 密码格式限制 */
 const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
 let loginPass;
@@ -24,6 +25,7 @@ let payPass;
 let newLoginpass;
 let newPaypass;
 
+/** 检验新支付密码是否符合需求 */
 const validateNewPaypass = (rule, value, callback) => {
   if (!value) {
     callback();
@@ -39,6 +41,7 @@ const validateNewPaypass = (rule, value, callback) => {
   }
 };
 
+/** 两次输入检查 */
 const validateRePaypass = (rule, value, callback) => {
   if (!value) {
     callback();
@@ -51,6 +54,7 @@ const validateRePaypass = (rule, value, callback) => {
   }
 };
 
+/** 新登录密码检验 */
 const validateNewLoginpass = (rule, value, callback) => {
   if (!value) {
     callback();
@@ -66,6 +70,7 @@ const validateNewLoginpass = (rule, value, callback) => {
   }
 };
 
+/** 登陆检查 */
 const validateReLoginpass = (rule, value, callback) => {
   if (!value) {
     callback();
@@ -100,6 +105,7 @@ const validateLoginpass = async (rule, value, callback) => {
   }
 };
 
+/** 实名验证状态 */
 const brief = {
   0: '您尚未进行实名验证。',
   1: '实名验证正在审核中。',
@@ -110,6 +116,7 @@ const error = {
 
 };
 
+/** 修改登陆密码表单 */
 const loginpassPropsArray = [
   {
     input: {
@@ -148,6 +155,7 @@ const loginpassPropsArray = [
   }
 ];
 
+/** 修改支付密码表单 */
 const paypassPropsArray = [
   {
     input: {
@@ -187,6 +195,7 @@ const paypassPropsArray = [
   }
 ];
 
+/** 主页面 */
 @connect(
   (state) => ({
     showModifyLoginpassModal: state.account.showModifyLoginpassModal,

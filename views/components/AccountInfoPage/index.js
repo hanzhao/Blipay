@@ -64,7 +64,7 @@ const validateName = (rule, value, callback) => {
     callback();
   }
 };
-
+/** 账户信息页面 */
 @connect(
   (state) => ({
     user: state.account.user

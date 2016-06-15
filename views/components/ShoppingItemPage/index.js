@@ -1,3 +1,4 @@
+/** 商品详情展示页 */
 import React from 'react'
 import { Alert, Button, Icon, Row, Col, InputNumber, Rate } from 'antd'
 import { asyncConnect } from 'redux-connect'
@@ -12,6 +13,7 @@ import {
 
 import styles from './styles';
 
+/** 渲染商品描述 */
 const renderDescription = (text) => (
   <div className={styles.description}>
     { text.split("\n").map((t, i) => (

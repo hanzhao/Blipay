@@ -1,3 +1,4 @@
+/** 订单页面 */
 import React from 'react';
 import { connect } from 'react-redux';
 import { asyncConnect } from 'redux-connect';
@@ -37,6 +38,7 @@ import {
 
 const FormItem = Form.Item;
 
+/** 支付确认 */
 const pay = function (order) {
   // store.dispatch(payOrder(order));
   Modal.confirm({
@@ -50,6 +52,7 @@ const pay = function (order) {
   })
 }
 
+/** 发货确认 */
 const ship = function (order) {
   // store.dispatch(shipOrder(order));
   Modal.confirm({
@@ -63,6 +66,7 @@ const ship = function (order) {
   })
 }
 
+/** 展开各个对话框 */
 const toggleReviewModal = function (order) {
   store.dispatch(toggleShoppingReview(order));
 }
@@ -75,7 +79,7 @@ const toggleRefundConfirmModal = function (order) {
   store.dispatch(toggleShoppingRefundConfirm(order));
 }
 
-
+/** 商品评价页面 */
 @connect(
   (state) => ({
     showReviewModal: state.shopping.showReviewModal,
@@ -130,7 +134,7 @@ class ShoppingReviewModal extends React.Component {
   }
 }
 
-
+/** 商品退货页面 */
 @connect(
   (state) => ({
     showRefundModal: state.shopping.showRefundModal,
@@ -173,7 +177,7 @@ class ShoppingRefundModal extends React.Component {
   }
 }
 
-
+/** 退货请求处理 */
 @connect(
   (state) => ({
     showRefundConfirmModal: state.shopping.showRefundConfirmModal,
@@ -228,7 +232,7 @@ class ShoppingRefundConfirmModal extends React.Component {
 
 
 
-
+/** 订单主页面 */
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState } }) => {

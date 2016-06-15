@@ -1,3 +1,4 @@
+/** 商品管理页 */
 import React from 'react';
 import { Menu, Dropdown, Icon } from 'antd';
 import { Button } from 'antd';
@@ -14,6 +15,8 @@ import { InputNumber } from 'antd';
 const createForm = Form.create;
 const FormItem = Form.Item;
 import ajax from '../../common/ajax';
+
+/** 排序选择 */
 const optionsPrice = [{
   value: 'priceLowToHigh',
   label: '价格从小到大'

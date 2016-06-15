@@ -7,6 +7,7 @@ const rootRouter = require('./root');
 const adminRouter = require('./admin');
 const auditorRouter = require('./auditor');
 
+/** API 路由，将不同模块的后端请求分发 */
 const apiRouter = Router();
 apiRouter.use(accountRouter);
 apiRouter.use(orderRouter);

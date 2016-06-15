@@ -1,3 +1,4 @@
+/** 商品管理表格 */
 import React from 'react';
 import styles from './styles';
 import { Form, Button , Card ,Input} from 'antd';
@@ -9,6 +10,8 @@ import ajax from '../../common/ajax';
 let  currentID=0;
 class ShoppingItenManageTable extends React.Component {
   render() {
+    /** 各种操作处理 */
+    /** 提交修改 */
     const handleSubmit = ()=> {
       this.props.form.validateFields(async (errors) => {
         let res=await ajax.post('/api/item/update',
@@ -22,6 +25,7 @@ class ShoppingItenManageTable extends React.Component {
           } );
         });
     };
+    /** 提交删除商品 */
     const handleDelete = ()=> {
       this.props.form.validateFields(async (errors) => {
         let res=await ajax.post('/api/item/delete',
@@ -30,16 +34,20 @@ class ShoppingItenManageTable extends React.Component {
           } );
         });
     };
+    /** 修改价格 */
     const onChangePrice = (value)=> {
         this.props.content.price=value;
     };
+    /** 修改库存 */
     const onChangeRemain = (value)=> {
         this.props.content.remain=value;
     };
+    /** 修改描述 */
     const onChangeDescription = (e)=> {
         this.props.content.description=e.target.value;
         console.log(e.target.value);
     };
+    /** 修改名称 */
     const onChangeName = (e)=> {
         this.props.content.name= e.target.value;
        console.log(e.target.value);

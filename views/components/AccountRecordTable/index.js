@@ -1,9 +1,11 @@
+/** 账户交易记录表格 */
 import React from 'react';
 import { Table } from 'antd';
 import moment from 'moment'
 
 import styles from './styles';
 
+/** 表格头 */
 const columns = [{
   title: '交易流水号',
   dataIndex: 'id',

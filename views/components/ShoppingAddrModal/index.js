@@ -1,3 +1,4 @@
+/** 支付订单选择地址 */
 import React from 'react';
 import { connect } from 'react-redux';
 import { asyncConnect } from 'redux-connect';

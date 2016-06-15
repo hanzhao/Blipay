@@ -1,3 +1,4 @@
+/** 管理员 管理次级管理员页面 */
 import React from 'react'
 import { Link } from 'react-router'
 import { asyncConnect } from 'redux-connect'
@@ -19,6 +20,7 @@ const enableAdmin = (id) => {
   store.dispatch(setAdminEnabled({ id }))
 }
 
+/** 管理表单头 */
 const columns = [{
   title: '管理员 ID',
   dataIndex: 'id',

@@ -1,5 +1,5 @@
 /*
- * 注册界面
+ * 用户注册界面
  */
 
 import React from 'react';
@@ -13,6 +13,7 @@ import styles from './styles';
 
 const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
+/** 验证用户输入 */
 const validate = (values) => {
   const errors = {};
   const { userName, loginPass, payPass } = values;

@@ -1,3 +1,4 @@
+/** 商品图片跑马灯 */
 import React from 'react'
 import { Carousel } from 'antd'
 

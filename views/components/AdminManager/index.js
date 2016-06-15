@@ -1,10 +1,11 @@
 /*
- * Admin 的管理管理员界面
+ * Admin 的管理管理员主界面
  */
 import React from 'react';
 import { Input, Button, Col, Table} from 'antd';
 import styles from './styles';
 
+/** 表格头 */
 const columns = [{
   title: '用户名',
   dataIndex: 'name',
@@ -46,6 +47,7 @@ const data = [{
   address: '普通管理员'
 }];
 
+/** 主页面 */
 class AdminManager extends React.Component {
   render() {
     return (

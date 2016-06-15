@@ -1,14 +1,24 @@
+/** 仲裁 */
 'use strict';
 const _ = require('lodash');
 const db = require('../models').db;
+/** 管理员 */
 const User = require('../models').Admin;
+/** 用户 */
 const Users = require('../models').User;
+/** 交易 */
 const Transaction = require('../models').Transaction;
+/** 记录 */
 const Record = require('../models').Record;
+/** Log表 */
 const Logtable = require('../models').Logtable;
+/**订单 */
 const Order = require('../models').Order;
+/** 配置 */
 const config = require('../config/admin');
+/** 后端路由 */
 const Router = require('express').Router;
+/** 加密模块 */
 const crypto = require('crypto');
 const router = Router();
 const Util = require('util');
@@ -18,8 +28,10 @@ const uploadPath = require('../config').upload;
 const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport(config.mailConfig);
 
+/** 检查交易记录 */
 router.post('/auditor/check_recordid', Promise.coroutine(function* (req, res) {
   console.log('in check_recordid', req.body);
+  /** 权限验证 */
   if (!req.session.auditorId) {
     return res.status(403).fail()
   }
@@ -33,6 +45,7 @@ router.post('/auditor/check_recordid', Promise.coroutine(function* (req, res) {
   }
 }));
 
+/** 密码处理 */
 const cookPassword = (key, salt) => {
   var hash = crypto.createHash('sha512');
   const mid = key.length >> 1
@@ -42,12 +55,14 @@ const cookPassword = (key, salt) => {
     .digest('base64');
 };
 
+/** 错误处理 */
 const reportError = (path, err) => {
   console.error(
     `\nERROR occurs in ${path}:\n\n${Util.inspect(err)}\n`
   );
 };
 
+/** 审计员登录 */
 router.post('/auditor/login', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/login', req.body);
   let user = yield User.findOne({
@@ -75,14 +90,17 @@ router.post('/auditor/login', Promise.coroutine(function* (req, res) {
   return res.success({ user });
 }));
 
+/** 审计员注销 */
 router.get('/auditor/logout', (req, res) => {
   console.log('in /auditor/logout');
   req.session.auditorId = null;
   return res.success({});
 });
 
+/** 审计员信息 */
 router.get('/auditor/info', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/info');
+  /** 权限验证 */
   if (!req.session.auditorId) {
     return res.success({ })
   }
@@ -92,7 +110,9 @@ router.get('/auditor/info', Promise.coroutine(function* (req, res) {
   return res.success({ user })
 }));
 
+/** 审计员更新信息 */
 router.post('/auditor/addinfo', Promise.coroutine(function* (req, res) {
+  /** 权限验证 */
   if (!req.session.auditorId) {
     return res.status(403).fail()
   }
@@ -113,7 +133,9 @@ router.post('/auditor/addinfo', Promise.coroutine(function* (req, res) {
   return res.success({record,transaction});
 }));
 
+/** 查找记录 */
 router.post('/auditor/searchorder', Promise.coroutine(function* (req, res) {
+  /** 权限验证 */
   if (!req.session.auditorId) {
     return res.status(403).fail()
   }
@@ -126,7 +148,9 @@ router.post('/auditor/searchorder', Promise.coroutine(function* (req, res) {
   return res.success({transaction});
 }));
 
+/** 查找买家 */
 router.post('/auditor/searchbuyer', Promise.coroutine(function* (req, res) {
+  /** 权限验证 */
   if (!req.session.auditorId) {
     return res.status(403).fail()
   }
@@ -139,7 +163,9 @@ router.post('/auditor/searchbuyer', Promise.coroutine(function* (req, res) {
   return res.success({transaction});
 }));
 
+/** 查找卖家 */
 router.post('/auditor/searchseller', Promise.coroutine(function* (req, res) {
+  /** 权限验证 */
   if (!req.session.auditorId) {
     return res.status(403).fail()
   }
@@ -152,8 +178,10 @@ router.post('/auditor/searchseller', Promise.coroutine(function* (req, res) {
   return res.success({transaction});
 }));
 
+/** 转账记录 */
 router.get('/auditor/transactions', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/transactions');
+  /** 权限验证 */
   if (!req.session.auditorId) {
     return res.status(403).fail()
   }
@@ -163,8 +191,10 @@ router.get('/auditor/transactions', Promise.coroutine(function* (req, res) {
   return res.success({ transactions })
 }));
 
+/** 记录Log */
 router.get('/auditor/log', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/log');
+  /** 权限验证 */
   if (!req.session.auditorId) {
     return res.status(403).fail()
   }
@@ -174,8 +204,10 @@ router.get('/auditor/log', Promise.coroutine(function* (req, res) {
   return res.success({ logtable })
 }));
 
+/** 查找用户 */
 router.get('/auditor/user', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/user');
+  /** 权限验证 */
   if (!req.session.auditorId) {
     return res.status(403).fail()
   }
@@ -187,8 +219,10 @@ router.get('/auditor/user', Promise.coroutine(function* (req, res) {
   return res.success({ loguser })
 }));
 
+/** 插入 订单-交易 记录 */
 router.get('/auditor/insert', Promise.coroutine(function* (req, res) {
   console.log('in /auditor/insert');
+  /** 权限验证 */
   if (!req.session.auditorId) {
     return res.status(403).fail()
   }

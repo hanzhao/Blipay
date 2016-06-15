@@ -1,5 +1,7 @@
+/** 图片附件 */
 'use strict';
 
+/** 附件表 */
 const Attachment = require('../models').Attachment;
 const multer = require('multer');
 const Router = require('express').Router;
@@ -8,8 +10,10 @@ const fs = Promise.promisifyAll(require('fs'));
 
 const upload = multer({ dest: '/tmp' })
 
+/** 添加图片 */
 router.post('/photo/new', upload.single('photo'),
   Promise.coroutine(function* (req, res) {
+    /** 权限验证 */
     if (!req.session.userId) {
       return res.status(403).fail()
     }
@@ -29,6 +33,7 @@ router.post('/photo/new', upload.single('photo'),
   })
 );
 
+/** 获取图片 */
 router.get('/photo/show', Promise.coroutine(function* (req, res) {
   const attachment = yield Attachment.findById(req.query.id, {
     attributes: ['blob']

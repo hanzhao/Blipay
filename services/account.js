@@ -1,9 +1,11 @@
+/** 用户模块内部接口 */
 const User = require('../models').User;
 const db = require('../models').db;
 const Transaction = require('../models').Transaction;
 const Promise = require('bluebird');
 const crypto = require('crypto');
 
+/** 密码加密 */
 const cookPassword = (key, salt) => {
   var hash = crypto.createHash('sha512');
   const mid = key.length >> 1;
@@ -13,6 +15,7 @@ const cookPassword = (key, salt) => {
     .digest('base64');
 };
 
+/** 返回用户余额 */
 const checkBalance = Promise.coroutine(function *(userId) {
   const user = yield User.findById(userId);
   if (!user) {
@@ -21,6 +24,7 @@ const checkBalance = Promise.coroutine(function *(userId) {
   return user.balance;
 });
 
+/** 请求扣款 */
 const requestPay = Promise.coroutine(function *(userId, amount, info, canBelowZero) {
   if (isNaN(amount)) {
     throw new Error('INVALID_AMOUNT');
@@ -50,6 +54,7 @@ const requestPay = Promise.coroutine(function *(userId, amount, info, canBelowZe
   return transaction.id;
 });
 
+/** 请求收款 */
 const requestReceive = Promise.coroutine(function *(userId, amount, info) {
   if (isNaN(amount)) {
     throw new Error('INVALID_AMOUNT');
@@ -74,6 +79,7 @@ const requestReceive = Promise.coroutine(function *(userId, amount, info) {
   return transaction.id;
 });
 
+/** 支付密码检查 */
 const checkPaypass = Promise.coroutine(function *(userId, payPass) {
   const user = yield User.findById(userId, {
     attributes: ['payPass', 'salt']

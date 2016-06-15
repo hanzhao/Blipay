@@ -1,5 +1,5 @@
 /*
- * 登录界面
+ * 管理员登录界面
  */
 
 import React from 'react';

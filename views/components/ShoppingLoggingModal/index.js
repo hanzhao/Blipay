@@ -1,3 +1,4 @@
+/** 商品页面提示登录框 */
 import React from 'react';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';

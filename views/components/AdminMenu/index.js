@@ -1,11 +1,12 @@
 /*
- * 左边的导航条
+ * 管理员左边的导航条
  */
 
 import React from 'react';
 import { Link } from 'react-router';
 import { Menu, Icon } from 'antd';
 
+/** 导航条选项 */
 const menus = [
   { to: '/admin/panel/welcome', text: '基本信息', icon: 'info-circle-o'},
   { to: '/admin/panel/manage/user', text: '用户管理', icon: 'solution' },

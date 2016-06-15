@@ -1,22 +1,38 @@
+/** 订单 */
 'use strict';
 
 const Promise = require('bluebird');
+/** 商品 */
 const Item = require('../models').Item;
+/** 用户 */
 const User = require('../models').User;
+/** 订单 */
 const Order = require('../models').Order;
+/** 图片附件 */
 const Attachment = require('../models').Attachment;
+/** 商品附件关系表 */
 const ItemAttachment = require('../models').ItemAttachment;
+/** 商品评价 */
 const Review = require('../models').Review;
+/** 仲裁 */
 const Arbitration = require('../models').Arbitration;
 
+/** 后端路由 */
 const Router = require('express').Router;
 const router = Router();
+
+/** 创建商品接口 */
 const createItem = require('../services/order').createItem;
+/** 商品获取 */
 const getItem = require('../services/order').getItem;
 const getItems = require('../services/order').getItems;
+/** 订单创建 */
 const createOrder = require('../services/order').createOrder;
+/** 请求支付 转账接口 */
 const requestPay = require('../services/account').requestPay;
 const requestReceive = require('../services/account').requestReceive;
+
+/** 新建商品 */
 router.post('/item/new', Promise.coroutine(function* (req, res) {
   console.log('in /item/new', req.body);
   const item = yield createItem(req.session.userId, req.body);
@@ -24,6 +40,7 @@ router.post('/item/new', Promise.coroutine(function* (req, res) {
   return res.success({ id: item.id, reviews: reviews });
 }));
 
+/** 展示商品 */
 router.get('/item/show', Promise.coroutine(function* (req, res) {
   console.log('in /item/show', req.query);
   const item = yield getItem(req.query.id);
@@ -33,19 +50,23 @@ router.get('/item/show', Promise.coroutine(function* (req, res) {
   return res.success({ item })
 }));
 
+/** 验证字段 */
 const validate = (i) => {
   return typeof (i) != 'undefined';
 };
 
+/** 获取商品列表 */
 router.get('/items', Promise.coroutine(function* (req, res) {
   const items = yield getItems()
   return res.success({ items });
 }))
 
+/** 条件筛选 */
 router.post('/item/item_list', Promise.coroutine(function* (req, res) {
   console.log('in /item/item_list');
   console.log(req.body);
   try {
+    /** 直接通过 id 筛选 */
     if (validate(req.body.id)) {
       const item = yield Item.findOne({
         where: { id: req.body.id }, order: req.body.base + req.body.order
@@ -53,6 +74,7 @@ router.post('/item/item_list', Promise.coroutine(function* (req, res) {
       return res.success({ items: [item] });
     }
     let filter = {};
+    /** 卖家 */
     if (validate(req.body.sellerId)) {
       filter.sellerId = req.body.sellerId;
     } else {
@@ -92,6 +114,7 @@ router.post('/item/item_list', Promise.coroutine(function* (req, res) {
   }
 }));
 
+/** 商品更新 */
 router.post('/item/update', Promise.coroutine(function* (req, res) {
   console.log('in /item/update');
   console.log(req.body);
@@ -112,6 +135,7 @@ router.post('/item/update', Promise.coroutine(function* (req, res) {
   }
 }));
 
+/** 商品删除 */
 router.post('/item/delete', Promise.coroutine(function* (req, res) {
   console.log('in /item/delete');
   console.log(req.body);
@@ -132,6 +156,7 @@ router.post('/item/delete', Promise.coroutine(function* (req, res) {
   }
 }));
 
+/** 新建订单 */
 router.post('/order/new', Promise.coroutine(function* (req, res) {
   console.log('in /order/new');
   console.log(req.body);
@@ -144,6 +169,7 @@ router.post('/order/new', Promise.coroutine(function* (req, res) {
   }
 }));
 
+/** 删除订单/弃用 */
 router.post('/order/delete', Promise.coroutine(function* (req, res) {
   console.log('/order/delete');
   console.log(req.body);
@@ -162,6 +188,7 @@ router.post('/order/delete', Promise.coroutine(function* (req, res) {
   }
 }));
 
+/** 更新订单状态 */
 router.post('/order/update', Promise.coroutine(function* (req, res) {
   console.log('/order/update');
   console.log(req.body);
@@ -171,6 +198,7 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
       return res.fail({ type: 'NO_ORDER' });
     }
     switch (req.body.op) {
+      /** 支付订单 */
       case 'pay':
         if (order.status != 0) {
           return res.fail({ type: 'INVALID_OP' })
@@ -178,6 +206,7 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
         if (req.session.userId != order.buyerId) {
           return res.fail({ type: 'AUTH_FAIL' })
         }
+        /** 发起扣款请求 */
         const payTrans = yield requestPay(order.buyerId, order.totalCost,
           `成功支付订单 #${order.id}`);
         yield order.update({
@@ -185,6 +214,7 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
           status: 1
         });
         break;
+      /** 订单发货 */
       case 'ship':
         if (order.status != 1) {
           return res.fail({ type: 'INVALID_OP' })
@@ -197,15 +227,16 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
           status: 2
         });
         break;
+      /** 确认收货 */
       case 'confirm':
         if (order.status != 2) {
           return res.fail({ type: 'INVALID_OP' })
         }
-        // TODO:
         if (req.session.userId != order.buyerId) {
           return res.fail({ type: 'AUTH_FAIL' })
         }
         const items = yield order.getItems();
+        /** 添加商品评价 */
         for (var index = 0; index < items.length; index++) {
           yield items[index].addReview(
             yield Review.create({
@@ -215,6 +246,7 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
             })
           );
         };
+        /** 转账给卖家 */
         const confirmTrans = yield requestReceive(
           order.sellerId, order.totalCost,
           `获得订单 #${order.id} 的收益`
@@ -224,6 +256,7 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
           status: 3
         });
         break;
+      /** 申请退款 */
       case 'reqRefund':
         if (order.status != 2 && order.status != 3) {
           return res.fail({ type: 'INVALID_OP' })
@@ -240,11 +273,14 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
           status: 4
         });
         break;
+      /** 拒绝退款申请 */
       case 'refuseRefund':
         if (order.status != 4) {
           return res.fail({ type: 'INVALID_OP' })
         }
-        // TODO:
+        if (req.session.userId != order.sellerId) {
+          return res.fail({ type: 'AUTH_FAIL' })
+        }
         if (!validate(req.body.refuseReason)) {
           throw new Error('Expect refuseReason');
         }
@@ -254,7 +290,7 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
         });
         const seller = yield User.findOne({where: {id: order.sellerId}})
         const buyer = yield User.findOne({where: {id: order.buyerId}})
-        // TODO: Call B5
+        /** 发起仲裁 */
         yield Arbitration.create({
           userName: buyer.userName,
           complained: seller.userName,
@@ -264,11 +300,15 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
           state: 'ing'
         })
         break;
+      /** 同意退款申请 */
       case 'confirmRefund':
         if (order.status != 4) {
           return res.fail({ type: 'INVALID_OP' })
         }
-        // TODO:
+        if (req.session.userId != order.sellerId) {
+          return res.fail({ type: 'AUTH_FAIL' })
+        }
+        /** 处理退款 */
         const sellerRefund = yield requestPay(order.sellerId, order.totalCost, `订单 #${order.id} 退款`)
         const refundTrans = yield requestReceive(order.buyerId, order.totalCost, `订单 #${order.id} 退款`);
         yield order.update({
@@ -277,6 +317,7 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
           sellerRefundTransId: sellerRefund
         });
         break;
+      /** 无效操作 */
       default:
         return res.fail({ type: 'INVALID_OP' })
     }
@@ -287,6 +328,7 @@ router.post('/order/update', Promise.coroutine(function* (req, res) {
   }
 }));
 
+/** 订单列表筛选 */
 router.post('/order/order_list', Promise.coroutine(function* (req, res) {
   console.log('/order/order_list');
   console.log(req.body);
@@ -295,6 +337,7 @@ router.post('/order/order_list', Promise.coroutine(function* (req, res) {
       const order = yield Order.findOne({ where: { id: req.body.id } });
       return res.success({ orders: [order] });
     }
+    /** 筛选条件 */
     let filter = { $or: [] };
     if (validate(req.body.sellerId)) {
       filter.$or.push({ sellerId: req.session.userId });
@@ -310,6 +353,7 @@ router.post('/order/order_list', Promise.coroutine(function* (req, res) {
         filter.status = req.body.filter.status;
       }
     }
+    /** 筛选结果排列顺序 */
     let queryOrder = '';
     if (validate(req.body.base)) {
       queryOrder = req.body.base + ' ' + req.body.order;
@@ -333,6 +377,7 @@ router.post('/order/order_list', Promise.coroutine(function* (req, res) {
   }
 }));
 
+/** 获取商品评价 */
 router.post('/item/review', Promise.coroutine(function* (req, res) {
   console.log('/item/review');
   console.log(req.body);

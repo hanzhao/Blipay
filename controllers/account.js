@@ -1,24 +1,35 @@
+/** 用户账户模块 */
 'use strict';
 const _ = require('lodash');
 const db = require('../models').db;
+/** 用户表 */
 const User = require('../models').User;
+/** 转账记录表 */
 const Transaction = require('../models').Transaction;
+/** 配置 */
 const config = require('../config/account');
+/** 后端路由 */
 const Router = require('express').Router;
+/** 加密模块 */
 const crypto = require('crypto');
 const router = Router();
+/** 邮件工具 */
 const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport(config.mailConfig);
+/** 密码处理 */
 const cookPassword = require('../services/account').cookPassword;
 
+/** 实名验证接口 */
 router.post('/account/apply_verification',
   Promise.coroutine(function* (req, res) {
     if (!req.session.userId) {
       return res.status(403).fail();
     }
+    /** 获取当前用户 */
     const user = yield User.findById(req.session.userId, {
       attributes: ['id', 'cardFront', 'cardBack', 'status']
     });
+    /** 存储证件照 */
     user.cardFront = req.body.attachments[0];
     user.cardBack = req.body.attachments[1];
     user.status = 1;
@@ -27,6 +38,7 @@ router.post('/account/apply_verification',
   })
 );
 
+/** 用户注册接口 */
 router.post('/account/register', Promise.coroutine(function* (req, res) {
   let user = yield User.findOne({
     where: { userName: req.body.userName },
@@ -35,7 +47,9 @@ router.post('/account/register', Promise.coroutine(function* (req, res) {
   if (user) {
     return res.fail({ type: 'USERNAME_EXIST' });
   }
+  /** 密码加盐加密处理 */
   const salt = crypto.randomBytes(64).toString('base64');
+  /**新建用户 */
   const newUser = {
     userName: req.body.userName,
     salt: salt,
@@ -44,19 +58,23 @@ router.post('/account/register', Promise.coroutine(function* (req, res) {
     lastLogin: new Date().toString()
   };
   user = yield User.create(newUser)
+  /** 用户信息存到 session */
   req.session.userId = user.id
   req.session.userName = user.userName
   return res.success({});
 }));
 
+/** 用户登录 */
 router.post('/account/login', Promise.coroutine(function* (req, res) {
   let user = yield User.findOne({
     where: { userName: req.body.userName },
     attributes: ['id', 'userName', 'loginPass', 'salt', 'lastLogin', 'disabled']
   });
+  /** 用户不存在 */
   if (!user) {
     return res.fail({ type: 'USER_NOT_EXIST' });
   }
+  /** 用户被禁用 */
   if (user.disabled) {
     return res.fail({ type: 'USER_DISABLED' });
   }
@@ -77,12 +95,15 @@ router.post('/account/login', Promise.coroutine(function* (req, res) {
   return res.success({ user });
 }));
 
+/** 用户注销登录 */
 router.get('/account/logout', (req, res) => {
   req.session.userId = null;
   return res.success({});
 });
 
+/** 获取用户信息 */
 router.get('/account/info', Promise.coroutine(function* (req, res) {
+  /** 验证登陆状态 */
   if (!req.session.userId) {
     return res.success({ });
   }
@@ -93,7 +114,9 @@ router.get('/account/info', Promise.coroutine(function* (req, res) {
   return res.success({ user });
 }));
 
+/** 获取转账记录 */
 router.get('/account/transactions', Promise.coroutine(function* (req, res) {
+  /** 验证权限 */
   if (!req.session.userId) {
     return res.status(403).fail();
   }
@@ -104,7 +127,9 @@ router.get('/account/transactions', Promise.coroutine(function* (req, res) {
   return res.success({ transactions });
 }));
 
+/** 验证支付密码 */
 router.post('/account/check_paypass', Promise.coroutine(function* (req, res) {
+  /** 验证权限 */
   if (!req.session.userId) {
     return res.status(403).fail();
   }
@@ -119,7 +144,9 @@ router.post('/account/check_paypass', Promise.coroutine(function* (req, res) {
   }
 }));
 
+/** 验证登录密码 */
 router.post('/account/check_loginpass', Promise.coroutine(function *(req, res) {
+  /** 权限验证 */
   if (!req.session.userId) {
     return res.status(403).fail();
   }
@@ -134,6 +161,7 @@ router.post('/account/check_loginpass', Promise.coroutine(function *(req, res) {
   }
 }));
 
+/** 身份证验证 */
 router.get('/account/check_id', Promise.coroutine(function *(req, res) {
   const user = yield User.findOne({
     where: { idNumber: req.query.idNumber }
@@ -144,6 +172,7 @@ router.get('/account/check_id', Promise.coroutine(function *(req, res) {
   return res.success();
 }));
 
+/** 检查用户名是否存在 */
 router.get('/account/check_username', Promise.coroutine(function* (req, res) {
   const user = yield User.findOne({
     where: { userName: req.query.userName }
@@ -155,7 +184,9 @@ router.get('/account/check_username', Promise.coroutine(function* (req, res) {
   }
 }));
 
+/** 更新用户信息 */
 router.post('/account/update_info', Promise.coroutine(function* (req, res) {
+  /** 权限验证 */
   if (!req.session.userId) {
     return res.status(403).fail();
   }
@@ -174,6 +205,7 @@ router.post('/account/update_info', Promise.coroutine(function* (req, res) {
 }));
 
 router.post('/account/change_paypass', Promise.coroutine(function *(req, res) {
+  /** 权限验证 */
   if (!req.session.userId) {
     return res.status(403).fail();
   }
@@ -185,6 +217,7 @@ router.post('/account/change_paypass', Promise.coroutine(function *(req, res) {
   return res.success();
 }));
 
+/** 更改登录密码 */
 router.post('/account/change_loginpass',
   Promise.coroutine(function *(req, res) {
     if (!req.session.userId) {
@@ -199,17 +232,21 @@ router.post('/account/change_loginpass',
   })
 );
 
+/** 充值 */
 router.post('/account/topup', Promise.coroutine(function* (req, res) {
+  /** 权限验证 */
   if (!req.session.userId) {
     return res.status(403).fail();
   }
   const delta = parseFloat(req.body.amount);
+  /** 数值验证 */
   if (isNaN(delta)) {
     return res.status(400).fail();
   }
   let user = yield User.findById(req.session.userId, {
     attributes: ['payPass', 'salt']
   });
+  /** 充值密码验证 */
   if (user.payPass !== cookPassword(req.body.password, user.salt)) {
     return res.fail({ type: 'INCORRECT_PASSWORD' });
   }
@@ -231,7 +268,9 @@ router.post('/account/topup', Promise.coroutine(function* (req, res) {
   return res.success({ user, transaction });
 }));
 
+/** 提现接口 */
 router.post('/account/withdraw', Promise.coroutine(function* (req, res) {
+  /** 权限验证 */
   if (!req.session.userId) {
     return res.status(403).fail();
   }
@@ -239,6 +278,7 @@ router.post('/account/withdraw', Promise.coroutine(function* (req, res) {
   if (isNaN(delta)) {
     return res.status(400).fail();
   }
+  /** 查找用户 */
   let user = yield User.findById(req.session.userId, {
     attributes: ['balance', 'salt', 'payPass']
   });
@@ -248,6 +288,7 @@ router.post('/account/withdraw', Promise.coroutine(function* (req, res) {
   if (user.payPass < delta) {
     return res.fail({ type: 'INSUFFICIENT_BALANCE' });
   }
+  /** 更新信息 */
   yield User.update({
     balance: db.literal(`balance - ${delta}`)
   }, {
@@ -266,6 +307,7 @@ router.post('/account/withdraw', Promise.coroutine(function* (req, res) {
   return res.success({ user, transaction });
 }));
 
+/** 找回密码 */
 router.post('/account/find_password',
   Promise.coroutine(function* (req, res) {
     let user = yield User.findOne({
@@ -281,6 +323,7 @@ router.post('/account/find_password',
     let loginPass = crypto.randomBytes(12).toString('base64');
     user.loginPass = cookPassword(loginPass, user.salt);
     yield user.save();
+    /** 发送邮件 */
     yield transporter.sendMail({
       from: config.from,
       to: user.email,

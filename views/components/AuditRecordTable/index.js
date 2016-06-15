@@ -1,9 +1,11 @@
+/** 交易记录表 */
 import React from 'react';
 import { Table } from 'antd';
 import moment from 'moment'
 
 import styles from './styles';
 
+/** 表头 */
 const columns = [{
   title: '交易时间',
   dataIndex: 'createdAt',
@@ -77,6 +79,7 @@ const columns = [{
   }
 }];
 
+/** 处理小数，填充表格 */
 const wrapAmount = (data) => {
   return data.map((d, index) => ({
     ...d,

@@ -1,3 +1,4 @@
+/** 审计员检索记录页面 */
 import React from 'react';
 import styles from './styles.scss';
 
@@ -28,6 +29,7 @@ function onChange(e) {
   console.log(`radio checked:${e.target.value}`);
 }
 
+/** 选择日期 */
 const RangePicker = DatePicker.RangePicker;
 
 const tableProps = {
@@ -38,6 +40,7 @@ const tableProps = {
   }
 };
 
+/** 各项筛选条件 */
 const orderPropsArray = [
   {
     input: {

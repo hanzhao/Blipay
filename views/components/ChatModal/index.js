@@ -1,3 +1,4 @@
+/** 聊天界面 */
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
@@ -51,6 +52,7 @@ class ChatModal extends React.Component {
       e.preventDefault()
     }
     if (!user) { return null }
+    /** 自动滚动到最新消息 */
     setTimeout(() => {
       const node = ReactDOM.findDOMNode(this.refs.messages)
       if (node && node.scrollHeight) {

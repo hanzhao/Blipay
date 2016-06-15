@@ -1,3 +1,4 @@
+/** 添加管理员页面 */
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
@@ -12,6 +13,7 @@ import {
 
 import styles from './styles';
 
+/** 样式 */
 const formItemLayout = {
   labelCol: { span: 8 },
   wrapperCol: { span: 10 },
@@ -19,6 +21,7 @@ const formItemLayout = {
 
 const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
+/** 表单校验 */
 const validate = (values) => {
   const errors = {};
   const { adminName, realName, password, repassword } = values;
@@ -56,6 +59,7 @@ function getValidate(item) {
   }
 }
 
+/** 主页面 */
 @reduxForm({
   form: 'admin-add-admin',
   fields: ['adminName', 'password', 'repassword', 'realName'],
