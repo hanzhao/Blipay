@@ -22,6 +22,10 @@ const LOAD_LOG = 'Blipay/auditor/LOAD_LOG';
 const LOAD_LOG_SUCCESS = 'Blipay/auditor/LOAD_LOG_SUCCESS';
 const LOAD_LOG_FAIL = 'Blipay/auditor/LOAD_LOG_FAIL';
 
+const LOAD_USER = 'Blipay/auditor/LOAD_USER';
+const LOAD_USER_SUCCESS = 'Blipay/auditor/LOAD_USER_SUCCESS';
+const LOAD_USER_FAIL = 'Blipay/auditor/LOAD_USER_FAIL';
+
 const INSERT_DATA = 'Blipay/auditor/INSERT_DATA';
 const INSERT_DATA_SUCCESS = 'Blipay/auditor/INSERT_DATA_SUCCESS';
 const INSERT_DATA_FAIL = 'Blipay/auditor/INSERT_DATA_FAIL';
@@ -83,6 +87,11 @@ export const loadTransactions = () => ({
 export const loadLog = () => ({
   types: [LOAD_LOG, LOAD_LOG_SUCCESS, LOAD_LOG_FAIL],
   promise: (client) => client.get('/api/auditor/log')
+})
+
+export const loadUser = () => ({
+  types: [LOAD_USER, LOAD_USER_SUCCESS, LOAD_USER_FAIL],
+  promise: (client) => client.get('/api/auditor/user')
 })
 
 export const insertData = () => ({
@@ -217,6 +226,13 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         // 映射 transactions 里的 createdAt 和 updatedAt 变成 Date Object
         logtable: action.result.logtable.map(e => wrapTransaction(e)),
+        message: null
+      }
+      case LOAD_USER_SUCCESS:
+      return {
+        ...state,
+        // 映射 transactions 里的 createdAt 和 updatedAt 变成 Date Object
+        loguser: action.result.loguser.map(e => wrapTransaction(e)),
         message: null
       }
     // Errors

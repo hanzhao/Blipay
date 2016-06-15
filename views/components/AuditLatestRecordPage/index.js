@@ -81,6 +81,21 @@ const addinfoPropsArray = [
   }
 ];
 
+const getFlowHead = (flow) => {
+  if (isNaN(flow))
+    return '0';
+  else
+    return (flow.toFixed(2) + '').split('.')[0];
+};
+
+const getFlowTail = (flow) => {
+  if (isNaN(flow))
+    return '00';
+  else
+    return (flow.toFixed(2) + '').split('.')[1];
+};
+
+
 @asyncConnect(
   [{
     promise: ({ store: { dispatch, getState } }) => {
@@ -109,15 +124,33 @@ class AuditLatestRecordPage extends React.Component {
     })
   }
   render() {
-    const transactions = this.props.transactions.filter((e) =>
+    var transactions = this.props.transactions.filter((e) =>
       e.createdAt >= this.state.range[0] && e.createdAt <= this.state.range[1]
     )
+    var i=0;
+    var flow=0;
+    while(i<transactions.length){
+    	flow=flow+transactions[i].totalCost;
+    	i++;
+    }
     return (
       <div className={styles.container}>
         <div className={styles.mypicker}>
           <RangePicker className={styles.picker}
                      showTime
                      onChange={this.handleChange} />
+        </div>
+        <div className={styles.balanceValue}>
+                <span className={styles.flowHead}>
+                  选择时间范围内交易总额：￥{ getFlowHead(flow) }.
+                </span>
+                <span className={styles.flowTail}>
+                  { getFlowTail(flow) }
+                </span>
+
+                <span className={styles.flowCount}>
+                  &nbsp;&nbsp;&nbsp;&nbsp;交易记录总数：{transactions.length}
+                </span>
         </div>
         <div className={styles.mybutton}>
                  <Button className={styles.withdrawal}

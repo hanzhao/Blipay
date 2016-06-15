@@ -10,6 +10,7 @@ const menus = [
   { to: '/audit', text: '最新帐单', icon: 'star' },
   { to: '/audit/search', text: '检索', icon: 'search' },
   { to: '/audit/log', text: '日志', icon: 'file-text' },
+  { to: '/audit/user', text: '异常用户', icon: 'file-text' }
 ];
 
 class AccountMenu extends React.Component {
